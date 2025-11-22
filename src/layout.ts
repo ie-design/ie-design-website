@@ -1,7 +1,7 @@
 import { interlaced } from "./util";
 
 interface ElementAlignment {
-    element: HTMLElement;
+    element: BoxElement;
     offset: number;
 }
 
@@ -14,20 +14,18 @@ export interface TextDetails {
     lineHeight: number;
 }
 
+export type BoxElement = HTMLElement | SVGSVGElement;
+
 export function px(pixels: number) {
     return pixels + "px";
 }
 
-export function alignWithGap(leftElement: HTMLElement, rightElement: HTMLElement, gap: number) {
-    rightElement.style.left = px(leftElement.offsetLeft + leftElement.offsetWidth + gap);
-}
-
-function axisAligningWithGaps(axisSize: (element: HTMLElement) => number) {
-    return (elementOrGaps: (HTMLElement | number)[]): [ElementAlignment[], number] => {
+function axisAligningWithGaps(axisSize: (element: BoxElement) => number) {
+    return (elementOrGaps: (BoxElement | number)[]): [ElementAlignment[], number] => {
         const elementAlignments = [];
         let runningTotal = 0;
         for (const elementOrGap of elementOrGaps) {
-            if (elementOrGap instanceof HTMLElement) {
+            if (elementOrGap instanceof HTMLElement || elementOrGap instanceof SVGSVGElement) {
                 elementAlignments.push({ element: elementOrGap, offset: runningTotal });
                 runningTotal += axisSize(elementOrGap);
             } else {
@@ -38,18 +36,28 @@ function axisAligningWithGaps(axisSize: (element: HTMLElement) => number) {
     };
 }
 
-// ZZZZ want a short hand for common simple use
-export const aligningWithGapsY = axisAligningWithGaps((element) => element.offsetHeight);
-export const aligningWithGapsX = axisAligningWithGaps((element) => element.offsetWidth);
+function unpx(value: string) {
+    return Number(value.slice(0, -2));
+}
+export function posX(element: BoxElement) {
+    return element instanceof HTMLElement ? element.offsetLeft : unpx(element.style.left);
+}
 
-export function setWidth(element: HTMLElement, width: number) {
-    element.style.width = px(width);
-    if (element instanceof HTMLImageElement) element.style.height = px((width * element.naturalHeight) / element.naturalWidth);
+export function posY(element: BoxElement) {
+    return element instanceof HTMLElement ? element.offsetTop : unpx(element.style.top);
 }
-export function setHeight(element: HTMLElement, height: number) {
-    element.style.height = px(height);
-    if (element instanceof HTMLImageElement) element.style.width = px((height * element.naturalWidth) / element.naturalHeight);
+
+export function sizeX(element: BoxElement) {
+    return element instanceof HTMLElement ? element.offsetWidth : element.clientWidth;
 }
+
+export function sizeY(element: BoxElement) {
+    return element instanceof HTMLElement ? element.offsetHeight : element.clientHeight;
+}
+
+// ZZZZ want a short hand for common simple use
+export const aligningWithGapsX = axisAligningWithGaps(sizeX);
+export const aligningWithGapsY = axisAligningWithGaps(sizeY);
 
 export function isLandscape() {
     return innerWidth / innerHeight > 1;
@@ -65,11 +73,11 @@ export function centerWithGapY(elements: HTMLElement[], gap: number, center: num
 }
 
 export function centerElementX(element: HTMLElement) {
-    element.style.left = px(innerWidth / 2 - element.offsetWidth / 2);
+    element.style.left = px(innerWidth / 2 - sizeX(element) / 2);
 }
 
 export function centerElementY(element: HTMLElement) {
-    element.style.top = px(innerHeight / 2 - element.offsetHeight / 2);
+    element.style.top = px(innerHeight / 2 - sizeY(element) / 2);
 }
 
 export function styleText(scrollText: HTMLElement, s: TextDetails) {

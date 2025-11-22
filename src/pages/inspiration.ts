@@ -1,7 +1,8 @@
 import { ieBlue } from "../constants";
-import { alignWithGap, aligningWithGapsY, px, styleText } from "../layout";
+import { aligningWithGapsX, aligningWithGapsY, posX, px, sizeX, styleText } from "../layout";
 import { registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollPadding, addScrollText, centerWithinScrollY, getScrollHeight } from "../scroll";
+import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight } from "../scroll";
+import { interlaced } from "../util";
 
 const INSPIRATION_TILE_WIDTH_PROPORTION = 0.85;
 
@@ -54,7 +55,7 @@ function addInspirationTile(imageString: string, majorText: string, minorText: s
 }
 
 export function addInspirationPage() {
-    const inspiration = addScrollImage("inspiration/inspiration.svg");
+    const inspiration = addScrollSvg("inspiration/inspiration.svg");
 
     const tiles = [
         addInspirationTile("inspiration/yumie.jpg", "THE START OF SOMETHING YUM-IE", "We always wanted to design chocolate bars and finally did it. Introducing our sweet new brand."),
@@ -78,12 +79,19 @@ export function addInspirationPage() {
 
         for (const tile of tiles) styleInspirationTile(tile);
 
-        alignWithGap(inspiration, tiles[0].image, 0.25 * s);
-        for (let i = 0; i < tiles.length - 1; i++) alignWithGap(tiles[i].image, tiles[i + 1].image, 0.1 * s);
+        const tileImagesWithGaps = interlaced(
+            tiles.map((t) => t.image),
+            0.1 * s
+        );
+        const [elementAlignments, _] = aligningWithGapsX([inspiration, 0.25 * s, ...tileImagesWithGaps]);
+
+        for (const { element, offset } of elementAlignments) {
+            element.style.left = px(offset);
+        }
 
         for (const tile of tiles) alignInspirationTile(tile);
 
         const lastImage = tiles[tiles.length - 1].image;
-        scrollPadding.style.left = px(lastImage.offsetLeft + lastImage.offsetWidth + 0.1 * s);
+        scrollPadding.style.left = px(posX(lastImage) + sizeX(lastImage) + 0.1 * s);
     });
 }

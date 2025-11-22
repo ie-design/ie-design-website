@@ -5,7 +5,7 @@ import { cleanLastPage, pageCleanups } from "./page";
 import { addConnectPage } from "./pages/connect";
 import { addEvolutionPage } from "./pages/evolution";
 import { addInspirationPage } from "./pages/inspiration";
-import { addHomeSVG, addViewPage } from "./pages/view";
+import { addViewPage } from "./pages/view";
 import { addWorkPage } from "./pages/work";
 import { getHeaderBarHeight, getScrollHeight } from "./scroll";
 import { Signal, effect } from "./signal";
@@ -20,9 +20,9 @@ import { colorOnHover, createIconSVG, fetchSVG, getElementByIdSVG, makeLine, set
 // hit end of scroll, next page
 // simpler rectangle scroll bar
 // "view" start animation
-// envelope lower
-// random color on hover for svg art?
-// nav sidebar hover style
+// onclose mix with escape key
+// image set width and height preserve aspect
+// onwheel warning?
 
 const pages = {
     view: addViewPage,
@@ -121,6 +121,23 @@ function addNavItems() {
         body.appendChild(navItem);
 
         navItemFromString[pageName] = navItem;
+
+        const hoverSpring = new Spring(0);
+        const hoverSpringSig = new Signal();
+        hoverSpring.setStiffnessCritical(400);
+        effect(() => {
+            navItem.style.left = px(edgeAlignX() + hoverSpring.position * 10);
+        }, [hoverSpringSig, bodySig]);
+
+        navItem.onmouseenter = () => {
+            hoverSpring.target = 1;
+            animateSpring(hoverSpring, hoverSpringSig);
+        };
+
+        navItem.onmouseleave = () => {
+            hoverSpring.target = 0;
+            animateSpring(hoverSpring, hoverSpringSig);
+        };
     }
 
     const navItems = Object.values(navItemFromString);
@@ -132,7 +149,7 @@ function addNavItems() {
             centerWithGapY(navItems, 0.06 * s, window.innerHeight / 2);
 
             for (const navItem of navItems) {
-                navItem.style.left = px(edgeAlignX());
+                // navItem.style.left = px(edgeAlignX());
                 navItem.style.visibility = "visible";
                 navItem.style.fontSize = px(s * 0.025);
             }
@@ -143,15 +160,15 @@ function addNavItems() {
 }
 
 async function animateHomeIE() {
-    const homeSvg = await addHomeSVG();
+    // const homeSvg = await addHomeSVG();
 
-    const rest = getElementByIdSVG(homeSvg, "rest");
-    rest.style.opacity = "0";
-    const ie = getElementByIdSVG(homeSvg, "ie");
-    ie.style.opacity = "0";
+    // const rest = getElementByIdSVG(homeSvg, "rest");
+    // rest.style.opacity = "0";
+    // const ie = getElementByIdSVG(homeSvg, "ie");
+    // ie.style.opacity = "0";
 
-    await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
-    await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
+    // await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
+    // await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
 }
 
 function addHeaderBar() {
@@ -220,7 +237,7 @@ function addMenuButton() {
         }
     );
 
-    menuButton.style.stroke = "#bbbbbb"; // ZZZZ onclose mix with escape key
+    menuButton.style.stroke = "#bbbbbb";
     menuButton.onclick = () => {
         if (menuModal.isOpening) {
             menuButton.style.stroke = "#bbbbbb";

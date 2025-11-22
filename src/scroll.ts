@@ -1,9 +1,10 @@
 import { body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen } from "./constants";
-import { aligningWithGapsY, centerElementX, centerElementY, isLandscape, px, setHeight, setWidth, styleText, TextDetails } from "./layout";
+import { aligningWithGapsY, centerElementX, centerElementY, isLandscape, px, styleText, TextDetails } from "./layout";
 import { Modal } from "./modal";
 import { appendChildForPage, awaitLayoutForImageLoading, registerUpdateLayout } from "./page";
-import { effect } from "./signal";
-import { createIconSVG, makeLine, makePolyline, setAttributes } from "./util";
+import { effect, Signal } from "./signal";
+import { animateSpring, Spring } from "./spring";
+import { createElementSVG, createIconSVG, fetchSVG, makeLine, makePolyline, setAttributes } from "./util";
 
 export interface TextSquare {
     major: HTMLElement;
@@ -106,10 +107,10 @@ export function addScrollImage(src: string): HTMLImageElement {
             fullscreenButton.style.top = px(fromEdge);
 
             const height = innerHeight * 0.9;
-            setHeight(bigImage, height);
+            bigImage.style.height = px(height);
             const minWidth = innerWidth * 0.9;
             if (bigImage.offsetWidth > minWidth) {
-                setWidth(bigImage, minWidth);
+                bigImage.style.width = px(minWidth);
             }
             centerElementX(bigImage);
             centerElementY(bigImage);
@@ -119,6 +120,31 @@ export function addScrollImage(src: string): HTMLImageElement {
     awaitLayoutForImageLoading(scrollImage);
     appendChildForPage(scrollContainer, scrollImage);
     return scrollImage;
+}
+
+export function addScrollSvg(src: string) {
+    const scrollSvg = createElementSVG("svg");
+    scrollSvg.style.position = "absolute";
+    scrollSvg.style.animation = fadeInAnimation();
+    async function fetchContent() {
+        const fetched = await fetchSVG(src);
+        for (const attr of fetched.attributes) scrollSvg.setAttribute(attr.name, attr.value);
+        while (fetched.firstChild) scrollSvg.appendChild(fetched.firstChild);
+
+        const letters = scrollSvg.getElementsByTagName("path");
+        for (const letter of letters) {
+            letter.style.transition = "fill 0.4s ease-out";
+            letter.onmouseenter = () => {
+                const hoverColor = Math.random() > 0.5 ? "hover-blue" : "hover-green";
+                letter.classList.add(hoverColor);
+                letter.onmouseleave = () => letter.classList.remove(hoverColor);
+            };
+        }
+    }
+    fetchContent();
+
+    appendChildForPage(scrollContainer, scrollSvg);
+    return scrollSvg;
 }
 
 export function addScrollText(text: string) {
@@ -200,16 +226,16 @@ export function alignScrollTextSquare({ major, minors }: TextSquare, majorToMino
     }
 }
 
-export function centerWithinScrollY(element: HTMLElement, scale: number) {
+export function centerWithinScrollY(element: HTMLElement | SVGSVGElement, scale: number) {
     const s = getScrollHeight();
     const height = s * scale;
-    setHeight(element, height);
+    element.style.height = px(height);
     element.style.top = px((s - height) / 2);
 }
 
-export function centerWithinScrollX(element: HTMLElement, scale: number) {
+export function centerWithinScrollX(element: HTMLElement | SVGSVGElement, scale: number) {
     const s = getScrollWidth();
     const width = s * scale;
-    setWidth(element, width);
+    element.style.width = px(width);
     element.style.left = px((s - width) / 2);
 }

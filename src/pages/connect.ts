@@ -1,16 +1,16 @@
-import { aligningWithGapsX, aligningWithGapsY, px, setWidth, styleText } from "../layout";
+import { aligningWithGapsX, aligningWithGapsY, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
 import { registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollText, centerWithinScrollY, getScrollHeight } from "../scroll";
+import { addScrollImage, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight } from "../scroll";
 
 function addIcon(imageSrc: string, clickLink: string) {
-    const icon = addScrollImage(imageSrc);
+    const icon = addScrollSvg(imageSrc);
     icon.style.cursor = "pointer";
     icon.onclick = () => window.open(clickLink);
     return icon;
 }
 
 export function addConnectPage() {
-    const connect = addScrollImage("connect/connect.svg");
+    const connect = addScrollSvg("connect/connect.svg");
     const texts = [
         addScrollText("Our clients look to us for more than award-winning design. They value our role as trusted advisor, support, and confidant."),
         addScrollText("We look for synergy and compatibility in every relationship we build so the work experience doesn’t feel like work at all."),
@@ -29,7 +29,7 @@ export function addConnectPage() {
         const s = getScrollHeight();
 
         const width = 0.55 * s;
-        setWidth(connect, width);
+        connect.style.width = px(width);
         centerWithinScrollY(letsMeet, 0.8);
 
         for (const text of texts) styleText(text, { letterSpacing: 0.18, fontWeight: 350, color: "#000000", fontSize: 0.028 * s, width, lineHeight: 0.05 * s });
@@ -49,15 +49,15 @@ export function addConnectPage() {
             element.style.top = px(offset + 0.05 * s);
         }
 
-        letsMeet.style.left = px(connect.offsetLeft + connect.offsetWidth + 0.15 * s);
+        letsMeet.style.left = px(posX(connect) + sizeX(connect) + 0.15 * s);
 
-        who.style.left = px(letsMeet.offsetLeft);
-        who.style.top = px(letsMeet.offsetTop + letsMeet.offsetHeight + 0.04 * s);
+        who.style.left = px(posX(letsMeet));
+        who.style.top = px(posY(letsMeet) + sizeY(letsMeet) + 0.04 * s);
 
         for (const icon of icons) {
-            icon.width = s * 0.055;
+            icon.style.width = px(s * 0.055);
             const lastText = texts[texts.length - 1];
-            icon.style.top = px(lastText.offsetTop + lastText.offsetHeight + 0.03 * s);
+            icon.style.top = px(posY(lastText) + sizeY(lastText) + 0.03 * s);
         }
         const [iconAlignments, __] = aligningWithGapsX([instagramIcon, 0.03 * s, linkedinIcon, 0.03 * s, mailIcon]);
 

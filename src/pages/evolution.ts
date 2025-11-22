@@ -1,7 +1,7 @@
-import { gray, ieGreen } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, px, setHeight, styleText } from "../layout";
+import { fadeInAnimation, gray, ieGreen } from "../constants";
+import { aligningWithGapsX, aligningWithGapsY, BoxElement, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
 import { appendChildForPage, registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollPadding, addScrollText, centerWithinScrollY, getScrollHeight, scrollContainer } from "../scroll";
+import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, scrollContainer } from "../scroll";
 
 interface Quote {
     quote: HTMLParagraphElement;
@@ -41,8 +41,8 @@ function styleQuote({ quote, author, title, openQuote, closeQuote }: Quote) {
 function layoutQuote({ quote, author, title, openQuote, closeQuote }: Quote) {
     const s = getScrollHeight();
 
-    author.style.left = px(quote.offsetLeft);
-    title.style.left = px(quote.offsetLeft);
+    author.style.left = px(posX(quote));
+    title.style.left = px(posX(quote));
 
     const [elementAlignments, _] = aligningWithGapsY([
         quote, //
@@ -56,25 +56,26 @@ function layoutQuote({ quote, author, title, openQuote, closeQuote }: Quote) {
         element.style.top = px(offset + 0.35 * s);
     }
 
-    // this is sorta jank. again, close quote bounding box gets confused
-    setTimeout(() => {
-        const range = document.createRange();
-        range.selectNodeContents(quote);
-        const rects = range.getClientRects();
-        const scrollContainerRect = scrollContainer.getBoundingClientRect();
-        const lastTextLineRect = rects[rects.length - 1];
-        const lastRectLeft = lastTextLineRect.left - scrollContainerRect.left + scrollContainer.scrollLeft;
+    // ZZZZ this is sorta jank. again, close quote bounding box gets confused
+    // setTimeout(() => {
+    //     const range = document.createRange();
+    //     range.selectNodeContents(quote);
+    //     const rects = range.getClientRects();
+    //     const scrollContainerRect = scrollContainer.getBoundingClientRect();
+    //     const lastTextLineRect = rects[rects.length - 1];
+    //     const lastRectLeft = lastTextLineRect.left - scrollContainerRect.left + scrollContainer.scrollLeft;
 
-        openQuote.style.left = px(quote.offsetLeft - 0.07 * s);
-        openQuote.style.top = px(quote.offsetTop + 0.05 * s);
-        closeQuote.style.left = px(lastRectLeft + lastTextLineRect.width);
-        closeQuote.style.top = px(quote.offsetTop + quote.offsetHeight - 0.01 * s);
-    }, 100);
+    //     openQuote.style.left = px(posX(quote) - 0.07 * s);
+    //     openQuote.style.top = px(posY(quote) + 0.05 * s);
+    //     closeQuote.style.left = px(lastRectLeft + lastTextLineRect.width);
+    //     closeQuote.style.top = px(posY(quote) + sizeY(quote) - 0.01 * s);
+    // }, 100);
 }
 
 function createTimelineLine() {
     const timelineLine = document.createElement("div");
     timelineLine.style.position = "absolute";
+    timelineLine.style.animation = fadeInAnimation();
     timelineLine.style.backgroundColor = gray;
     timelineLine.style.width = px(1);
     appendChildForPage(scrollContainer, timelineLine);
@@ -82,9 +83,9 @@ function createTimelineLine() {
 }
 
 export function addEvolutionPage() {
-    const evolution = addScrollImage("evolution/evolution.svg");
-    const evolutionHistory = addScrollImage("evolution/evolution-history.svg");
-    const logoFull = addScrollImage("logo-full.svg");
+    const evolution = addScrollSvg("evolution/evolution.svg");
+    const evolutionHistory = addScrollSvg("evolution/evolution-history.svg");
+    const logoFull = addScrollSvg("logo-full.svg");
 
     const promos: HTMLImageElement[] = [];
     for (let i = 1; i <= 5; i++) promos.push(addScrollImage(`evolution/promo-${i}.jpg`));
@@ -123,13 +124,13 @@ export function addEvolutionPage() {
         const s = getScrollHeight();
 
         centerWithinScrollY(evolution, 0.75);
-        setHeight(evolutionHistory, 0.3 * s);
-        setHeight(logoFull, 0.45 * s);
+        evolutionHistory.style.height = px( 0.3 * s);
+        logoFull.style.height = px( 0.45 * s);
 
         for (const promo of promos) centerWithinScrollY(promo, 1);
         for (const quote of quotes) styleQuote(quote);
 
-        const items: (HTMLElement | number)[] = [evolution, 0.2 * s, evolutionHistory];
+        const items: (BoxElement | number)[] = [evolution, 0.2 * s, evolutionHistory];
 
         const maxLength = Math.max(quotes.length, promos.length);
         for (let i = 0; i < maxLength; i++) {
@@ -144,19 +145,19 @@ export function addEvolutionPage() {
             element.style.left = px(offset);
         }
 
-        evolutionHistory.style.top = px(evolution.offsetTop + evolution.offsetHeight - evolutionHistory.offsetHeight);
+        evolutionHistory.style.top = px(posY(evolution) + sizeY(evolution) - sizeY(evolutionHistory));
 
-        logoFull.style.left = px(evolutionHistory.offsetLeft + (evolutionHistory.offsetWidth - logoFull.offsetWidth) / 2);
-        logoFull.style.top = px(evolutionHistory.offsetTop - logoFull.offsetHeight - 0.1 * s);
+        logoFull.style.left = px(posX(evolutionHistory) + (sizeX(evolutionHistory) - sizeX(logoFull)) / 2);
+        logoFull.style.top = px(posY(evolutionHistory) - sizeY(logoFull) - 0.1 * s);
 
         for (const quote of quotes) layoutQuote(quote);
 
         for (const { timelineLine, timelineItem } of timelines) {
             const { element, offsetFactor } = timelineItem;
             const offset = s * offsetFactor;
-            timelineLine.style.left = px(element.offsetLeft + element.offsetWidth / 2);
-            timelineLine.style.top = px(element.offsetTop + element.offsetHeight + offset);
-            timelineLine.style.height = px(scrollContainer.offsetHeight - (element.offsetTop + element.offsetHeight) - offset);
+            timelineLine.style.left = px(posX(element) + sizeX(element) / 2);
+            timelineLine.style.top = px(posY(element) + sizeY(element) + offset);
+            timelineLine.style.height = px(sizeY(scrollContainer) - (posY(element) + sizeY(element)) - offset);
         }
     });
 }

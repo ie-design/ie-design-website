@@ -1,5 +1,6 @@
 import { bodySig } from "./constants";
 import { effect } from "./signal";
+import { sleep } from "./util";
 
 export const pageCleanups = new Set<() => void>();
 
@@ -13,13 +14,14 @@ export function awaitLayoutForImageLoading(image: HTMLImageElement) {
 export async function registerUpdateLayout(updateLayout: () => void) {
     await Promise.all(awaitBeforeLayouts);
     awaitBeforeLayouts.clear();
+    await sleep(10)
     runAllAndClear(beforeLayouts);
 
     effect(updateLayout, [bodySig]);
     pageCleanups.add(() => bodySig.unsubscribe(updateLayout));
 }
 
-export function appendChildForPage(parent: HTMLElement, child: HTMLElement) {
+export function appendChildForPage(parent: Element, child: Element) {
     beforeLayouts.add(() => {
         parent.appendChild(child);
         pageCleanups.add(() => parent.removeChild(child));

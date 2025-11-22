@@ -1,34 +1,33 @@
 import { SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION } from "../constants";
 import { aligningWithGapsX, aligningWithGapsY, isLandscape, px } from "../layout";
 import { appendChildForPage, registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollPadding, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollX, centerWithinScrollY, getScrollHeight, getScrollWidth, scrollContainer, styleScrollTextSquare, TextSquare } from "../scroll";
-import { fetchSVG } from "../util";
+import { addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollX, centerWithinScrollY, getScrollHeight, getScrollWidth, scrollContainer, styleScrollTextSquare, TextSquare } from "../scroll";
+import { fetchSVG, sleep } from "../util";
 
-export let homeAnimated: HTMLElement | undefined;
+// export let homeAnimated: HTMLElement | undefined;
 
-export async function addHomeSVG() {
-    homeAnimated = document.createElement("div");
-    homeAnimated.style.position = "absolute";
-    const homeSvg = await fetchSVG("view/home.svg");
-    homeAnimated.appendChild(homeSvg);
+// export async function addHomeSVG() {
+//     homeAnimated = document.createElement("div");
+//     homeAnimated.style.position = "absolute";
+//     const homeSvg = await fetchSVG("view/home.svg");
+//     homeAnimated.appendChild(homeSvg);
 
-    registerUpdateLayout(() => {
-        if (isLandscape()) {
-            const s = getScrollHeight();
-            const height = s * 0.95;
-            homeSvg.style.height = px(height);
-            homeAnimated.style.top = px((s - height) / 2);
-        }
-    });
+//     registerUpdateLayout(() => {
+//         if (isLandscape()) {
+//             const s = getScrollHeight();
+//             const height = s * 0.95;
+//             homeSvg.style.height = px(height);
+//             homeAnimated.style.top = px((s - height) / 2);
+//         }
+//     });
 
-    return homeSvg;
-}
+//     return homeSvg;
+// }
 
 export function addViewPage() {
-    const home = addScrollImage("view/home.svg");
-    if (homeAnimated) home.style.visibility = "hidden";
+    const home = addScrollSvg("view/home.svg");
     const horizon = addScrollImage("view/horizon.jpg");
-    const freshLook = addScrollImage("view/fresh-look.svg");
+    const freshLook = addScrollSvg("view/fresh-look.svg");
     const greatBrands = addScrollImage("view/great-brands.jpg");
     const textTile1 = addScrollTextSquare(
         "GREAT BRANDS DON'T JUST HAPPEN",
