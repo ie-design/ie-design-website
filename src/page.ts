@@ -1,6 +1,5 @@
 import { bodySig } from "./constants";
 import { effect } from "./signal";
-import { sleep } from "./util";
 
 export const pageCleanups = new Set<() => void>();
 
@@ -11,17 +10,15 @@ export function awaitLayoutForImageLoading(image: HTMLImageElement) {
     awaitBeforeLayouts.add(image.decode());
 }
 
-// TODO gross
-export async function wahhh() {
+export async function flushPageContent() {
     await Promise.all(awaitBeforeLayouts);
     awaitBeforeLayouts.clear();
-    await sleep(10);
+    await new Promise(requestAnimationFrame);
     runAllAndClear(beforeLayouts);
-    bodySig.update(); // TODO gross
 }
 
 export async function registerUpdateLayout(updateLayout: () => void) {
-    await wahhh();
+    await flushPageContent();
     effect(updateLayout, [bodySig]);
     pageCleanups.add(() => bodySig.unsubscribe(updateLayout));
 }

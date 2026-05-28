@@ -1,12 +1,9 @@
 {
     "compilerOptions": {
-        "outDir": "./dist/",
+        "strict": true,
         "sourceMap": true,
-        "noImplicitAny": true,
         "module": "es2022",
-        "target": "es6",
-        "allowJs": true,
-        "moduleResolution": "node",
-        "strict": true
+        "target": "es2022",
+        "moduleResolution": "bundler"
     }
 }

@@ -1,6 +1,6 @@
-import { body } from "../constants";
-import { aligningWithGapsX, posX, px, sizeX } from "../layout";
-import { appendChildForPage, awaitLayoutForImageLoading, registerUpdateLayout, wahhh } from "../page";
+import { body, bodySig } from "../constants";
+import { aligningWithGapsX, posX, px, sizeX, sizeY } from "../layout";
+import { appendChildForPage, awaitLayoutForImageLoading, flushPageContent, registerUpdateLayout } from "../page";
 import { TextSquare, addScrollImage, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer, styleScrollTextSquare } from "../scroll";
 import { Signal, effect } from "../signal";
 import { Spring, animateSpring } from "../spring";
@@ -9,11 +9,6 @@ import { spaceToFile } from "../util";
 interface WorkContent {
     name: string;
     description: string[];
-}
-
-interface WorkTab {
-    spring: Spring;
-    springSig: Signal;
 }
 
 interface WorkItem {
@@ -73,18 +68,20 @@ export function addWorkPage() {
 
         tabImage.onclick = () => {
             for (const workTab of workTabs) {
-                workTab.spring.target = 100;
+                workTab.spring.target = innerHeight / 2;
                 animateSpring(workTab.spring, workTab.springSig);
             }
 
             populateWorkItems();
-            wahhh();
+            flushPageContent().then(() => bodySig.update());
         };
 
         awaitLayoutForImageLoading(tabImage);
         appendChildForPage(body, tabImage);
 
-        const spring = new Spring(0);
+        console.log(sizeY(tabImage))
+        const center = sizeY(tabImage) / 2;
+        const spring = new Spring(center);
         spring.setStiffnessCritical(100);
         const springSig = new Signal();
 
