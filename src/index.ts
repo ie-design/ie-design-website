@@ -1,3 +1,4 @@
+import { addGrowingTheDreamBlog } from "./blogs/growing-the-dream";
 import { body, bodySig, fadeInAnimation, gray, ieGreen } from "./constants";
 import { centerElementX, centerWithGapY, isLandscape, px, styleText } from "./layout";
 import { Modal } from "./modal";
@@ -13,18 +14,20 @@ import { Spring, animateSpring, animateWithSpring } from "./spring";
 import { colorOnHover, createIconSVG, fetchSVG, getElementByIdSVG, makeLine, setAttributes, sleep } from "./util";
 
 // TODO
+// work page
 // mobile layouts
 // blog pages
-// work page
-// image click
-// hit end of scroll, next page
-// simpler rectangle scroll bar
 // "view" start animation
-// onclose mix with escape key
-// image set width and height preserve aspect
-// onwheel warning?
 
-const pages = {
+// image click after full screen resize bug
+// hit end of scroll, next page
+// onclose mix with escape key
+// onwheel warning?
+// local font
+// decouple setSize with image aspect ratio
+// letterSpacing *s everywhere
+
+const pages: Record<string, () => void> = {
     view: addViewPage,
     work: addWorkPage,
     inspiration: addInspirationPage,
@@ -161,12 +164,10 @@ function addNavItems() {
 
 async function animateHomeIE() {
     // const homeSvg = await addHomeSVG();
-
     // const rest = getElementByIdSVG(homeSvg, "rest");
     // rest.style.opacity = "0";
     // const ie = getElementByIdSVG(homeSvg, "ie");
     // ie.style.opacity = "0";
-
     // await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
     // await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
 }
@@ -335,6 +336,12 @@ async function setup() {
     addCopyright();
 
     const pageNavItem = navItemFromString[pageName] ?? navItemFromString.view;
-    pageNavItem.click();
+    // pageNavItem.click();
+    addGrowingTheDreamBlog();
 }
+
+// addMenuButton();
+// addLogo();
+// createGrowingTheDreamBlog();
+
 setup();

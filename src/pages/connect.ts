@@ -1,6 +1,6 @@
 import { aligningWithGapsX, aligningWithGapsY, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
 import { registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight } from "../scroll";
+import { addScrollImage, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape } from "../scroll";
 
 function addIcon(imageSrc: string, clickLink: string) {
     const icon = addScrollSvg(imageSrc);
@@ -11,11 +11,7 @@ function addIcon(imageSrc: string, clickLink: string) {
 
 export function addConnectPage() {
     const connect = addScrollSvg("connect/connect.svg");
-    const texts = [
-        addScrollText("Our clients look to us for more than award-winning design. They value our role as trusted advisor, support, and confidant."),
-        addScrollText("We look for synergy and compatibility in every relationship we build so the work experience doesn’t feel like work at all."),
-        addScrollText("If your gut is telling you we should connect, now is the perfect time to email."),
-    ];
+    const texts = [addScrollText("Our clients look to us for more than award-winning design. They value our role as trusted advisor, support, and confidant."), addScrollText("We look for synergy and compatibility in every relationship we build so the work experience doesn’t feel like work at all."), addScrollText("If your gut is telling you we should connect, now is the perfect time to email.")];
     const letsMeet = addScrollImage("connect/lets-meet.jpg");
     const who = addScrollText("Bethlyn Krakauer, Founder and Creative Director");
 
@@ -26,6 +22,7 @@ export function addConnectPage() {
     const icons = [instagramIcon, linkedinIcon, mailIcon];
 
     registerUpdateLayout(() => {
+        resizeScrollContainerLandscape();
         const s = getScrollHeight();
 
         const width = 0.55 * s;

@@ -2,8 +2,7 @@ import { body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen } from "./constan
 import { aligningWithGapsY, centerElementX, centerElementY, isLandscape, px, styleText, TextDetails } from "./layout";
 import { Modal } from "./modal";
 import { appendChildForPage, awaitLayoutForImageLoading, registerUpdateLayout } from "./page";
-import { effect, Signal } from "./signal";
-import { animateSpring, Spring } from "./spring";
+import { effect } from "./signal";
 import { createElementSVG, createIconSVG, fetchSVG, makeLine, makePolyline, setAttributes } from "./util";
 
 export interface TextSquare {
@@ -19,6 +18,47 @@ body.appendChild(scrollContainer);
 scrollContainer.onwheel = (e) => {
     if (isLandscape() && !e.shiftKey) scrollContainer.scrollBy({ left: e.deltaY });
 };
+
+export function resizeScrollContainerLandscape() {
+    const scrollHeight = getScrollHeight();
+
+    const scrollLeft = scrollHeight * 0.5;
+
+    const underScrollContainer = (innerHeight - scrollHeight) / 2;
+    scrollContainer.style.height = px(scrollHeight + underScrollContainer); // place scroll bar at bottom of page
+    scrollContainer.style.width = px(innerWidth - scrollLeft);
+    scrollContainer.style.top = px((innerHeight - scrollHeight) / 2);
+    scrollContainer.style.left = px(scrollLeft);
+
+    scrollContainer.style.overflowX = "scroll";
+    scrollContainer.style.overflowY = "hidden";
+    scrollContainer.scrollTop = 0;
+}
+
+export function resizeScrollContainerPortrait() {
+    const scrollWidth = getScrollWidth();
+    const headerBarHeight = getHeaderBarHeight();
+    scrollContainer.style.width = px(scrollWidth);
+    scrollContainer.style.height = px(innerHeight - headerBarHeight);
+    scrollContainer.style.left = px((innerWidth - scrollWidth) / 2);
+    scrollContainer.style.top = px(headerBarHeight);
+
+    scrollContainer.style.overflowX = "hidden";
+    scrollContainer.style.overflowY = "scroll";
+    scrollContainer.scrollLeft = 0;
+}
+
+export function resizeScrollContainerFull() {
+    const headerBarHeight = getHeaderBarHeight();
+    scrollContainer.style.width = px(innerWidth);
+    scrollContainer.style.height = px(innerHeight - headerBarHeight);
+    scrollContainer.style.left = px(0);
+    scrollContainer.style.top = px(headerBarHeight);
+
+    scrollContainer.style.overflowX = "hidden";
+    scrollContainer.style.overflowY = "scroll";
+    scrollContainer.scrollLeft = 0;
+}
 
 export const getHeaderBarHeight = () => {
     if (isLandscape()) {
@@ -166,34 +206,6 @@ export function styleScrollTextSquare({ major, minors }: TextSquare, majorTextDe
     for (const minor of minors) styleText(minor, minorTextDetails);
 }
 
-effect(() => {
-    if (isLandscape()) {
-        const x = 280;
-
-        const scrollHeight = getScrollHeight();
-        const underScrollContainer = (innerHeight - scrollHeight) / 2;
-        scrollContainer.style.height = px(scrollHeight + underScrollContainer); // place scroll bar at bottom of page
-        scrollContainer.style.width = px(innerWidth - x);
-        scrollContainer.style.top = px((innerHeight - scrollHeight) / 2);
-        scrollContainer.style.left = px(x);
-
-        scrollContainer.style.overflowX = "scroll";
-        scrollContainer.style.overflowY = "hidden";
-        scrollContainer.scrollTop = 0;
-    } else {
-        const scrollWidth = getScrollWidth();
-        const headerBarHeight = getHeaderBarHeight();
-        scrollContainer.style.width = px(scrollWidth);
-        scrollContainer.style.height = px(innerHeight - headerBarHeight);
-        scrollContainer.style.left = px((innerWidth - scrollWidth) / 2);
-        scrollContainer.style.top = px(headerBarHeight);
-
-        scrollContainer.style.overflowX = "hidden";
-        scrollContainer.style.overflowY = "scroll";
-        scrollContainer.scrollLeft = 0;
-    }
-}, [bodySig]);
-
 export function getScrollHeight() {
     // return innerHeight * 0.7;
     return 1.02 * innerHeight - 0.000485 * innerHeight * innerHeight;
@@ -203,6 +215,7 @@ export function getScrollWidth() {
     const SCROLL_WIDTH_PROPORTION = 1;
     return innerWidth * SCROLL_WIDTH_PROPORTION;
 }
+
 export function alignScrollTextSquare({ major, minors }: TextSquare, majorToMinorGap: number, betweenMinorsGap: number) {
     const items: (HTMLElement | number)[] = [];
 

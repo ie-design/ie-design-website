@@ -1,7 +1,8 @@
+import { addGrowingTheDreamBlog } from "../blogs/growing-the-dream";
 import { ieBlue } from "../constants";
 import { aligningWithGapsX, aligningWithGapsY, posX, px, sizeX, styleText } from "../layout";
-import { registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight } from "../scroll";
+import { cleanLastPage, registerUpdateLayout } from "../page";
+import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer } from "../scroll";
 import { interlaced } from "../util";
 
 const INSPIRATION_TILE_WIDTH_PROPORTION = 0.85;
@@ -51,6 +52,12 @@ function addInspirationTile(imageString: string, majorText: string, minorText: s
     const minor = addScrollText(minorText);
     const readMore = addScrollText("Read more");
 
+    readMore.style.cursor = "pointer";
+    readMore.onclick = () => {
+        cleanLastPage();
+        addGrowingTheDreamBlog();
+    };
+
     return { image, major, minor, readMore };
 }
 
@@ -58,7 +65,7 @@ export function addInspirationPage() {
     const inspiration = addScrollSvg("inspiration/inspiration.svg");
 
     const tiles = [
-        addInspirationTile("inspiration/yumie.jpg", "THE START OF SOMETHING YUM-IE", "We always wanted to design chocolate bars and finally did it. Introducing our sweet new brand."),
+        addInspirationTile("inspiration/yumie.jpg", "THE START OF SOMETHING YUM-IE", "We always wanted to design chocolate bars and finally did it. Introducing our sweet new brand."), //
         addInspirationTile("inspiration/words-ideas.jpg", "SHARE SOME DESIGN LOVE", "The i.e. design promo journals encourage clients to sketch their big ideas and capture their dreams."),
         addInspirationTile("inspiration/cook-ie.jpg", "GOTTA LOVE A COOK-IE", "How a secret recipe works to bring relationships to a whole new level."),
         addInspirationTile("inspiration/remix.jpg", "REMIX", "A behind-the-scenes look at how we transformed classic memory carriers into objects of art."),
@@ -73,6 +80,7 @@ export function addInspirationPage() {
     const scrollPadding = addScrollPadding();
 
     registerUpdateLayout(() => {
+        resizeScrollContainerLandscape();
         const s = getScrollHeight();
 
         centerWithinScrollY(inspiration, 0.75);

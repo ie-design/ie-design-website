@@ -1,7 +1,7 @@
 import { fadeInAnimation, gray, ieGreen } from "../constants";
 import { aligningWithGapsX, aligningWithGapsY, BoxElement, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
 import { appendChildForPage, registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, scrollContainer } from "../scroll";
+import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer } from "../scroll";
 
 interface Quote {
     quote: HTMLParagraphElement;
@@ -58,17 +58,17 @@ function layoutQuote({ quote, author, title, openQuote, closeQuote }: Quote) {
 
     // ZZZZ this is sorta jank. again, close quote bounding box gets confused
     // setTimeout(() => {
-    //     const range = document.createRange();
-    //     range.selectNodeContents(quote);
-    //     const rects = range.getClientRects();
-    //     const scrollContainerRect = scrollContainer.getBoundingClientRect();
-    //     const lastTextLineRect = rects[rects.length - 1];
-    //     const lastRectLeft = lastTextLineRect.left - scrollContainerRect.left + scrollContainer.scrollLeft;
+    const range = document.createRange();
+    range.selectNodeContents(quote);
+    const rects = range.getClientRects();
+    const scrollContainerRect = scrollContainer.getBoundingClientRect();
+    const lastTextLineRect = rects[rects.length - 1];
+    const lastRectLeft = lastTextLineRect.left - scrollContainerRect.left + scrollContainer.scrollLeft;
 
-    //     openQuote.style.left = px(posX(quote) - 0.07 * s);
-    //     openQuote.style.top = px(posY(quote) + 0.05 * s);
-    //     closeQuote.style.left = px(lastRectLeft + lastTextLineRect.width);
-    //     closeQuote.style.top = px(posY(quote) + sizeY(quote) - 0.01 * s);
+    openQuote.style.left = px(posX(quote) - 0.07 * s);
+    openQuote.style.top = px(posY(quote) + 0.05 * s);
+    closeQuote.style.left = px(lastRectLeft + lastTextLineRect.width);
+    closeQuote.style.top = px(posY(quote) + sizeY(quote) - 0.01 * s);
     // }, 100);
 }
 
@@ -90,22 +90,7 @@ export function addEvolutionPage() {
     const promos: HTMLImageElement[] = [];
     for (let i = 1; i <= 5; i++) promos.push(addScrollImage(`evolution/promo-${i}.jpg`));
 
-    const quotes = [
-        addQuote(
-            "Our annual promo is always grounded in our identity but it's fun to push limits and reinvent ourselves each year. The best part is <strong>hearing what our clients have to say.</strong>",
-            "BETHLYN KRAKAUER",
-            "Founder, i.e. design, inc."
-        ),
-        addQuote("I love how you do stuff. I'm finding that these types of messages are really <strong>transforming relationships</strong> with people. They are just dreamy.", "DEBRA SCHATZKI", "Founder, BPP Wealth Solutions LLC"),
-        addQuote("I see a lot of this special quality in your work. It's not just about being intentional. You always bring in an element of <strong>surprise and delight.</strong>", "JOSH KRAKAUER", "Founder, Sculpt"),
-        addQuote("Your approach works so well because it is really <strong>personal</strong> and equally <strong>professional.</strong>", "ANN SULLIVAN", "Founder, Ann Sullivan Organizing"),
-        addQuote("You truly understand the unique positioning of a prospective client and are able to <strong>tell their story</strong> exactly as it should be told.", "DAVID YUN", "Principal, Varident LLC"),
-        addQuote(
-            "Beth is quite frankly one of the <strong>most talented designers</strong> that I have ever had the privilege to work with. She always has a special way of making everything she touches turn to gold!",
-            "DAVID RUSH",
-            "President, ENV"
-        ),
-    ];
+    const quotes = [addQuote("Our annual promo is always grounded in our identity but it's fun to push limits and reinvent ourselves each year. The best part is <strong>hearing what our clients have to say.</strong>", "BETHLYN KRAKAUER", "Founder, i.e. design, inc."), addQuote("I love how you do stuff. I'm finding that these types of messages are really <strong>transforming relationships</strong> with people. They are just dreamy.", "DEBRA SCHATZKI", "Founder, BPP Wealth Solutions LLC"), addQuote("I see a lot of this special quality in your work. It's not just about being intentional. You always bring in an element of <strong>surprise and delight.</strong>", "JOSH KRAKAUER", "Founder, Sculpt"), addQuote("Your approach works so well because it is really <strong>personal</strong> and equally <strong>professional.</strong>", "ANN SULLIVAN", "Founder, Ann Sullivan Organizing"), addQuote("You truly understand the unique positioning of a prospective client and are able to <strong>tell their story</strong> exactly as it should be told.", "DAVID YUN", "Principal, Varident LLC"), addQuote("Beth is quite frankly one of the <strong>most talented designers</strong> that I have ever had the privilege to work with. She always has a special way of making everything she touches turn to gold!", "DAVID RUSH", "President, ENV")];
 
     const timelineItems = [
         { element: evolution, offsetFactor: 0.06 }, //
@@ -121,11 +106,12 @@ export function addEvolutionPage() {
     const scrollPadding = addScrollPadding();
 
     registerUpdateLayout(() => {
+        resizeScrollContainerLandscape();
         const s = getScrollHeight();
 
         centerWithinScrollY(evolution, 0.75);
-        evolutionHistory.style.height = px( 0.3 * s);
-        logoFull.style.height = px( 0.45 * s);
+        evolutionHistory.style.height = px(0.3 * s);
+        logoFull.style.height = px(0.45 * s);
 
         for (const promo of promos) centerWithinScrollY(promo, 1);
         for (const quote of quotes) styleQuote(quote);

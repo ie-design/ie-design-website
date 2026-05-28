@@ -11,12 +11,17 @@ export function awaitLayoutForImageLoading(image: HTMLImageElement) {
     awaitBeforeLayouts.add(image.decode());
 }
 
-export async function registerUpdateLayout(updateLayout: () => void) {
+// TODO gross
+export async function wahhh() {
     await Promise.all(awaitBeforeLayouts);
     awaitBeforeLayouts.clear();
-    await sleep(10)
+    await sleep(10);
     runAllAndClear(beforeLayouts);
+    bodySig.update(); // TODO gross
+}
 
+export async function registerUpdateLayout(updateLayout: () => void) {
+    await wahhh();
     effect(updateLayout, [bodySig]);
     pageCleanups.add(() => bodySig.unsubscribe(updateLayout));
 }
