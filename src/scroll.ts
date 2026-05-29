@@ -188,6 +188,19 @@ export function addScrollSvg(src: string) {
     return scrollSvg;
 }
 
+export function addScrollVideo(src: string, poster?: string): HTMLVideoElement {
+    const scrollVideo = document.createElement("video");
+    scrollVideo.style.position = "absolute";
+    scrollVideo.src = src;
+    scrollVideo.controls = true;
+    scrollVideo.playsInline = true;
+    scrollVideo.preload = "auto";
+    if (poster) scrollVideo.poster = poster;
+    scrollVideo.style.animation = fadeInAnimation();
+    appendChildForPage(scrollContainer, scrollVideo);
+    return scrollVideo;
+}
+
 export function addScrollText(text: string) {
     const scrollText = document.createElement("p");
     scrollText.innerHTML = text;

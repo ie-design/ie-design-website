@@ -1,4 +1,7 @@
-import { addGrowingTheDreamBlog } from "../blogs/growing-the-dream";
+import { addNewStudioNewViewBlog } from "../blogs/01-new-studio-new-view";
+import { addReconnectingBlog } from "../blogs/02-reconnecting";
+import { addRemixBlog } from "../blogs/07-remix";
+
 import { ieBlue } from "../constants";
 import { aligningWithGapsX, aligningWithGapsY, posX, px, sizeX, styleText } from "../layout";
 import { cleanLastPage, registerUpdateLayout } from "../page";
@@ -17,9 +20,9 @@ interface InspirationTile {
 function styleInspirationTile({ image, major, minor, readMore }: InspirationTile) {
     const s = getScrollHeight();
 
-    styleText(major, { letterSpacing: 0.003 * s, fontWeight: 400, color: "#000000", fontSize: 0.036 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.09 * s });
-    styleText(minor, { letterSpacing: 0.0015 * s, fontWeight: 350, color: "#000000", fontSize: 0.027 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.05 * s });
-    styleText(readMore, { letterSpacing: 0.0025 * s, fontWeight: 400, color: ieBlue, fontSize: 0.03 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.05 * s });
+    styleText(major, { letterSpacing: 0.001 * s, fontWeight: 400, color: "#000000", fontSize: 0.036 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.09 * s });
+    styleText(minor, { letterSpacing: 0.0005 * s, fontWeight: 350, color: "#000000", fontSize: 0.027 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.05 * s });
+    styleText(readMore, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.03 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.05 * s });
 
     image.style.height = px(0.55 * s);
 }
@@ -46,7 +49,7 @@ function alignInspirationTile({ image, major, minor, readMore }: InspirationTile
     }
 }
 
-function addInspirationTile(imageString: string, majorText: string, minorText: string): InspirationTile {
+function addInspirationTile(addBlog: () => void, imageString: string, majorText: string, minorText: string): InspirationTile {
     const image = addScrollImage(imageString);
     const major = addScrollText(majorText);
     const minor = addScrollText(minorText);
@@ -55,7 +58,7 @@ function addInspirationTile(imageString: string, majorText: string, minorText: s
     readMore.style.cursor = "pointer";
     readMore.onclick = () => {
         cleanLastPage();
-        addGrowingTheDreamBlog();
+        addBlog();
     };
 
     return { image, major, minor, readMore };
@@ -64,17 +67,21 @@ function addInspirationTile(imageString: string, majorText: string, minorText: s
 export function addInspirationPage() {
     const inspiration = addScrollSvg("inspiration/inspiration.svg");
 
+    const ZZZZ_TEMP_NO_BLOG = () => {
+        console.error("NO BLOG");
+    };
+
     const tiles = [
-        addInspirationTile("inspiration/yumie.jpg", "THE START OF SOMETHING YUM-IE", "We always wanted to design chocolate bars and finally did it. Introducing our sweet new brand."), //
-        addInspirationTile("inspiration/words-ideas.jpg", "SHARE SOME DESIGN LOVE", "The i.e. design promo journals encourage clients to sketch their big ideas and capture their dreams."),
-        addInspirationTile("inspiration/cook-ie.jpg", "GOTTA LOVE A COOK-IE", "How a secret recipe works to bring relationships to a whole new level."),
-        addInspirationTile("inspiration/remix.jpg", "REMIX", "A behind-the-scenes look at how we transformed classic memory carriers into objects of art."),
-        addInspirationTile("inspiration/krempa.png", "REBRANDING A FAMILY BUSINESS", "A refresh for a 50-year legacy."),
-        addInspirationTile("inspiration/fotostori.jpg", "BRANDING FROM THE NAME UP", "When a client had an idea for a brand spinoff, we took her concept to reality and launched the business in high style."),
-        addInspirationTile("inspiration/inspired-2-create.jpg", "INSPIRED 2 CREATE", "A painting inspired by the i.e. design logo combines oil paints, ground up crayons, and a lego."),
-        addInspirationTile("inspiration/from-inside.jpg", "THE VIEW FROM INSIDE", "i.e. design's new studio was 30 years in the making."),
-        addInspirationTile("inspiration/reconnecting.jpg", "RECONNECTING", "How uncertain times led to a homecoming for i.e. design's senior designer."),
-        addInspirationTile("inspiration/new-studio.jpg", "NEW STUDIO. NEW VIEW.", "How the need for inspiration fueled the building of a studio."),
+        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/yumie.jpg", "THE START OF SOMETHING YUM-IE", "We always wanted to design chocolate bars and finally did it. Introducing our sweet new brand."), //
+        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/words-ideas.jpg", "SHARE SOME DESIGN LOVE", "The i.e. design promo journals encourage clients to sketch their big ideas and capture their dreams."),
+        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/cook-ie.jpg", "GOTTA LOVE A COOK-IE", "How a secret recipe works to bring relationships to a whole new level."),
+        addInspirationTile(addRemixBlog, "inspiration/remix.jpg", "REMIX", "A behind-the-scenes look at how we transformed classic memory carriers into objects of art."),
+        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/krempa.png", "REBRANDING A FAMILY BUSINESS", "A refresh for a 50-year legacy."),
+        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/fotostori.jpg", "BRANDING FROM THE NAME UP", "When a client had an idea for a brand spinoff, we took her concept to reality and launched the business in high style."),
+        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/inspired-2-create.jpg", "INSPIRED 2 CREATE", "A painting inspired by the i.e. design logo combines oil paints, ground up crayons, and a lego."),
+        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/from-inside.jpg", "THE VIEW FROM INSIDE", "i.e. design's new studio was 30 years in the making."),
+        addInspirationTile(addReconnectingBlog, "inspiration/reconnecting.jpg", "RECONNECTING", "How uncertain times led to a homecoming for i.e. design's senior designer."),
+        addInspirationTile(addNewStudioNewViewBlog, "inspiration/new-studio.jpg", "NEW STUDIO. NEW VIEW.", "How the need for inspiration fueled the building of a studio."),
     ];
 
     const scrollPadding = addScrollPadding();

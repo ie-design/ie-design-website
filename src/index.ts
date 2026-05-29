@@ -1,6 +1,6 @@
-import { addGrowingTheDreamBlog } from "./blogs/growing-the-dream";
+import { addBrandingFromTheNameUpBlog } from "./blogs/05-branding-from-the-name-up";
 import { body, bodySig, fadeInAnimation, gray, ieGreen } from "./constants";
-import { centerElementX, centerWithGapY, isLandscape, posX, px, styleText } from "./layout";
+import { centerElementX, centerWithGapY, isLandscape, px, styleText } from "./layout";
 import { Modal } from "./modal";
 import { cleanLastPage, registerUpdateLayout } from "./page";
 import { addConnectPage } from "./pages/connect";
@@ -8,26 +8,12 @@ import { addEvolutionPage } from "./pages/evolution";
 import { addInspirationPage } from "./pages/inspiration";
 import { addViewPage } from "./pages/view";
 import { addWorkPage } from "./pages/work";
-import { addScrollSvg, centerWithinScrollY, getHeaderBarHeight, getScrollHeight, resizeScrollContainerLandscape, scrollContainer } from "./scroll";
+import { addScrollSvg, centerWithinScrollY, getHeaderBarHeight, getScrollHeight, resizeScrollContainerLandscape } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
 import { colorOnHover, createIconSVG, fetchSVG, getElementByIdSVG, makeLine, setAttributes, sleep } from "./util";
 
-// TODO
-// work page
-// mobile layouts
-// blog pages
-// "view" start animation
-
-// image click after full screen resize bug
-// hit end of scroll, next page
-// onclose mix with escape key
-// onwheel warning?
-// local font
-// decouple setSize with image aspect ratio
-// letterSpacing *s everywhere
-
-const pages: Record<string, () => void> = {
+const pages = {
     view: addViewPage,
     work: addWorkPage,
     inspiration: addInspirationPage,
@@ -339,21 +325,18 @@ async function animateHomeIE() {
 async function setup() {
     // const pageName = location.hash.substring("#/".length);
 
-    await animateIntro();
-    await animateHomeIE();
+    // await animateIntro();
+    // await animateHomeIE();
 
     addNavItems();
     addHeaderBar();
     addMenuButton();
     addLogo();
-    addCopyright();
+    // addCopyright();
 
     // const pageNavItem = navItemFromString[pageName] ?? navItemFromString.view;
     addViewPage();
+    // addBrandingFromTheNameUpBlog()
 }
-
-// addMenuButton();
-// addLogo();
-// createGrowingTheDreamBlog();
 
 setup();

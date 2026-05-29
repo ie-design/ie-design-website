@@ -35,7 +35,12 @@ export function addViewPage() {
             centerWithinScrollY(insightClarity, 1);
             centerWithinScrollY(skyward, 1);
 
-            for (const textTile of textTiles) styleScrollTextSquare(textTile, { letterSpacing: 0.0046 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.09 * s }, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.03 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.05 * s });
+            for (const textTile of textTiles)
+                styleScrollTextSquare(
+                    textTile, //
+                    { letterSpacing: 0.0046 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.09 * s },
+                    { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.03 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.05 * s }
+                );
 
             const [elementAlignments, _] = aligningWithGapsX([
                 home, //
@@ -63,7 +68,7 @@ export function addViewPage() {
                 element.style.left = px(offset);
             }
 
-            for (const textTile of textTiles) alignScrollTextSquare(textTile, 20, 20);
+            for (const textTile of textTiles) alignScrollTextSquare(textTile, 0.03 * s, 0.03 * s);
         } else {
             resizeScrollContainerPortrait();
             const s = getScrollWidth();
