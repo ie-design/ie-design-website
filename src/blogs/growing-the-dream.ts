@@ -70,13 +70,13 @@ export function addGrowingTheDreamBlog() {
         const fit = innerWidth - scrollLeft * 2;
 
         for (const head of heads) {
-            styleText(head, { letterSpacing: 0.18, fontWeight: 400, color: "#B3B3B3", fontSize: 0.025 * s, width: 1 * s, lineHeight: 0.02 * s });
+            styleText(head, { letterSpacing: 0.0009 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.025 * s, width: 1 * s, lineHeight: 0.02 * s });
         }
         for (const subhead of subheads) {
-            styleText(subhead, { letterSpacing: 0.18, fontWeight: 600, color: "#000000", fontSize: 0.011 * s, width: 1 * s, lineHeight: 0.02 * s });
+            styleText(subhead, { letterSpacing: 0.0009 * s, fontWeight: 600, color: "#000000", fontSize: 0.011 * s, width: 1 * s, lineHeight: 0.02 * s });
         }
         for (const paragraph of paragraphs) {
-            styleText(paragraph, { letterSpacing: 0.18, fontWeight: 350, color: "#000000", fontSize: 0.011 * s, width: 1 * s, lineHeight: 0.019 * s });
+            styleText(paragraph, { letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.011 * s, width: 1 * s, lineHeight: 0.019 * s });
         }
         for (const t of blogItems) {
             if (t instanceof HTMLElement) {

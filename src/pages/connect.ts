@@ -11,7 +11,11 @@ function addIcon(imageSrc: string, clickLink: string) {
 
 export function addConnectPage() {
     const connect = addScrollSvg("connect/connect.svg");
-    const texts = [addScrollText("Our clients look to us for more than award-winning design. They value our role as trusted advisor, support, and confidant."), addScrollText("We look for synergy and compatibility in every relationship we build so the work experience doesn’t feel like work at all."), addScrollText("If your gut is telling you we should connect, now is the perfect time to email.")];
+    const texts = [
+        addScrollText("Our clients look to us for more than award-winning design. They value our role as trusted advisor, support, and confidant."), //
+        addScrollText("We look for synergy and compatibility in every relationship we build so the work experience doesn’t feel like work at all."),
+        addScrollText("If your gut is telling you we should connect, now is the perfect time to email."),
+    ];
     const letsMeet = addScrollImage("connect/lets-meet.jpg");
     const who = addScrollText("Bethlyn Krakauer, Founder and Creative Director");
 
@@ -29,8 +33,8 @@ export function addConnectPage() {
         connect.style.width = px(width);
         centerWithinScrollY(letsMeet, 0.8);
 
-        for (const text of texts) styleText(text, { letterSpacing: 0.18, fontWeight: 350, color: "#000000", fontSize: 0.028 * s, width, lineHeight: 0.05 * s });
-        styleText(who, { letterSpacing: 0.18, fontWeight: 350, color: "#000000", fontSize: 0.028 * s, width: 1 * s, lineHeight: 0.05 * s });
+        for (const text of texts) styleText(text, { letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.028 * s, width, lineHeight: 0.05 * s });
+        styleText(who, { letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.028 * s, width: 1 * s, lineHeight: 0.05 * s });
 
         const [elementAlignments, _] = aligningWithGapsY([
             connect, //

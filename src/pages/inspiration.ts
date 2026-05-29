@@ -17,9 +17,9 @@ interface InspirationTile {
 function styleInspirationTile({ image, major, minor, readMore }: InspirationTile) {
     const s = getScrollHeight();
 
-    styleText(major, { letterSpacing: 0.6, fontWeight: 400, color: "#000000", fontSize: 0.036 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.09 * s });
-    styleText(minor, { letterSpacing: 0.3, fontWeight: 350, color: "#000000", fontSize: 0.027 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.05 * s });
-    styleText(readMore, { letterSpacing: 0.5, fontWeight: 400, color: ieBlue, fontSize: 0.03 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.05 * s });
+    styleText(major, { letterSpacing: 0.003 * s, fontWeight: 400, color: "#000000", fontSize: 0.036 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.09 * s });
+    styleText(minor, { letterSpacing: 0.0015 * s, fontWeight: 350, color: "#000000", fontSize: 0.027 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.05 * s });
+    styleText(readMore, { letterSpacing: 0.0025 * s, fontWeight: 400, color: ieBlue, fontSize: 0.03 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.05 * s });
 
     image.style.height = px(0.55 * s);
 }
@@ -42,7 +42,7 @@ function alignInspirationTile({ image, major, minor, readMore }: InspirationTile
     ]);
 
     for (const { element, offset } of elementAlignments) {
-        element.style.top = px(offset + s * 0.15);
+        element.style.top = px(offset + 0.15 * s);
     }
 }
 

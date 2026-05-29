@@ -25,15 +25,15 @@ function addQuote(quoteText: string, authorText: string, titleText: string): Quo
 function styleQuote({ quote, author, title, openQuote, closeQuote }: Quote) {
     const s = getScrollHeight();
     const widthScale = 0.75;
-    styleText(quote, { letterSpacing: 0.18, fontWeight: 350, color: "#000000", fontSize: 0.032 * s, width: widthScale * s, lineHeight: 0.065 * s });
+    styleText(quote, { letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.032 * s, width: widthScale * s, lineHeight: 0.065 * s });
 
-    styleText(author, { letterSpacing: 0.2, fontWeight: 350, color: "#000000", fontSize: 0.035 * s, width: widthScale * s, lineHeight: 0.06 * s });
+    styleText(author, { letterSpacing: 0.001 * s, fontWeight: 350, color: "#000000", fontSize: 0.035 * s, width: widthScale * s, lineHeight: 0.06 * s });
     author.style.textAlign = "right";
 
-    styleText(title, { letterSpacing: 0.15, fontWeight: 350, color: "#000000", fontSize: 0.025 * s, width: widthScale * s, lineHeight: 0.06 * s });
+    styleText(title, { letterSpacing: 0.00075 * s, fontWeight: 350, color: "#000000", fontSize: 0.025 * s, width: widthScale * s, lineHeight: 0.06 * s });
     title.style.textAlign = "right";
 
-    const quoteTextDetails = { letterSpacing: 0.2, fontWeight: 350, color: ieGreen, fontSize: 0.15 * s, width: 0.05 * s, lineHeight: 0.06 * s };
+    const quoteTextDetails = { letterSpacing: 0.001 * s, fontWeight: 350, color: ieGreen, fontSize: 0.15 * s, width: 0.05 * s, lineHeight: 0.06 * s };
     styleText(openQuote, quoteTextDetails);
     styleText(closeQuote, quoteTextDetails);
 }
@@ -140,7 +140,7 @@ export function addEvolutionPage() {
 
         for (const { timelineLine, timelineItem } of timelines) {
             const { element, offsetFactor } = timelineItem;
-            const offset = s * offsetFactor;
+            const offset = offsetFactor * s;
             timelineLine.style.left = px(posX(element) + sizeX(element) / 2);
             timelineLine.style.top = px(posY(element) + sizeY(element) + offset);
             timelineLine.style.height = px(sizeY(scrollContainer) - (posY(element) + sizeY(element)) - offset);

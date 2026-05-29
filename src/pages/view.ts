@@ -1,30 +1,11 @@
 import { SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, isLandscape, px } from "../layout";
+import { aligningWithGapsX, aligningWithGapsY, isLandscape, px, sizeX } from "../layout";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollX, centerWithinScrollY, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleScrollTextSquare, TextSquare } from "../scroll";
 
-// export let homeAnimated: HTMLElement | undefined;
-
-// export async function addHomeSVG() {
-//     homeAnimated = document.createElement("div");
-//     homeAnimated.style.position = "absolute";
-//     const homeSvg = await fetchSVG("view/home.svg");
-//     homeAnimated.appendChild(homeSvg);
-
-//     registerUpdateLayout(() => {
-//         if (isLandscape()) {
-//             const s = getScrollHeight();
-//             const height = s * 0.95;
-//             homeSvg.style.height = px(height);
-//             homeAnimated.style.top = px((s - height) / 2);
-//         }
-//     });
-
-//     return homeSvg;
-// }
-
 export function addViewPage() {
     const home = addScrollSvg("view/home.svg");
+    home.style.animation = "";
     const horizon = addScrollImage("view/horizon.jpg");
     const freshLook = addScrollSvg("view/fresh-look.svg");
     const greatBrands = addScrollImage("view/great-brands.jpg");
@@ -54,10 +35,29 @@ export function addViewPage() {
             centerWithinScrollY(insightClarity, 1);
             centerWithinScrollY(skyward, 1);
 
-            console.log(s);
-            for (const textTile of textTiles) styleScrollTextSquare(textTile, { letterSpacing: 0.0046 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.09 * s }, { letterSpacing: 0.2, fontWeight: 300, color: "#000000", fontSize: 0.03 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.05 * s });
+            for (const textTile of textTiles) styleScrollTextSquare(textTile, { letterSpacing: 0.0046 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.09 * s }, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.03 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.05 * s });
 
-            const [elementAlignments, _] = aligningWithGapsX([home, HOME_HORIZON_PAD * s, horizon, FRESH_LOOK_PAD * s, freshLook, FRESH_LOOK_PAD * s, greatBrands, IMAGE_TEXT_SQUARE_PAD * s, textTile1.major, IMAGE_TEXT_SQUARE_PAD * s, insightClarity, IMAGE_TEXT_SQUARE_PAD * s, textTile2.major, IMAGE_TEXT_SQUARE_PAD * s, skyward, IMAGE_TEXT_SQUARE_PAD * s, textTile3.major, IMAGE_TEXT_SQUARE_PAD * s, scrollPadding]);
+            const [elementAlignments, _] = aligningWithGapsX([
+                home, //
+                HOME_HORIZON_PAD * s,
+                horizon,
+                FRESH_LOOK_PAD * s,
+                freshLook,
+                FRESH_LOOK_PAD * s,
+                greatBrands,
+                IMAGE_TEXT_SQUARE_PAD * s,
+                textTile1.major,
+                IMAGE_TEXT_SQUARE_PAD * s,
+                insightClarity,
+                IMAGE_TEXT_SQUARE_PAD * s,
+                textTile2.major,
+                IMAGE_TEXT_SQUARE_PAD * s,
+                skyward,
+                IMAGE_TEXT_SQUARE_PAD * s,
+                textTile3.major,
+                IMAGE_TEXT_SQUARE_PAD * s,
+                scrollPadding,
+            ]);
 
             for (const { element, offset } of elementAlignments) {
                 element.style.left = px(offset);
@@ -75,7 +75,12 @@ export function addViewPage() {
             centerWithinScrollX(insightClarity, 1);
             centerWithinScrollX(skyward, 1);
 
-            for (const textTile of textTiles) styleScrollTextSquare(textTile, { letterSpacing: 4, fontWeight: 350, color: "#B3B3B3", fontSize: 0.06 * s, width: 1 * s, lineHeight: 0.08 * s }, { letterSpacing: 0.2, fontWeight: 300, color: "#000000", fontSize: 0.028 * s, width: 1 * s, lineHeight: 0.05 * s });
+            for (const textTile of textTiles)
+                styleScrollTextSquare(
+                    textTile, //
+                    { letterSpacing: 0.02 * s, fontWeight: 350, color: "#B3B3B3", fontSize: 0.06 * s, width: 1 * s, lineHeight: 0.08 * s },
+                    { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.028 * s, width: 1 * s, lineHeight: 0.05 * s }
+                );
 
             const TEXT_TILE_WIDTH = 0.85;
             for (const textTile of textTiles) {
@@ -91,7 +96,27 @@ export function addViewPage() {
                 return x;
             }
 
-            const [elementAlignments, _] = aligningWithGapsY([home, MOBILE_PAD * s, horizon, MOBILE_PAD * s, freshLook, MOBILE_PAD * s, greatBrands, MOBILE_PAD * s, ...mobileTile(textTile1), MOBILE_PAD * s, insightClarity, MOBILE_PAD * s, ...mobileTile(textTile2), MOBILE_PAD * s, skyward, MOBILE_PAD * s, ...mobileTile(textTile3), MOBILE_PAD * s, scrollPadding]);
+            const [elementAlignments, _] = aligningWithGapsY([
+                home, //
+                MOBILE_PAD * s,
+                horizon,
+                MOBILE_PAD * s,
+                freshLook,
+                MOBILE_PAD * s,
+                greatBrands,
+                MOBILE_PAD * s,
+                ...mobileTile(textTile1),
+                MOBILE_PAD * s,
+                insightClarity,
+                MOBILE_PAD * s,
+                ...mobileTile(textTile2),
+                MOBILE_PAD * s,
+                skyward,
+                MOBILE_PAD * s,
+                ...mobileTile(textTile3),
+                MOBILE_PAD * s,
+                scrollPadding,
+            ]);
             for (const { element, offset } of elementAlignments) {
                 element.style.top = px(offset);
             }

@@ -1,8 +1,7 @@
-import { body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen } from "./constants";
+import { body, fadeInAnimation, gray, ieBlue, ieGreen } from "./constants";
 import { aligningWithGapsY, centerElementX, centerElementY, isLandscape, px, styleText, TextDetails } from "./layout";
 import { Modal } from "./modal";
-import { appendChildForPage, awaitLayoutForImageLoading, registerUpdateLayout } from "./page";
-import { effect } from "./signal";
+import { appendChildForPage, awaitLayout, registerUpdateLayout } from "./page";
 import { createElementSVG, createIconSVG, fetchSVG, makeLine, makePolyline, setAttributes } from "./util";
 
 export interface TextSquare {
@@ -157,7 +156,7 @@ export function addScrollImage(src: string): HTMLImageElement {
         });
     };
 
-    awaitLayoutForImageLoading(scrollImage);
+    awaitLayout(scrollImage.decode());
     appendChildForPage(scrollContainer, scrollImage);
     return scrollImage;
 }
@@ -166,22 +165,24 @@ export function addScrollSvg(src: string) {
     const scrollSvg = createElementSVG("svg");
     scrollSvg.style.position = "absolute";
     scrollSvg.style.animation = fadeInAnimation();
+
     async function fetchContent() {
         const fetched = await fetchSVG(src);
         for (const attr of fetched.attributes) scrollSvg.setAttribute(attr.name, attr.value);
         while (fetched.firstChild) scrollSvg.appendChild(fetched.firstChild);
 
-        const letters = scrollSvg.getElementsByTagName("path");
-        for (const letter of letters) {
-            letter.style.transition = "fill 0.4s ease-out";
-            letter.onmouseenter = () => {
-                const hoverColor = Math.random() > 0.5 ? "hover-blue" : "hover-green";
-                letter.classList.add(hoverColor);
-                letter.onmouseleave = () => letter.classList.remove(hoverColor);
-            };
-        }
+        // const letters = scrollSvg.getElementsByTagName("path");
+        // for (const letter of letters) {
+        //     letter.style.transition = "fill 0.4s ease-out";
+        //     letter.onmouseenter = () => {
+        //         const hoverColor = Math.random() > 0.5 ? "hover-blue" : "hover-green";
+        //         letter.classList.add(hoverColor);
+        //         letter.onmouseleave = () => letter.classList.remove(hoverColor);
+        //     };
+        // }
     }
-    fetchContent();
+    const fetchContentPromise = fetchContent();
+    awaitLayout(fetchContentPromise);
 
     appendChildForPage(scrollContainer, scrollSvg);
     return scrollSvg;
@@ -241,14 +242,14 @@ export function alignScrollTextSquare({ major, minors }: TextSquare, majorToMino
 
 export function centerWithinScrollY(element: HTMLElement | SVGSVGElement, scale: number) {
     const s = getScrollHeight();
-    const height = s * scale;
+    const height = scale * s;
     element.style.height = px(height);
     element.style.top = px((s - height) / 2);
 }
 
 export function centerWithinScrollX(element: HTMLElement | SVGSVGElement, scale: number) {
     const s = getScrollWidth();
-    const width = s * scale;
+    const width = scale * s;
     element.style.width = px(width);
     element.style.left = px((s - width) / 2);
 }

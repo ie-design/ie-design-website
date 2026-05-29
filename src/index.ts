@@ -1,14 +1,14 @@
 import { addGrowingTheDreamBlog } from "./blogs/growing-the-dream";
 import { body, bodySig, fadeInAnimation, gray, ieGreen } from "./constants";
-import { centerElementX, centerWithGapY, isLandscape, px, styleText } from "./layout";
+import { centerElementX, centerWithGapY, isLandscape, posX, px, styleText } from "./layout";
 import { Modal } from "./modal";
-import { cleanLastPage, pageCleanups } from "./page";
+import { cleanLastPage, registerUpdateLayout } from "./page";
 import { addConnectPage } from "./pages/connect";
 import { addEvolutionPage } from "./pages/evolution";
 import { addInspirationPage } from "./pages/inspiration";
 import { addViewPage } from "./pages/view";
 import { addWorkPage } from "./pages/work";
-import { getHeaderBarHeight, getScrollHeight } from "./scroll";
+import { addScrollSvg, centerWithinScrollY, getHeaderBarHeight, getScrollHeight, resizeScrollContainerLandscape, scrollContainer } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
 import { colorOnHover, createIconSVG, fetchSVG, getElementByIdSVG, makeLine, setAttributes, sleep } from "./util";
@@ -117,7 +117,7 @@ function addNavItems() {
             cleanLastPage();
             addPage();
             navItem.style.color = "#000000";
-            pageCleanups.add(() => (navItem.style.color = gray));
+            // pageCleanups.add(() => (navItem.style.color = gray));
             // history.pushState({}, "", "/#/" + pageName);
         };
 
@@ -160,16 +160,6 @@ function addNavItems() {
             for (const navItem of navItems) navItem.style.visibility = "hidden";
         }
     }, [bodySig]);
-}
-
-async function animateHomeIE() {
-    // const homeSvg = await addHomeSVG();
-    // const rest = getElementByIdSVG(homeSvg, "rest");
-    // rest.style.opacity = "0";
-    // const ie = getElementByIdSVG(homeSvg, "ie");
-    // ie.style.opacity = "0";
-    // await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
-    // await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
 }
 
 function addHeaderBar() {
@@ -322,12 +312,35 @@ function addCopyright() {
         }
     }, [bodySig]);
 }
+async function animateHomeIE() {
+    const homeSvg = addScrollSvg("view/home.svg");
+    homeSvg.style.animation = "";
+
+    registerUpdateLayout(() => {
+        if (isLandscape()) {
+            resizeScrollContainerLandscape();
+
+            centerWithinScrollY(homeSvg, 0.95);
+            homeSvg.style.left = px(0);
+        }
+    });
+
+    while (homeSvg.childElementCount === 0) await new Promise(requestAnimationFrame);
+    // ZZZZ this line is hacky
+
+    const rest = getElementByIdSVG(homeSvg, "rest");
+    rest.style.opacity = "0";
+    const ie = getElementByIdSVG(homeSvg, "ie");
+    ie.style.opacity = "0";
+    await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
+    await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
+}
 
 async function setup() {
-    const pageName = location.hash.substring("#/".length);
-    // if (pageName === "") await animateIntro();
+    // const pageName = location.hash.substring("#/".length);
 
-    // await animateHomeIE();
+    await animateIntro();
+    await animateHomeIE();
 
     addNavItems();
     addHeaderBar();
@@ -335,9 +348,8 @@ async function setup() {
     addLogo();
     addCopyright();
 
-    const pageNavItem = navItemFromString[pageName] ?? navItemFromString.view;
-    // pageNavItem.click();
-    addGrowingTheDreamBlog();
+    // const pageNavItem = navItemFromString[pageName] ?? navItemFromString.view;
+    addViewPage();
 }
 
 // addMenuButton();

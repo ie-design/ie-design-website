@@ -1,6 +1,6 @@
 import { body, bodySig } from "../constants";
 import { aligningWithGapsX, posX, px, sizeX, sizeY } from "../layout";
-import { appendChildForPage, awaitLayoutForImageLoading, flushPageContent, registerUpdateLayout } from "../page";
+import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout, runAllAndClear } from "../page";
 import { TextSquare, addScrollImage, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer, styleScrollTextSquare } from "../scroll";
 import { Signal, effect } from "../signal";
 import { Spring, animateSpring } from "../spring";
@@ -61,28 +61,37 @@ export function addWorkPage() {
         }
     }
 
-    const workTabs = workContents.map((workContent) => {
+    let activated = false;
+
+    function scrollToWork(workItem: WorkItem) {
+        scrollContainer.scroll({ left: posX(workItem.textSquare.major), behavior: "smooth" });
+    }
+
+    const workTabs = workContents.map((workContent, i) => {
         const tabImage = document.createElement("img");
         tabImage.style.position = "absolute";
+        tabImage.style.cursor = "pointer";
         tabImage.src = `work/${spaceToFile(workContent.name)}/tab.png`;
 
         tabImage.onclick = () => {
-            for (const workTab of workTabs) {
-                workTab.spring.target = innerHeight / 2;
-                animateSpring(workTab.spring, workTab.springSig);
-            }
+            activated = true;
+            // for (const workTab of workTabs) {
+            //     workTab.spring.target = 0;
+            //     animateSpring(workTab.spring, workTab.springSig);
+            // }
 
             populateWorkItems();
-            flushPageContent().then(() => bodySig.update());
+            flushPageContent().then(() => {
+                bodySig.update();
+                scrollToWork(workItems[i]);
+            }); // ZZZZ bit hacky
         };
 
-        awaitLayoutForImageLoading(tabImage);
+        awaitLayout(tabImage.decode());
         appendChildForPage(body, tabImage);
 
-        console.log(sizeY(tabImage))
-        const center = sizeY(tabImage) / 2;
-        const spring = new Spring(center);
-        spring.setStiffnessCritical(100);
+        const spring = new Spring(innerHeight);
+        spring.setStiffnessCritical(150);
         const springSig = new Signal();
 
         effect(() => {
@@ -92,7 +101,12 @@ export function addWorkPage() {
         return { tabImage, spring, springSig };
     });
 
+    const cleanupLastLayout = new Set<() => void>();
+
     registerUpdateLayout(() => {
+        runAllAndClear(cleanupLastLayout);
+
+        console.log("LAYOUT!!!");
         resizeScrollContainerLandscape();
         const s = getScrollHeight();
 
@@ -103,10 +117,39 @@ export function addWorkPage() {
             tabImage.style.left = px(posX(scrollContainer) + sizeX(tabImage) * i * 2);
         }
 
-        for (const { springSig } of workTabs) springSig.update();
+        if (activated) {
+            for (let i = 0; i < workTabs.length; i++) {
+                const { tabImage, spring, springSig } = workTabs[i];
+                spring.target = innerHeight - sizeX(tabImage) / 2;
+                animateSpring(spring, springSig);
+
+                tabImage.onmouseenter = () => {
+                    spring.target = innerHeight - sizeX(tabImage);
+                    animateSpring(spring, springSig);
+                };
+                tabImage.onmouseleave = () => {
+                    spring.target = innerHeight - sizeX(tabImage) / 2;
+                    animateSpring(spring, springSig);
+                };
+                tabImage.onclick = () => {
+                    scrollToWork(workItems[i]);
+                };
+
+                cleanupLastLayout.add(() => {
+                    tabImage.onmouseenter = () => {};
+                    tabImage.onmouseleave = () => {};
+                    tabImage.onclick = () => {};
+                });
+            }
+        } else {
+            for (const { tabImage, spring, springSig } of workTabs) {
+                spring.target = (innerHeight - sizeY(tabImage)) / 2;
+                animateSpring(spring, springSig);
+            }
+        }
 
         for (const workItem of workItems) {
-            styleScrollTextSquare(workItem.textSquare, { letterSpacing: 2.2, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, width: 1 * s, lineHeight: 0.09 * s }, { letterSpacing: 0.2, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, width: 1 * s, lineHeight: 0.05 * s });
+            styleScrollTextSquare(workItem.textSquare, { letterSpacing: 0.011 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, width: 1 * s, lineHeight: 0.09 * s }, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, width: 1 * s, lineHeight: 0.05 * s });
             centerWithinScrollY(workItem.image1, 1);
             centerWithinScrollY(workItem.image2, 1);
         }
