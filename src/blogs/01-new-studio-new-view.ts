@@ -5,7 +5,6 @@ export const newStudioNewViewBlog = new Blog(
     "NEW STUDIO. NEW VIEW.",
     "How the need for inspiration fueled the building of a studio.",
     (b: Blog) => {
-
         b.addParagraph("By Bethlyn Krakauer");
         b.addSpace();
         b.addSubhead("It’s always been a blurry line between my business and personal life.");

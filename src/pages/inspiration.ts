@@ -77,7 +77,7 @@ export function addInspirationPage() {
     const inspiration = addScrollSvg("inspiration/inspiration.svg");
 
     const tiles = [
-        addInspirationTile(growingTheDreamBlog),
+        addInspirationTile(growingTheDreamBlog), // -
         addInspirationTile(theStartOfSomethingYumIeBlog),
         addInspirationTile(shareSomeDesignLoveBlog),
         addInspirationTile(gottaLoveACookIeBlog),

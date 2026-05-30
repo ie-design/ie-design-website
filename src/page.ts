@@ -28,7 +28,6 @@ export async function registerUpdateLayout(updateLayout: () => void) {
     pageCleanups.add(() => bodySig.unsubscribe(updateLayout));
 }
 
-
 export function cleanLastPage() {
     runAllAndClear(pageCleanups);
 }

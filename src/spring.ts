@@ -37,14 +37,14 @@ export function animateSpring(spring: Spring, signal: Signal) {
 
     spring.isAnimating = true;
     spring.onUnrest();
-    
+
     let lastMillis = 0;
     requestAnimationFrame(firstFrame);
     function firstFrame(millis: number) {
         lastMillis = millis;
         tickSpring(millis);
     }
-    
+
     function tickSpring(millis: number) {
         const step = millis - lastMillis;
         lastMillis = millis;
@@ -77,7 +77,7 @@ export async function animateWithSpring(stiffness: number, overTime: (time: numb
             springSig.unsubscribe(animate);
             resolve();
         };
-        
+
         effect(animate, [springSig]);
 
         animateSpring(spring, springSig);
