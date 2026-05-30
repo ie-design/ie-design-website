@@ -1,5 +1,5 @@
 import { body, fadeInAnimation, gray, ieBlue, ieGreen } from "./constants";
-import { aligningWithGapsY, centerElementX, centerElementY, isLandscape, px, styleText, TextDetails } from "./layout";
+import { aligningWithGapsY, centerElementX, centerElementY, isLandscape, px, setImageHeight, setImageWidth, styleText, TextDetails } from "./layout";
 import { Modal } from "./modal";
 import { appendChildForPage, awaitLayout, registerUpdateLayout } from "./page";
 import { createElementSVG, createIconSVG, fetchSVG, makeLine, makePolyline, setAttributes } from "./util";
@@ -146,10 +146,10 @@ export function addScrollImage(src: string): HTMLImageElement {
             fullscreenButton.style.top = px(fromEdge);
 
             const height = innerHeight * 0.9;
-            bigImage.style.height = px(height);
+            setImageHeight(bigImage, height);
             const minWidth = innerWidth * 0.9;
             if (bigImage.offsetWidth > minWidth) {
-                bigImage.style.width = px(minWidth);
+                setImageWidth(bigImage, minWidth);
             }
             centerElementX(bigImage);
             centerElementY(bigImage);
