@@ -1,11 +1,20 @@
-import { addNewStudioNewViewBlog } from "../blogs/01-new-studio-new-view";
-import { addReconnectingBlog } from "../blogs/02-reconnecting";
-import { addRemixBlog } from "../blogs/07-remix";
+import { newStudioNewViewBlog } from "../blogs/01-new-studio-new-view";
+import { reconnectingBlog } from "../blogs/02-reconnecting";
+import { theViewFromInsideBlog } from "../blogs/03-the-view-from-inside";
+import { inspired2CreateBlog } from "../blogs/04-inspired-2-create";
+import { brandingFromTheNameUpBlog } from "../blogs/05-branding-from-the-name-up";
+import { rebrandingAFamilyBusinessBlog } from "../blogs/06-rebranding-a-family-business";
+import { remixBlog } from "../blogs/07-remix";
+import { gottaLoveACookIeBlog } from "../blogs/08-gotta-love-a-cook-ie";
+import { shareSomeDesignLoveBlog } from "../blogs/09-share-some-design-love";
+import { theStartOfSomethingYumIeBlog } from "../blogs/10-the-start-of-something-yum-ie";
+import { growingTheDreamBlog } from "../blogs/11-growing-the-dream";
+import { Blog } from "../blogs/blog";
 
 import { ieBlue } from "../constants";
 import { aligningWithGapsX, aligningWithGapsY, posX, px, sizeX, styleText } from "../layout";
 import { cleanLastPage, registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer } from "../scroll";
+import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape } from "../scroll";
 import { interlaced } from "../util";
 
 const INSPIRATION_TILE_WIDTH_PROPORTION = 0.85;
@@ -35,7 +44,7 @@ function alignInspirationTile({ image, major, minor, readMore }: InspirationTile
     readMore.style.left = image.style.left;
 
     const [elementAlignments, _] = aligningWithGapsY([
-        image, //
+        image, // -
         0.03 * s,
         major,
         -0.01 * s,
@@ -49,16 +58,16 @@ function alignInspirationTile({ image, major, minor, readMore }: InspirationTile
     }
 }
 
-function addInspirationTile(addBlog: () => void, imageString: string, majorText: string, minorText: string): InspirationTile {
-    const image = addScrollImage(imageString);
-    const major = addScrollText(majorText);
-    const minor = addScrollText(minorText);
+function addInspirationTile(blog: Blog): InspirationTile {
+    const image = addScrollImage(blog.tileImage);
+    const major = addScrollText(blog.title);
+    const minor = addScrollText(blog.subtitle);
     const readMore = addScrollText("Read more");
 
     readMore.style.cursor = "pointer";
     readMore.onclick = () => {
         cleanLastPage();
-        addBlog();
+        blog.add();
     };
 
     return { image, major, minor, readMore };
@@ -67,21 +76,18 @@ function addInspirationTile(addBlog: () => void, imageString: string, majorText:
 export function addInspirationPage() {
     const inspiration = addScrollSvg("inspiration/inspiration.svg");
 
-    const ZZZZ_TEMP_NO_BLOG = () => {
-        console.error("NO BLOG");
-    };
-
     const tiles = [
-        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/yumie.jpg", "THE START OF SOMETHING YUM-IE", "We always wanted to design chocolate bars and finally did it. Introducing our sweet new brand."), //
-        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/words-ideas.jpg", "SHARE SOME DESIGN LOVE", "The i.e. design promo journals encourage clients to sketch their big ideas and capture their dreams."),
-        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/cook-ie.jpg", "GOTTA LOVE A COOK-IE", "How a secret recipe works to bring relationships to a whole new level."),
-        addInspirationTile(addRemixBlog, "inspiration/remix.jpg", "REMIX", "A behind-the-scenes look at how we transformed classic memory carriers into objects of art."),
-        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/krempa.png", "REBRANDING A FAMILY BUSINESS", "A refresh for a 50-year legacy."),
-        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/fotostori.jpg", "BRANDING FROM THE NAME UP", "When a client had an idea for a brand spinoff, we took her concept to reality and launched the business in high style."),
-        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/inspired-2-create.jpg", "INSPIRED 2 CREATE", "A painting inspired by the i.e. design logo combines oil paints, ground up crayons, and a lego."),
-        addInspirationTile(ZZZZ_TEMP_NO_BLOG, "inspiration/from-inside.jpg", "THE VIEW FROM INSIDE", "i.e. design's new studio was 30 years in the making."),
-        addInspirationTile(addReconnectingBlog, "inspiration/reconnecting.jpg", "RECONNECTING", "How uncertain times led to a homecoming for i.e. design's senior designer."),
-        addInspirationTile(addNewStudioNewViewBlog, "inspiration/new-studio.jpg", "NEW STUDIO. NEW VIEW.", "How the need for inspiration fueled the building of a studio."),
+        addInspirationTile(growingTheDreamBlog),
+        addInspirationTile(theStartOfSomethingYumIeBlog),
+        addInspirationTile(shareSomeDesignLoveBlog),
+        addInspirationTile(gottaLoveACookIeBlog),
+        addInspirationTile(remixBlog),
+        addInspirationTile(rebrandingAFamilyBusinessBlog),
+        addInspirationTile(brandingFromTheNameUpBlog),
+        addInspirationTile(inspired2CreateBlog),
+        addInspirationTile(theViewFromInsideBlog),
+        addInspirationTile(reconnectingBlog),
+        addInspirationTile(newStudioNewViewBlog),
     ];
 
     const scrollPadding = addScrollPadding();

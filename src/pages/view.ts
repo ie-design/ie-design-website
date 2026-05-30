@@ -37,13 +37,13 @@ export function addViewPage() {
 
             for (const textTile of textTiles)
                 styleScrollTextSquare(
-                    textTile, //
+                    textTile, // -
                     { letterSpacing: 0.0046 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.09 * s },
                     { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.03 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.05 * s }
                 );
 
             const [elementAlignments, _] = aligningWithGapsX([
-                home, //
+                home, // -
                 HOME_HORIZON_PAD * s,
                 horizon,
                 FRESH_LOOK_PAD * s,
@@ -82,7 +82,7 @@ export function addViewPage() {
 
             for (const textTile of textTiles)
                 styleScrollTextSquare(
-                    textTile, //
+                    textTile, // -
                     { letterSpacing: 0.02 * s, fontWeight: 350, color: "#B3B3B3", fontSize: 0.06 * s, width: 1 * s, lineHeight: 0.08 * s },
                     { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.028 * s, width: 1 * s, lineHeight: 0.05 * s }
                 );
@@ -102,7 +102,7 @@ export function addViewPage() {
             }
 
             const [elementAlignments, _] = aligningWithGapsY([
-                home, //
+                home, // -
                 MOBILE_PAD * s,
                 horizon,
                 MOBILE_PAD * s,

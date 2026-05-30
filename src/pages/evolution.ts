@@ -45,7 +45,7 @@ function layoutQuote({ quote, author, title, openQuote, closeQuote }: Quote) {
     title.style.left = px(posX(quote));
 
     const [elementAlignments, _] = aligningWithGapsY([
-        quote, //
+        quote, // -
         0.04 * s,
         author,
         -0.015 * s,
@@ -93,7 +93,7 @@ export function addEvolutionPage() {
     const quotes = [addQuote("Our annual promo is always grounded in our identity but it's fun to push limits and reinvent ourselves each year. The best part is <strong>hearing what our clients have to say.</strong>", "BETHLYN KRAKAUER", "Founder, i.e. design, inc."), addQuote("I love how you do stuff. I'm finding that these types of messages are really <strong>transforming relationships</strong> with people. They are just dreamy.", "DEBRA SCHATZKI", "Founder, BPP Wealth Solutions LLC"), addQuote("I see a lot of this special quality in your work. It's not just about being intentional. You always bring in an element of <strong>surprise and delight.</strong>", "JOSH KRAKAUER", "Founder, Sculpt"), addQuote("Your approach works so well because it is really <strong>personal</strong> and equally <strong>professional.</strong>", "ANN SULLIVAN", "Founder, Ann Sullivan Organizing"), addQuote("You truly understand the unique positioning of a prospective client and are able to <strong>tell their story</strong> exactly as it should be told.", "DAVID YUN", "Principal, Varident LLC"), addQuote("Beth is quite frankly one of the <strong>most talented designers</strong> that I have ever had the privilege to work with. She always has a special way of making everything she touches turn to gold!", "DAVID RUSH", "President, ENV")];
 
     const timelineItems = [
-        { element: evolution, offsetFactor: 0.06 }, //
+        { element: evolution, offsetFactor: 0.06 }, // -
         { element: evolutionHistory, offsetFactor: 0.06 },
         ...quotes.map((q) => ({ element: q.quote, offsetFactor: 0.2 })),
         ...promos.map((o) => ({ element: o, offsetFactor: -0.001 })),

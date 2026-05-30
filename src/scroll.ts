@@ -156,7 +156,7 @@ export function addScrollImage(src: string): HTMLImageElement {
         });
     };
 
-    awaitLayout(scrollImage.decode());
+    awaitLayout(scrollImage.decode().catch(() => console.error(`Failed to decode image: ${src}`)));
     appendChildForPage(scrollContainer, scrollImage);
     return scrollImage;
 }

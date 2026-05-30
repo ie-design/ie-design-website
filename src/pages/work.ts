@@ -157,7 +157,7 @@ export function addWorkPage() {
         const items = [];
         for (const workItem of workItems) {
             items.push(
-                workItem.textSquare.major, //
+                workItem.textSquare.major, // -
                 0.2 * s,
                 workItem.image1,
                 0.15 * s,

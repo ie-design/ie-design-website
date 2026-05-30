@@ -12,7 +12,7 @@ function addIcon(imageSrc: string, clickLink: string) {
 export function addConnectPage() {
     const connect = addScrollSvg("connect/connect.svg");
     const texts = [
-        addScrollText("Our clients look to us for more than award-winning design. They value our role as trusted advisor, support, and confidant."), //
+        addScrollText("Our clients look to us for more than award-winning design. They value our role as trusted advisor, support, and confidant."), // -
         addScrollText("We look for synergy and compatibility in every relationship we build so the work experience doesn’t feel like work at all."),
         addScrollText("If your gut is telling you we should connect, now is the perfect time to email."),
     ];
@@ -37,7 +37,7 @@ export function addConnectPage() {
         styleText(who, { letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.028 * s, width: 1 * s, lineHeight: 0.05 * s });
 
         const [elementAlignments, _] = aligningWithGapsY([
-            connect, //
+            connect, // -
             0.09 * s,
             texts[0],
             0.03 * s,

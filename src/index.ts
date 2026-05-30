@@ -1,4 +1,4 @@
-import { addBrandingFromTheNameUpBlog } from "./blogs/05-branding-from-the-name-up";
+import { growingTheDreamBlog } from "./blogs/11-growing-the-dream";
 import { body, bodySig, fadeInAnimation, gray, ieGreen } from "./constants";
 import { centerElementX, centerWithGapY, isLandscape, px, styleText } from "./layout";
 import { Modal } from "./modal";
@@ -335,8 +335,8 @@ async function setup() {
     // addCopyright();
 
     // const pageNavItem = navItemFromString[pageName] ?? navItemFromString.view;
-    addViewPage();
-    // addBrandingFromTheNameUpBlog()
+    // addViewPage();
+    growingTheDreamBlog.add();
 }
 
 setup();
