@@ -23,7 +23,7 @@ const pages = {
 
 const navItemFromString: Record<string, HTMLElement> = {};
 
-const edgeAlignX = () => innerHeight * 0.1;
+const leftAlign = () => innerHeight * 0.1;
 const headerIconSize = () => getHeaderBarHeight() * 0.4;
 
 async function animateIntro() {
@@ -86,18 +86,45 @@ async function animateIntro() {
     body.removeChild(svg);
 }
 
+async function animateHomeIE() {
+    const homeSvg = addScrollSvg("view/home.svg");
+    homeSvg.style.animation = "";
+
+    registerUpdateLayout(() => {
+        if (isLandscape()) {
+            resizeScrollContainerLandscape();
+
+            centerWithinScrollY(homeSvg, 0.95);
+            homeSvg.style.left = px(0);
+        }
+    });
+
+    while (homeSvg.childElementCount === 0) await new Promise(requestAnimationFrame);
+    // ZZZZ this line is hacky
+
+    const rest = getElementByIdSVG(homeSvg, "rest");
+    rest.style.opacity = "0";
+    const ie = getElementByIdSVG(homeSvg, "ie");
+    ie.style.opacity = "0";
+    await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
+    await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
+}
+
 function addNavItems() {
     for (const [pageName, addPage] of Object.entries(pages)) {
-        const navItem = document.createElement("span");
-        navItem.innerText = pageName.toUpperCase();
-
-        navItem.style.animation = fadeInAnimation();
+        const navItem = document.createElement("div");
         navItem.style.position = "absolute";
-        navItem.style.fontFamily = "Spartan";
-        navItem.style.color = gray;
-        navItem.style.fontWeight = "500";
+        navItem.style.animation = fadeInAnimation();
         navItem.style.cursor = "pointer";
-        navItem.style.whiteSpace = "nowrap";
+
+        const navItemSpan = document.createElement("span");
+        navItemSpan.style.display = "inline-block";
+        navItemSpan.innerText = pageName.toUpperCase();
+
+        navItemSpan.style.fontFamily = "Spartan";
+        navItemSpan.style.color = gray;
+        navItemSpan.style.fontWeight = "500";
+        navItemSpan.style.whiteSpace = "nowrap";
 
         navItem.onclick = () => {
             cleanLastPage();
@@ -107,26 +134,10 @@ function addNavItems() {
             // history.pushState({}, "", "/#/" + pageName);
         };
 
+        navItem.appendChild(navItemSpan);
         body.appendChild(navItem);
 
         navItemFromString[pageName] = navItem;
-
-        const hoverSpring = new Spring(0);
-        const hoverSpringSig = new Signal();
-        hoverSpring.setStiffnessCritical(400);
-        effect(() => {
-            navItem.style.left = px(edgeAlignX() + hoverSpring.position * 10);
-        }, [hoverSpringSig, bodySig]);
-
-        navItem.onmouseenter = () => {
-            hoverSpring.target = 1;
-            animateSpring(hoverSpring, hoverSpringSig);
-        };
-
-        navItem.onmouseleave = () => {
-            hoverSpring.target = 0;
-            animateSpring(hoverSpring, hoverSpringSig);
-        };
     }
 
     const navItems = Object.values(navItemFromString);
@@ -138,9 +149,16 @@ function addNavItems() {
             centerWithGapY(navItems, 0.06 * s, window.innerHeight / 2);
 
             for (const navItem of navItems) {
-                // navItem.style.left = px(edgeAlignX());
                 navItem.style.visibility = "visible";
                 navItem.style.fontSize = px(s * 0.025);
+
+                navItem.style.left = px(leftAlign());
+
+                const navItemSpan = navItem.children[0] as HTMLElement;
+
+                navItemSpan.style.transition = "transform 0.3s ease-out";
+                navItem.onmouseenter = () => (navItemSpan.style.transform = `translate(${0.02 * s}px, 0px)`);
+                navItem.onmouseleave = () => (navItemSpan.style.transform = "");
             }
         } else {
             for (const navItem of navItems) navItem.style.visibility = "hidden";
@@ -232,7 +250,7 @@ function addMenuButton() {
         menuButton.style.width = px(size);
         menuButton.style.height = px(size);
 
-        menuButton.style.left = px(innerWidth - size - edgeAlignX());
+        menuButton.style.left = px(innerWidth - size - leftAlign());
         menuButton.style.top = px((getHeaderBarHeight() - size) / 2);
     }, [bodySig]);
 }
@@ -273,7 +291,7 @@ function addLogo() {
         logo.style.width = px(size);
         logo.style.height = px(size);
 
-        logo.style.left = px(edgeAlignX());
+        logo.style.left = px(leftAlign());
         logo.style.top = px((getHeaderBarHeight() - size) / 2);
     }, [bodySig]);
 }
@@ -288,7 +306,7 @@ function addCopyright() {
 
     effect(() => {
         if (isLandscape()) {
-            copyright.style.left = px(edgeAlignX());
+            copyright.style.left = px(leftAlign());
             copyright.style.top = px(innerHeight * 0.9);
             styleText(copyright, { letterSpacing: 0.3, fontWeight: 500, color: gray, fontSize: 0.012 * innerHeight, lineHeight: 20 });
             copyright.style.visibility = "visible";
@@ -297,29 +315,6 @@ function addCopyright() {
             copyright.style.visibility = "hidden";
         }
     }, [bodySig]);
-}
-async function animateHomeIE() {
-    const homeSvg = addScrollSvg("view/home.svg");
-    homeSvg.style.animation = "";
-
-    registerUpdateLayout(() => {
-        if (isLandscape()) {
-            resizeScrollContainerLandscape();
-
-            centerWithinScrollY(homeSvg, 0.95);
-            homeSvg.style.left = px(0);
-        }
-    });
-
-    while (homeSvg.childElementCount === 0) await new Promise(requestAnimationFrame);
-    // ZZZZ this line is hacky
-
-    const rest = getElementByIdSVG(homeSvg, "rest");
-    rest.style.opacity = "0";
-    const ie = getElementByIdSVG(homeSvg, "ie");
-    ie.style.opacity = "0";
-    await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
-    await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
 }
 
 async function setup() {
@@ -332,11 +327,10 @@ async function setup() {
     addHeaderBar();
     addMenuButton();
     addLogo();
-    // addCopyright();
+    addCopyright();
 
     // const pageNavItem = navItemFromString[pageName] ?? navItemFromString.view;
-    // addViewPage();
-    growingTheDreamBlog.add();
+    addViewPage();
 }
 
 setup();
