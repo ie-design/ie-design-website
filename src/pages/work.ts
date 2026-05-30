@@ -1,5 +1,5 @@
 import { body, bodySig } from "../constants";
-import { aligningWithGapsX, posX, px, sizeX, sizeY } from "../layout";
+import { aligningWithGapsX, posX, px, setImageHeight, setImageWidth, sizeX, sizeY } from "../layout";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout, runAllAndClear } from "../page";
 import { TextSquare, addScrollImage, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer, styleScrollTextSquare } from "../scroll";
 import { Signal, effect } from "../signal";
@@ -73,20 +73,6 @@ export function addWorkPage() {
         tabImage.style.cursor = "pointer";
         tabImage.src = `work/${spaceToFile(workContent.name)}/tab.png`;
 
-        tabImage.onclick = () => {
-            activated = true;
-            // for (const workTab of workTabs) {
-            //     workTab.spring.target = 0;
-            //     animateSpring(workTab.spring, workTab.springSig);
-            // }
-
-            populateWorkItems();
-            flushPageContent().then(() => {
-                bodySig.update();
-                scrollToWork(workItems[i]);
-            }); // ZZZZ bit hacky
-        };
-
         awaitLayout(tabImage.decode());
         appendChildForPage(body, tabImage);
 
@@ -106,15 +92,26 @@ export function addWorkPage() {
     registerUpdateLayout(() => {
         runAllAndClear(cleanupLastLayout);
 
-        console.log("LAYOUT!!!");
         resizeScrollContainerLandscape();
         const s = getScrollHeight();
 
-        for (const { tabImage } of workTabs) tabImage.style.height = px(s);
+        const boundLeft = posX(scrollContainer) * 0.8;
+        const boundRight = innerWidth * 0.95;
+        const boundWidth = boundRight - boundLeft;
 
+        for (const { tabImage } of workTabs) setImageHeight(tabImage, s);
+
+        const countWithSpaces = workTabs.length * 2 - 1;
+        const tabTotalSizeX = sizeX(workTabs[0].tabImage) * countWithSpaces;
+        let k = (boundWidth - tabTotalSizeX) / 2;
+
+        if (boundWidth < tabTotalSizeX) {
+            for (const { tabImage } of workTabs) setImageWidth(tabImage, boundWidth / countWithSpaces);
+            k = 0;
+        }
         for (let i = 0; i < workTabs.length; i++) {
             const { tabImage } = workTabs[i];
-            tabImage.style.left = px(posX(scrollContainer) + sizeX(tabImage) * i * 2);
+            tabImage.style.left = px(boundLeft + sizeX(tabImage) * i * 2 + k);
         }
 
         if (activated) {
@@ -134,19 +131,40 @@ export function addWorkPage() {
                 tabImage.onclick = () => {
                     scrollToWork(workItems[i]);
                 };
-
-                cleanupLastLayout.add(() => {
-                    tabImage.onmouseenter = () => {};
-                    tabImage.onmouseleave = () => {};
-                    tabImage.onclick = () => {};
-                });
             }
         } else {
-            for (const { tabImage, spring, springSig } of workTabs) {
+            for (let i = 0; i < workTabs.length; i++) {
+                const { tabImage, spring, springSig } = workTabs[i];
                 spring.target = (innerHeight - sizeY(tabImage)) / 2;
                 animateSpring(spring, springSig);
+
+                tabImage.onmouseenter = () => {
+                    spring.target = (innerHeight - sizeY(tabImage)) / 2 - sizeX(tabImage) / 2;
+                    animateSpring(spring, springSig);
+                };
+                tabImage.onmouseleave = () => {
+                    spring.target = (innerHeight - sizeY(tabImage)) / 2;
+                    animateSpring(spring, springSig);
+                };
+                tabImage.onclick = () => {
+                    activated = true;
+
+                    populateWorkItems();
+                    flushPageContent().then(() => {
+                        bodySig.update();
+                        scrollToWork(workItems[i]);
+                    }); // ZZZZ bit hacky
+                };
             }
         }
+
+        cleanupLastLayout.add(() => {
+            for (const { tabImage } of workTabs) {
+                tabImage.onmouseenter = () => {};
+                tabImage.onmouseleave = () => {};
+                tabImage.onclick = () => {};
+            }
+        });
 
         for (const workItem of workItems) {
             styleScrollTextSquare(workItem.textSquare, { letterSpacing: 0.011 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, width: 1 * s, lineHeight: 0.09 * s }, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, width: 1 * s, lineHeight: 0.05 * s });
