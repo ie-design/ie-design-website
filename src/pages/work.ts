@@ -67,7 +67,7 @@ export function addWorkPage() {
         scrollContainer.scroll({ left: posX(workItem.textSquare.major), behavior: "smooth" });
     }
 
-    const workTabs = workContents.map((workContent, i) => {
+    const workTabs = workContents.map((workContent) => {
         const tabImage = document.createElement("img");
         tabImage.style.position = "absolute";
         tabImage.style.cursor = "pointer";

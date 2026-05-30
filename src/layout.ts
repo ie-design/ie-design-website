@@ -80,6 +80,16 @@ export function centerElementY(element: HTMLElement) {
     element.style.top = px(innerHeight / 2 - sizeY(element) / 2);
 }
 
+export function setImageWidth(image: HTMLImageElement, width: number) {
+    image.style.width = px(width);
+    image.style.height = px((width / image.naturalWidth) * image.naturalHeight);
+}
+
+export function setImageHeight(image: HTMLImageElement, height: number) {
+    image.style.height = px(height);
+    image.style.width = px((height / image.naturalHeight) * image.naturalWidth);
+}
+
 export function styleText(scrollText: HTMLElement, s: TextDetails) {
     scrollText.style.fontFamily = "Spartan";
     scrollText.style.position = "absolute";
