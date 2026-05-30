@@ -10,6 +10,7 @@ import { shareSomeDesignLoveBlog } from "../blogs/09-share-some-design-love";
 import { theStartOfSomethingYumIeBlog } from "../blogs/10-the-start-of-something-yum-ie";
 import { growingTheDreamBlog } from "../blogs/11-growing-the-dream";
 import { Blog } from "../blogs/blog";
+import { blogs } from "../blogs/blogs";
 
 import { ieBlue } from "../constants";
 import { aligningWithGapsX, aligningWithGapsY, posX, px, sizeX, styleText } from "../layout";
@@ -59,7 +60,7 @@ function alignInspirationTile({ image, major, minor, readMore }: InspirationTile
 }
 
 function addInspirationTile(blog: Blog): InspirationTile {
-    const image = addScrollImage(blog.tileImage);
+    const image = addScrollImage(blog.tileImage());
     const major = addScrollText(blog.title);
     const minor = addScrollText(blog.subtitle);
     const readMore = addScrollText("Read more");
@@ -76,19 +77,7 @@ function addInspirationTile(blog: Blog): InspirationTile {
 export function addInspirationPage() {
     const inspiration = addScrollSvg("inspiration/inspiration.svg");
 
-    const tiles = [
-        addInspirationTile(growingTheDreamBlog), // -
-        addInspirationTile(theStartOfSomethingYumIeBlog),
-        addInspirationTile(shareSomeDesignLoveBlog),
-        addInspirationTile(gottaLoveACookIeBlog),
-        addInspirationTile(remixBlog),
-        addInspirationTile(rebrandingAFamilyBusinessBlog),
-        addInspirationTile(brandingFromTheNameUpBlog),
-        addInspirationTile(inspired2CreateBlog),
-        addInspirationTile(theViewFromInsideBlog),
-        addInspirationTile(reconnectingBlog),
-        addInspirationTile(newStudioNewViewBlog),
-    ];
+    const tiles = blogs.map(addInspirationTile);
 
     const scrollPadding = addScrollPadding();
 

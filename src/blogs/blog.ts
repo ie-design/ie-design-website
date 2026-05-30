@@ -9,9 +9,7 @@ const DEFAULT_SPACING = 0.018;
 export class Blog {
     constructor(readonly name: string, readonly title: string, readonly subtitle: string, private readonly setup: (b: Blog) => void) {}
 
-    get tileImage() {
-        return `blog/${this.name}/thumbnail.jpg`;
-    }
+    tileImage = () => `blog/${this.name}/thumbnail.jpg`;
 
     items: (BoxElement | number)[] = [];
 
