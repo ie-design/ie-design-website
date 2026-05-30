@@ -8,6 +8,8 @@ export class Modal {
     spring: Spring;
     springSig: Signal;
 
+    static isAnyModalOpen = false;
+
     onLayout = () => {};
 
     constructor(color: string, onOpen: (backdrop: HTMLElement) => void, private onAnimate: (time: number) => void, onClose: () => void) {
@@ -73,11 +75,13 @@ export class Modal {
         this.spring.target = 1;
         animateSpring(this.spring, this.springSig);
         this.isOpening = true;
+        Modal.isAnyModalOpen = true;
     };
 
     beginClose = () => {
         this.spring.target = 0;
         animateSpring(this.spring, this.springSig);
         this.isOpening = false;
+        Modal.isAnyModalOpen = false;
     };
 }

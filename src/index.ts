@@ -238,6 +238,7 @@ function addMenuButton() {
             menuButton.style.stroke = "#bbbbbb";
             menuModal.beginClose();
         } else {
+            if (Modal.isAnyModalOpen) return;
             menuButton.style.stroke = gray;
             menuModal.beginOpen();
         }

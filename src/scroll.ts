@@ -84,6 +84,8 @@ export function addScrollImage(src: string): HTMLImageElement {
     scrollImage.style.cursor = "pointer";
 
     scrollImage.onclick = () => {
+        if (Modal.isAnyModalOpen) return;
+
         const bigImage = document.createElement("img");
         bigImage.src = src;
         bigImage.style.position = "absolute";
