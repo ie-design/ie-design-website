@@ -1,4 +1,4 @@
-import { growingTheDreamBlog } from "./blogs/11-growing-the-dream";
+import { blogs } from "./blogs/blogs";
 import { body, bodySig, fadeInAnimation, gray, ieGreen } from "./constants";
 import { centerElementX, centerWithGapY, isLandscape, px, styleText } from "./layout";
 import { Modal } from "./modal";
@@ -13,7 +13,7 @@ import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
 import { colorOnHover, createIconSVG, fetchSVG, getElementByIdSVG, makeLine, setAttributes, sleep } from "./util";
 
-const pages = {
+const pages: Record<string, () => void> = {
     view: addViewPage,
     work: addWorkPage,
     inspiration: addInspirationPage,
@@ -129,9 +129,8 @@ function addNavItems() {
         navItem.onclick = () => {
             cleanLastPage();
             addPage();
+            history.pushState({}, "", "/" + pageName);
             navItem.style.color = "#000000";
-            // pageCleanups.add(() => (navItem.style.color = gray));
-            // history.pushState({}, "", "/#/" + pageName);
         };
 
         navItem.appendChild(navItemSpan);
@@ -318,20 +317,45 @@ function addCopyright() {
     }, [bodySig]);
 }
 
-async function setup() {
-    // const pageName = location.hash.substring("#/".length);
+type RouteNode = (() => void) | { [key: string]: RouteNode };
 
-    // await animateIntro();
-    // await animateHomeIE();
+const routes = {
+    ...pages,
+    blog: Object.fromEntries(blogs.map((b) => [b.slug, b.add])),
+};
+
+function addDefaultPage() {
+    addViewPage();
+}
+
+function resolveRoute() {
+    const segments = window.location.pathname.substring(1).split("/").filter(Boolean);
+    let node: RouteNode | undefined = routes as RouteNode;
+    for (const segment of segments) {
+        if (typeof node !== "object") break;
+        node = node[segment];
+    }
+    return typeof node === "function" ? node : addDefaultPage;
+}
+
+async function setup() {
+    const addPage = resolveRoute();
+    if (addPage === addDefaultPage) {
+        await animateIntro();
+        await animateHomeIE();
+    }
+    addPage();
+
+    window.addEventListener("popstate", () => {
+        cleanLastPage();
+        resolveRoute()();
+    });
 
     addNavItems();
     addHeaderBar();
     addMenuButton();
     addLogo();
     addCopyright();
-
-    // const pageNavItem = navItemFromString[pageName] ?? navItemFromString.view;
-    addViewPage();
 }
 
 setup();

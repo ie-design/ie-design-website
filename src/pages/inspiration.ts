@@ -68,6 +68,7 @@ function addInspirationTile(blog: Blog): InspirationTile {
     readMore.style.cursor = "pointer";
     readMore.onclick = () => {
         cleanLastPage();
+        history.pushState({}, "", "/blog/" + blog.slug);
         blog.add();
     };
 

@@ -10,6 +10,7 @@ export class Blog {
     constructor(readonly name: string, readonly title: string, readonly subtitle: string, private readonly setup: (b: Blog) => void) {}
 
     tileImage = () => `blog/${this.name}/thumbnail.jpg`;
+    get slug() { return this.name.substring(this.name.indexOf("-") + 1); }
 
     items: (BoxElement | number)[] = [];
 
