@@ -67,12 +67,14 @@ function addInspirationTile(blog: Blog): InspirationTile {
     const readMore = addScrollText("Read more");
 
     readMore.style.cursor = "pointer";
-    readMore.onclick = () => {
+    function goToBlog() {
         cleanLastPage();
         history.pushState({}, "", "/blog/" + blog.slug);
         setNavHidden(true);
         blog.add();
-    };
+    }
+    readMore.onclick = goToBlog;
+    image.onclick = goToBlog;
 
     return { image, major, minor, readMore };
 }

@@ -114,7 +114,7 @@ async function animateHomeIE() {
 function addNavItems() {
     const navItems: HTMLElement[] = [];
 
-    const setNavHidden = (hidden: boolean) => {
+    const setNavItemsHidden = (hidden: boolean) => {
         for (const navItem of navItems)
             navItem.style.transform = hidden ? "translateX(-200px)" : "";
     };
@@ -173,7 +173,7 @@ function addNavItems() {
         }
     }, [bodySig]);
 
-    registerNavHidden(setNavHidden);
+    registerNavHidden(setNavItemsHidden);
 }
 
 function addHeaderBar() {
@@ -370,11 +370,11 @@ async function setup() {
         resolveRoute()();
     });
 
-    setNavHidden(window.location.pathname.startsWith("/blog/"));
     addHeaderBar();
     addMenuButton();
     addLogo();
     addCopyright();
+    setNavHidden(window.location.pathname.startsWith("/blog/"));
 }
 
 setup();
