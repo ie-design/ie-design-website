@@ -11,6 +11,7 @@ import { addWorkPage } from "./pages/work";
 import { addScrollSvg, centerWithinScrollY, getHeaderBarHeight, getScrollHeight, resizeScrollContainerLandscape } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
+import { registerNavHidden, setNavHidden } from "./nav";
 import { colorOnHover, createIconSVG, fetchSVG, getElementByIdSVG, makeLine, setAttributes, sleep } from "./util";
 
 const pages: Record<string, () => void> = {
@@ -111,11 +112,19 @@ async function animateHomeIE() {
 }
 
 function addNavItems() {
+    const navItems: HTMLElement[] = [];
+
+    const setNavHidden = (hidden: boolean) => {
+        for (const navItem of navItems)
+            navItem.style.transform = hidden ? "translateX(-200px)" : "";
+    };
+
     for (const [pageName, addPage] of Object.entries(pages)) {
         const navItem = document.createElement("div");
         navItem.style.position = "absolute";
         navItem.style.animation = fadeInAnimation();
         navItem.style.cursor = "pointer";
+        navItem.style.transition = "transform 0.4s ease";
 
         const navItemSpan = document.createElement("span");
         navItemSpan.style.display = "inline-block";
@@ -130,6 +139,7 @@ function addNavItems() {
             cleanLastPage();
             addPage();
             history.pushState({}, "", "/" + pageName);
+            setNavHidden(false);
             navItem.style.color = "#000000";
         };
 
@@ -137,9 +147,8 @@ function addNavItems() {
         body.appendChild(navItem);
 
         navItemFromString[pageName] = navItem;
+        navItems.push(navItem);
     }
-
-    const navItems = Object.values(navItemFromString);
 
     effect(() => {
         if (isLandscape()) {
@@ -163,6 +172,8 @@ function addNavItems() {
             for (const navItem of navItems) navItem.style.visibility = "hidden";
         }
     }, [bodySig]);
+
+    registerNavHidden(setNavHidden);
 }
 
 function addHeaderBar() {
@@ -301,8 +312,13 @@ function addCopyright() {
     copyright.style.position = "absolute";
     copyright.innerText = "©2025 i.e. design, inc.";
     copyright.style.whiteSpace = "nowrap";
+    copyright.style.transition = "transform 0.4s ease";
 
     body.appendChild(copyright);
+
+    registerNavHidden((hidden) => {
+        copyright.style.transform = hidden ? "translateX(-200px)" : "";
+    });
 
     effect(() => {
         if (isLandscape()) {
@@ -346,12 +362,15 @@ async function setup() {
     }
     addPage();
 
+    addNavItems();
+
     window.addEventListener("popstate", () => {
         cleanLastPage();
+        setNavHidden(window.location.pathname.startsWith("/blog/"));
         resolveRoute()();
     });
 
-    addNavItems();
+    setNavHidden(window.location.pathname.startsWith("/blog/"));
     addHeaderBar();
     addMenuButton();
     addLogo();

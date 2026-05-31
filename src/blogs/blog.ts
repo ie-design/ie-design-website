@@ -1,7 +1,7 @@
 import { aligningWithGapsY, BoxElement, px, styleText } from "../layout";
 import { ieBlue, ieGreen } from "../constants";
 import { registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollText, addScrollVideo, getScrollHeight, resizeScrollContainerFull } from "../scroll";
+import { addScrollImage, addScrollPadding, addScrollText, addScrollVideo, getScrollHeight, resizeScrollContainerFull } from "../scroll";
 
 const IMAGE_SPACING = 0.02;
 const DEFAULT_SPACING = 0.018;
@@ -100,7 +100,11 @@ export class Blog {
         this.addImage("thumbnail.jpg");
         this.addSpace();
         this.addHead(this.title);
+        
         this.setup(this);
+
+        const scrollPadding = addScrollPadding();
+        this.items.push(0.05, scrollPadding);
 
         registerUpdateLayout(() => {
             resizeScrollContainerFull();

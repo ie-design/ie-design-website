@@ -13,6 +13,7 @@ import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 
 import { ieBlue } from "../constants";
+import { setNavHidden } from "../nav";
 import { aligningWithGapsX, aligningWithGapsY, posX, px, sizeX, styleText } from "../layout";
 import { cleanLastPage, registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape } from "../scroll";
@@ -69,6 +70,7 @@ function addInspirationTile(blog: Blog): InspirationTile {
     readMore.onclick = () => {
         cleanLastPage();
         history.pushState({}, "", "/blog/" + blog.slug);
+        setNavHidden(true);
         blog.add();
     };
 
