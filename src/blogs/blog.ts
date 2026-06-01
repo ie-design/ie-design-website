@@ -111,9 +111,10 @@ export class Blog {
         function addNavButton(navBlog: Blog | undefined, title: (blog: Blog) => string) {
             if (navBlog) {
                 const navButton = addScrollText(title(navBlog));
-                navButtons.push(navButton);
                 navButton.style.cursor = "pointer";
+                colorOnHover(navButton, ieBlue, ieGreen);
                 navButton.onclick = () => site.openPage(navBlog.add);
+                navButtons.push(navButton);
                 return navButton;
             }
         }

@@ -14,8 +14,13 @@ scrollContainer.style.position = "absolute";
 body.appendChild(scrollContainer);
 (scrollContainer.style as any).scrollbarColor = `${ieGreen} ${ieBlue}55`;
 
-scrollContainer.onwheel = (e) => {
-    if (isLandscape() && !e.shiftKey) scrollContainer.scrollBy({ left: e.deltaY });
+scrollContainer.onwheel = (e) => e.preventDefault();
+window.onwheel = (e) => {
+    if (scrollContainer.style.overflowY === "scroll") {
+        scrollContainer.scrollBy({ top: e.deltaY, left: e.deltaX });
+    } else {
+        scrollContainer.scrollBy({ left: e.deltaX + e.deltaY });
+    }
 };
 
 export function resizeScrollContainerLandscape() {

@@ -62,6 +62,8 @@ export function addWorkPage() {
     }
 
     let activated = false;
+    let currentWorkIndex = -1;
+    let hoveredIndex = -1;
 
     function scrollToWork(workItem: WorkItem) {
         scrollContainer.scroll({ left: posX(workItem.textSquare.major), behavior: "smooth" });
@@ -85,6 +87,33 @@ export function addWorkPage() {
         }, [springSig]);
 
         return { tabImage, spring, springSig };
+    });
+
+    function updateTabTargets() {
+        if (!activated) return;
+        for (let i = 0; i < workTabs.length; i++) {
+            const { tabImage, spring, springSig } = workTabs[i];
+            const isActive = i === hoveredIndex || i === currentWorkIndex;
+            spring.target = isActive ? innerHeight - sizeX(tabImage) : innerHeight - sizeX(tabImage) / 2;
+            animateSpring(spring, springSig);
+        }
+    }
+
+    function updateCurrentWork() {
+        if (!activated || workItems.length === 0) return;
+        const center = scrollContainer.scrollLeft - scrollContainer.clientWidth / 2;
+        let closest = 0;
+        let closestDist = Infinity;
+        for (let i = 0; i < workItems.length; i++) {
+            const dist = Math.abs(posX(workItems[i].textSquare.major) - center);
+            if (dist < closestDist) { closestDist = dist; closest = i; }
+        }
+        currentWorkIndex = closest;
+        updateTabTargets();
+    }
+
+    scrollContainer.addEventListener("scroll", () => {
+        updateCurrentWork();
     });
 
     const cleanupLastLayout = new Set<() => void>();
@@ -116,22 +145,20 @@ export function addWorkPage() {
 
         if (activated) {
             for (let i = 0; i < workTabs.length; i++) {
-                const { tabImage, spring, springSig } = workTabs[i];
-                spring.target = innerHeight - sizeX(tabImage) / 2;
-                animateSpring(spring, springSig);
-
+                const { tabImage } = workTabs[i];
                 tabImage.onmouseenter = () => {
-                    spring.target = innerHeight - sizeX(tabImage);
-                    animateSpring(spring, springSig);
+                    hoveredIndex = i;
+                    updateTabTargets();
                 };
                 tabImage.onmouseleave = () => {
-                    spring.target = innerHeight - sizeX(tabImage) / 2;
-                    animateSpring(spring, springSig);
+                    hoveredIndex = -1;
+                    updateTabTargets();
                 };
                 tabImage.onclick = () => {
                     scrollToWork(workItems[i]);
                 };
             }
+            updateCurrentWork();
         } else {
             for (let i = 0; i < workTabs.length; i++) {
                 const { tabImage, spring, springSig } = workTabs[i];
@@ -159,6 +186,7 @@ export function addWorkPage() {
         }
 
         cleanupLastLayout.add(() => {
+            hoveredIndex = -1;
             for (const { tabImage } of workTabs) {
                 tabImage.onmouseenter = () => {};
                 tabImage.onmouseleave = () => {};
