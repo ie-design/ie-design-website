@@ -15,21 +15,25 @@ export interface TextDetails {
 }
 
 export type BoxElement = HTMLElement | SVGSVGElement;
+export type LayoutItem = BoxElement | BoxElement[] | number;
 
 export function px(pixels: number) {
     return pixels + "px";
 }
 
 function axisAligningWithGaps(axisSize: (element: BoxElement) => number) {
-    return (elementOrGaps: (BoxElement | number)[]): [ElementAlignment[], number] => {
-        const elementAlignments = [];
+    return (elementsOrGaps: LayoutItem[]): [ElementAlignment[], number] => {
+        const elementAlignments: ElementAlignment[] = [];
         let runningTotal = 0;
-        for (const elementOrGap of elementOrGaps) {
-            if (elementOrGap instanceof HTMLElement || elementOrGap instanceof SVGSVGElement) {
-                elementAlignments.push({ element: elementOrGap, offset: runningTotal });
-                runningTotal += axisSize(elementOrGap);
+        for (const item of elementsOrGaps) {
+            if (Array.isArray(item)) {
+                for (const element of item) elementAlignments.push({ element, offset: runningTotal });
+                runningTotal += Math.max(...item.map(axisSize));
+            } else if (item instanceof HTMLElement || item instanceof SVGSVGElement) {
+                elementAlignments.push({ element: item, offset: runningTotal });
+                runningTotal += axisSize(item);
             } else {
-                runningTotal += elementOrGap;
+                runningTotal += item;
             }
         }
         return [elementAlignments, runningTotal];

@@ -1,7 +1,8 @@
-import { aligningWithGapsY, BoxElement, px, styleText } from "../layout";
+import { aligningWithGapsY, LayoutItem, px, sizeX, styleText } from "../layout";
 import { ieBlue, ieGreen } from "../constants";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollText, addScrollVideo, getScrollHeight, resizeScrollContainerFull } from "../scroll";
+import { site } from "../site";
 
 const IMAGE_SPACING = 0.02;
 const DEFAULT_SPACING = 0.018;
@@ -10,10 +11,12 @@ const thumbnail = "thumbnail.jpg";
 export class Blog {
     name = "";
     nameWithNumber = "";
+    prevBlog?: Blog;
+    nextBlog?: Blog;
 
     constructor(readonly title: string, readonly subtitle: string, private readonly setup: (b: Blog) => void) {}
 
-    items: (BoxElement | number)[] = [];
+    items: LayoutItem[] = [];
 
     path = (src: string) => `blog/${this.nameWithNumber}/${src}`;
     thumbnailPath = () => this.path(thumbnail);
@@ -105,6 +108,20 @@ export class Blog {
 
         this.setup(this);
 
+        const navButtons: HTMLParagraphElement[] = [];
+        function addNavButton(navBlog: Blog | undefined, title: (blog: Blog) => string) {
+            if (navBlog) {
+                const navButton = addScrollText(title(navBlog));
+                navButtons.push(navButton);
+                navButton.style.cursor = "pointer";
+                navButton.onclick = () => site.openPage(navBlog.add);
+                return navButton;
+            }
+        }
+        const prevButton = addNavButton(this.prevBlog, (b) => "← " + b.title);
+        const nextButton = addNavButton(this.nextBlog, (b) => b.title + " →");
+        this.items.push(0.06, navButtons);
+
         const scrollPadding = addScrollPadding();
         this.items.push(0.05, scrollPadding);
 
@@ -133,7 +150,7 @@ export class Blog {
             for (const subhead of this.subheads) styleText(subhead, { letterSpacing: 0.0002 * s, fontWeight: 600, color: "#000000", fontSize: 0.011 * s, width: fit, lineHeight: 0.02 * s });
             for (const paragraph of this.paragraphs) styleText(paragraph, { letterSpacing: 0.0002 * s, fontWeight: 350, color: "#000000", fontSize: 0.011 * s, width: fit, lineHeight: 0.019 * s });
 
-            const itemsScaled = this.items.map((item) => (item instanceof Element ? item : item * s));
+            const itemsScaled = this.items.map((item) => (typeof item === "number" ? item * s : item));
             const [elementAlignments, _] = aligningWithGapsY(itemsScaled);
             for (const { element, offset } of elementAlignments) {
                 element.style.top = px(offset);
@@ -149,6 +166,13 @@ export class Blog {
                 rightImage.style.top = leftImage.style.top;
                 rightImage.style.left = px(leftMargin + halfImageWidth + IMAGE_SPACING * s);
             }
+
+            const navStyle = { letterSpacing: 0.0002 * s, fontWeight: 500, color: ieBlue, fontSize: 0.011 * s, lineHeight: 0.02 * s };
+            if (prevButton) styleText(prevButton, navStyle);
+            if (nextButton) {
+                styleText(nextButton, navStyle);
+                nextButton.style.left = px(leftMargin + fit - sizeX(nextButton));
+            }
         });
     };
 }
@@ -163,7 +187,10 @@ export function initializeBlogs(blogs: Blog[]) {
         blog.nameWithNumber = String(i + 1).padStart(2, "0") + "-" + blog.name;
     }
 
-    blogs.reverse();
+    for (let i = 0; i < blogs.length; i++) {
+        blogs[i].prevBlog = blogs[i - 1];
+        blogs[i].nextBlog = blogs[i + 1];
+    }
 
     return blogs;
 }

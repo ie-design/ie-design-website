@@ -69,7 +69,7 @@ export function addInspirationPage() {
     const inspiration = addScrollSvg("inspiration/inspiration.svg");
     const andOtherThings = addScrollSvg("inspiration/and-other-things.svg");
 
-    const tiles = blogs.map(addInspirationTile);
+    const tiles = blogs.toReversed().map(addInspirationTile);
 
     const scrollPadding = addScrollPadding();
 
