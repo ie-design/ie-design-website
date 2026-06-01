@@ -1,11 +1,24 @@
 import { SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION } from "../constants";
 import { aligningWithGapsX, aligningWithGapsY, isLandscape, px, sizeX } from "../layout";
-import { registerUpdateLayout } from "../page";
+import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollX, centerWithinScrollY, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleScrollTextSquare, TextSquare } from "../scroll";
 
+let homeFromIntro: SVGSVGElement | undefined;
+export function setHomeFromIntro(home: SVGSVGElement) {
+    homeFromIntro = home;
+}
+
+function homeMaybeFromIntro() {
+    const h = homeFromIntro ?? addScrollSvg("view/home.svg");
+    if (homeFromIntro) {
+        shouldElementOutlastPage.delete(homeFromIntro);
+        homeFromIntro = undefined;
+    }
+    return h;
+}
+
 export function addViewPage() {
-    const home = addScrollSvg("view/home.svg");
-    home.style.animation = "";
+    const home = homeMaybeFromIntro();
     const horizon = addScrollImage("view/horizon.jpg");
     const freshLook = addScrollSvg("view/fresh-look.svg");
     const greatBrands = addScrollImage("view/great-brands.jpg");

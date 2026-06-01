@@ -2,11 +2,11 @@ import { blogs } from "./blogs/blogs";
 import { body, bodySig, fadeInAnimation, gray, ieGreen } from "./constants";
 import { centerElementX, centerWithGapY, isLandscape, px, styleText } from "./layout";
 import { Modal } from "./modal";
-import { cleanLastPage, registerUpdateLayout } from "./page";
+import { cleanLastPage, registerUpdateLayout, shouldElementOutlastPage } from "./page";
 import { addConnectPage } from "./pages/connect";
 import { addEvolutionPage } from "./pages/evolution";
 import { addInspirationPage } from "./pages/inspiration";
-import { addViewPage } from "./pages/view";
+import { addViewPage, setHomeFromIntro } from "./pages/view";
 import { addWorkPage } from "./pages/work";
 import { addScrollSvg, centerWithinScrollY, getHeaderBarHeight, getScrollHeight, resizeScrollContainerLandscape } from "./scroll";
 import { Signal, effect } from "./signal";
@@ -374,23 +374,26 @@ export class Site {
     };
 
     animateHomeIE = async () => {
-        const homeSvg = addScrollSvg("view/home.svg");
-        homeSvg.style.animation = "";
+        const home = addScrollSvg("view/home.svg");
+        shouldElementOutlastPage.add(home);
+
+        setHomeFromIntro(home);
+        home.style.animation = "";
 
         registerUpdateLayout(() => {
             if (isLandscape()) {
                 resizeScrollContainerLandscape();
-                centerWithinScrollY(homeSvg, 0.95);
-                homeSvg.style.left = px(0);
+                centerWithinScrollY(home, 0.95);
+                home.style.left = px(0);
             }
         });
 
-        while (homeSvg.childElementCount === 0) await new Promise(requestAnimationFrame);
+        while (home.childElementCount === 0) await new Promise(requestAnimationFrame);
         // ZZZZ this line is hacky
 
-        const rest = getElementByIdSVG(homeSvg, "rest");
+        const rest = getElementByIdSVG(home, "rest");
         rest.style.opacity = "0";
-        const ie = getElementByIdSVG(homeSvg, "ie");
+        const ie = getElementByIdSVG(home, "ie");
         ie.style.opacity = "0";
         await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
         await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));

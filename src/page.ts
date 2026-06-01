@@ -15,10 +15,15 @@ export async function flushPageContent() {
     runAllAndClear(beforeLayouts);
 }
 
+export const shouldElementOutlastPage = new Set<Element>();
+
 export function appendChildForPage(parent: Element, child: Element) {
     beforeLayouts.add(() => {
         parent.appendChild(child);
-        pageCleanups.add(() => parent.removeChild(child));
+        pageCleanups.add(() => {
+            if (!shouldElementOutlastPage.has(child)) parent.removeChild(child);
+            else appendChildForPage(parent, child); // try again for next page cleanup
+        });
     });
 }
 
