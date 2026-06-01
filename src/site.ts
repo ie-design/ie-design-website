@@ -11,7 +11,7 @@ import { addWorkPage } from "./pages/work";
 import { addScrollSvg, centerWithinScrollY, getHeaderBarHeight, getScrollHeight, resizeScrollContainerLandscape } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
-import { createIconSVG, fetchSVG, getElementByIdSVG, makeLine, setAttributes, sleep } from "./util";
+import { colorOnHover, colorOnHoverSVGStroke, createIconSVG, fetchSVG, getElementByIdSVG, makeLine, setAttributes, sleep } from "./util";
 
 interface Page {
     addPage: () => void;
@@ -174,42 +174,15 @@ export class Site {
         this.menuButton = menuButton;
 
         menuButton.style.animation = fadeInAnimation();
+        colorOnHoverSVGStroke(menuButton, "#bbbbbb", gray);
+
         const menuLine = makeLine(menuButton, 4);
         const line1 = menuLine();
         const line2 = menuLine();
         const line3 = menuLine();
 
         const menuModal = new Modal(
-            "#000000ee",
-            (backdrop) => {
-                const menuPageNavs: HTMLElement[] = [];
-                for (const [pageName, addPage] of Object.entries(pillars)) {
-                    const menuPageNav = document.createElement("span");
-                    menuPageNav.style.position = "absolute";
-                    menuPageNav.innerText = pageName.toUpperCase();
-                    menuPageNav.style.fontFamily = "Spartan";
-                    menuPageNav.style.fontWeight = "500";
-                    menuPageNav.style.cursor = "pointer";
-
-                    menuPageNav.onclick = () => {
-                        menuModal.beginClose();
-                        this.openPage(addPage);
-                    };
-
-                    backdrop.appendChild(menuPageNav);
-                    menuPageNavs.push(menuPageNav);
-                }
-
-                menuModal.onLayout = () => {
-                    for (const menuPageNav of menuPageNavs) {
-                        menuPageNav.style.fontSize = px(innerHeight * 0.05);
-                        centerElementX(menuPageNav);
-                    }
-                    centerWithGapY(menuPageNavs, innerHeight * 0.08, innerHeight / 2);
-                };
-
-                menuButton.style.zIndex = "1";
-            },
+            "#000000f8",
             (time) => {
                 const s = time * sz;
                 setAttributes(line1, { x1: 0, y1: 0, x2: sz, y2: s });
@@ -217,19 +190,54 @@ export class Site {
                 setAttributes(line2, { x1: 0, y1: sz / 2, x2: sz, y2: sz / 2 });
                 setAttributes(line3, { x1: 0, y1: sz, x2: sz, y2: sz - s });
             },
-            () => {
-                menuButton.style.zIndex = "0";
+            {
+                onBeginOpen: (backdrop) => {
+                    const menuPageNavs: HTMLElement[] = [];
+                    for (const [pageName, addPage] of Object.entries(pillars)) {
+                        const menuPageNav = document.createElement("span");
+                        menuPageNav.style.position = "absolute";
+                        menuPageNav.innerText = pageName.toUpperCase();
+                        menuPageNav.style.fontFamily = "Spartan";
+                        menuPageNav.style.fontWeight = "500";
+                        menuPageNav.style.cursor = "pointer";
+                        colorOnHover(menuPageNav, gray, "white");
+
+                        menuPageNav.onclick = () => {
+                            menuModal.beginClose();
+                            this.openPage(addPage);
+                        };
+
+                        backdrop.appendChild(menuPageNav);
+                        menuPageNavs.push(menuPageNav);
+                    }
+
+                    menuModal.onLayout = () => {
+                        for (const menuPageNav of menuPageNavs) {
+                            menuPageNav.style.fontSize = px(innerHeight * 0.05);
+                            centerElementX(menuPageNav);
+                        }
+                        centerWithGapY(menuPageNavs, innerHeight * 0.08, innerHeight / 2);
+                    };
+
+                    menuButton.style.zIndex = "1";
+                },
+                onTriggerOpen: () => {
+                    colorOnHoverSVGStroke(menuButton, gray, "white");
+                },
+                onTriggerClose: () => {
+                    colorOnHoverSVGStroke(menuButton, "#bbbbbb", gray);
+                },
+                onEndClose: () => {
+                    menuButton.style.zIndex = "0";
+                },
             }
         );
 
-        menuButton.style.stroke = "#bbbbbb";
         menuButton.onclick = () => {
-            if (menuModal.isOpening) {
-                menuButton.style.stroke = "#bbbbbb";
+            if (menuModal.wasLastOpened) {
                 menuModal.beginClose();
             } else {
                 if (Modal.isAnyModalOpen) return;
-                menuButton.style.stroke = gray;
                 menuModal.beginOpen();
             }
         };

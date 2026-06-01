@@ -34,7 +34,8 @@ const colorOnHoverGeneric =
     };
 
 export const colorOnHover = colorOnHoverGeneric<HTMLElement>("color");
-export const colorOnHoverSVG = colorOnHoverGeneric<SVGSVGElement>("fill");
+export const colorOnHoverSVGFill = colorOnHoverGeneric<SVGSVGElement>("fill");
+export const colorOnHoverSVGStroke = colorOnHoverGeneric<SVGSVGElement>("stroke");
 
 export function setAttributes(element: Element, attributes: Record<string, any>) {
     for (const [key, value] of Object.entries(attributes)) {

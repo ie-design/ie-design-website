@@ -119,15 +119,19 @@ export function addScrollImage(src: string): HTMLImageElement {
 
         const imageModal = new Modal(
             "#ffffffee",
-            (backdrop) => {
-                backdrop.appendChild(bigImage);
-                backdrop.appendChild(exitButton);
-                backdrop.appendChild(fullscreenButton);
-            },
             (time) => {
                 bigImage.style.opacity = time + "";
             },
-            () => {}
+            {
+                onBeginOpen: (backdrop) => {
+                    backdrop.appendChild(bigImage);
+                    backdrop.appendChild(exitButton);
+                    backdrop.appendChild(fullscreenButton);
+                },
+                onTriggerOpen: () => {},
+                onTriggerClose: () => {},
+                onEndClose: () => {},
+            }
         );
         imageModal.beginOpen();
         exitButton.onclick = imageModal.beginClose;
@@ -186,7 +190,7 @@ export function addScrollSvg(src: string) {
     const fetchContentPromise = fetchContent();
     awaitLayout(fetchContentPromise);
 
-    appendChildForPage(scrollContainer, scrollSvg)
+    appendChildForPage(scrollContainer, scrollSvg);
     return scrollSvg;
 }
 

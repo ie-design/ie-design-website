@@ -2,7 +2,7 @@ import { gray, ieGreen } from "../constants";
 import { aligningWithGapsX, aligningWithGapsY, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape } from "../scroll";
-import { colorOnHoverSVG } from "../util";
+import { colorOnHoverSVGFill } from "../util";
 
 function addIcon(imageSrc: string, clickLink: string) {
     const icon = addScrollSvg(imageSrc);
@@ -25,9 +25,9 @@ export function addConnectPage() {
     const linkedinIcon = addIcon("connect/linkedin-icon.svg", "https://www.linkedin.com/company/i-e-design-inc");
     const mailIcon = addIcon("connect/mail-icon.svg", "mailto:beth@ie-design.com");
 
-    colorOnHoverSVG(instagramIcon, "#B3B3B3", ieGreen);
-    colorOnHoverSVG(linkedinIcon, "#B3B3B3", ieGreen);
-    colorOnHoverSVG(mailIcon, "#B3B3B3", ieGreen);
+    colorOnHoverSVGFill(instagramIcon, "#B3B3B3", ieGreen);
+    colorOnHoverSVGFill(linkedinIcon, "#B3B3B3", ieGreen);
+    colorOnHoverSVGFill(mailIcon, "#B3B3B3", ieGreen);
 
     const icons = [instagramIcon, linkedinIcon, mailIcon];
 
