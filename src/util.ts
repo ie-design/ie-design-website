@@ -24,12 +24,17 @@ export function mapRange(n: number, start1: number, stop1: number, start2: numbe
     return ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2;
 }
 
-export function colorOnHover(element: HTMLElement, color: string, hoverColor: string) {
-    element.style.color = color;
-    element.onmouseover = () => (element.style.color = hoverColor);
-    element.onmouseleave = () => (element.style.color = color);
-    element.style.transition = "color 0.2s ease-out";
-}
+const colorOnHoverGeneric =
+    <T extends HTMLElement | SVGSVGElement>(field: string) =>
+    (element: T, color: string, hoverColor: string) => {
+        element.style.setProperty(field, color);
+        element.onmouseover = () => element.style.setProperty(field, hoverColor);
+        element.onmouseleave = () => element.style.setProperty(field, color);
+        element.style.transition = `${field} 0.2s ease-out`;
+    };
+
+export const colorOnHover = colorOnHoverGeneric<HTMLElement>("color");
+export const colorOnHoverSVG = colorOnHoverGeneric<SVGSVGElement>("fill");
 
 export function setAttributes(element: Element, attributes: Record<string, any>) {
     for (const [key, value] of Object.entries(attributes)) {

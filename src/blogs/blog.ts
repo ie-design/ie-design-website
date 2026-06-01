@@ -3,6 +3,7 @@ import { ieBlue, ieGreen } from "../constants";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollText, addScrollVideo, getScrollHeight, resizeScrollContainerFull } from "../scroll";
 import { site } from "../site";
+import { colorOnHover } from "../util";
 
 const IMAGE_SPACING = 0.02;
 const DEFAULT_SPACING = 0.018;
@@ -85,10 +86,8 @@ export class Blog {
         a.href = href;
         a.target = "_blank";
         a.innerText = text;
-        a.style.color = ieBlue;
+        colorOnHover(a, ieBlue, ieGreen);
         a.style.textDecoration = "none";
-        a.onmouseenter = () => (a.style.color = ieGreen);
-        a.onmouseleave = () => (a.style.color = ieBlue);
         return a;
     };
 

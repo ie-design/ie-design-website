@@ -1,12 +1,12 @@
 import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 
-import { ieBlue } from "../constants";
+import { ieBlue, ieGreen } from "../constants";
 import { aligningWithGapsX, aligningWithGapsY, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
 import { cleanLastPage, registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape } from "../scroll";
 import { site } from "../site";
-import { interlaced } from "../util";
+import { colorOnHover, interlaced } from "../util";
 
 const INSPIRATION_TILE_WIDTH_PROPORTION = 0.85;
 
@@ -56,6 +56,7 @@ function addInspirationTile(blog: Blog): InspirationTile {
     const readMore = addScrollText("Read more");
 
     readMore.style.cursor = "pointer";
+    colorOnHover(readMore, ieBlue, ieGreen);
     function goToBlog() {
         site.openPage(blog.add);
     }
