@@ -70,14 +70,13 @@ export class Site {
         history.pushState({}, "", import.meta.env.BASE_URL.slice(0, -1) + route);
     };
 
-    openPage = (addPage: () => void) => {
+    openPageWithoutRoute = (addPage: () => void) => {
         const page = pages.find((p) => p.addPage === addPage);
         if (!page) return;
 
         cleanLastPage();
         page.addPage();
 
-        this.pushRoute(page.route);
         this.setSideItemsShown(page.sideItemsShown);
 
         // ZZZZ this is done poorly
@@ -89,6 +88,13 @@ export class Site {
                 navItem.style.color = gray;
             }
         }
+    };
+
+    openPage = (addPage: () => void) => {
+        const page = pages.find((p) => p.addPage === addPage);
+        if (!page) return;
+        this.pushRoute(page.route);
+        this.openPageWithoutRoute(addPage);
     };
 
     addNavItems = () => {
@@ -409,7 +415,7 @@ export class Site {
 
         window.addEventListener("popstate", () => {
             const page = this.resolveRoute();
-            this.openPage(page.addPage);
+            this.openPageWithoutRoute(page.addPage);
         });
 
         this.addHeaderBar();
@@ -417,7 +423,7 @@ export class Site {
         this.addLogo();
         this.addCopyright();
 
-        this.openPage(page.addPage);
+        this.openPageWithoutRoute(page.addPage);
     };
 }
 
