@@ -492,8 +492,12 @@ export class Site {
         this.imageModal = imageModal;
     };
 
-    openImage = (src: string) => {
-        if (this.bigImage) this.bigImage.src = src;
+    openImage = async (src: string) => {
+        const bigImage = this.bigImage;
+        if (!bigImage) return;
+        
+        bigImage.src = src;
+        await bigImage.decode();
         this.imageModal?.beginOpen();
     };
 
