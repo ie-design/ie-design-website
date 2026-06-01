@@ -1,6 +1,6 @@
 import { blogs } from "./blogs/blogs";
-import { body, bodySig, fadeInAnimation, gray, ieGreen } from "./constants";
-import { centerElementX, centerWithGapY, isLandscape, px, styleText } from "./layout";
+import { body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen } from "./constants";
+import { centerElementX, centerElementY, centerWithGapY, isLandscape, px, setImageHeight, setImageWidth, styleText } from "./layout";
 import { Modal } from "./modal";
 import { cleanLastPage, registerUpdateLayout, shouldElementOutlastPage } from "./page";
 import { addConnectPage } from "./pages/connect";
@@ -11,7 +11,7 @@ import { addWorkPage } from "./pages/work";
 import { addScrollSvg, centerWithinScrollY, getHeaderBarHeight, getScrollHeight, resizeScrollContainerLandscape } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
-import { colorOnHover, colorOnHoverSVGStroke, createIconSVG, fetchSVG, getElementByIdSVG, makeLine, setAttributes, sleep } from "./util";
+import { colorOnHover, colorOnHoverSVGStroke, createIconSVG, fetchSVG, getElementByIdSVG, makeLine, makePolyline, setAttributes, sleep } from "./util";
 
 interface Page {
     addPage: () => void;
@@ -70,10 +70,12 @@ export class Site {
         history.pushState({}, "", import.meta.env.BASE_URL.slice(0, -1) + route);
     };
 
-    openPageWithoutRoute = (addPage: () => void) => {
+    loadPage = (addPage: () => void) => {
         const page = pages.find((p) => p.addPage === addPage);
         if (!page) return;
 
+        if (this.imageModal?.wasLastOpened) this.imageModal.beginClose();
+        if (this.menuModal?.wasLastOpened) this.menuModal.beginClose();
         cleanLastPage();
         page.addPage();
 
@@ -94,7 +96,7 @@ export class Site {
         const page = pages.find((p) => p.addPage === addPage);
         if (!page) return;
         this.pushRoute(page.route);
-        this.openPageWithoutRoute(addPage);
+        this.loadPage(addPage);
     };
 
     addNavItems = () => {
@@ -413,6 +415,88 @@ export class Site {
         await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
     };
 
+    bigImage?: HTMLImageElement;
+    imageModal?: Modal;
+    menuModal?: Modal;
+
+    addImageModal = () => {
+        const sz = 60;
+
+        const exitButton = createIconSVG(sz);
+        const makeExitLine = makeLine(exitButton, 12);
+        setAttributes(makeExitLine(), { x1: 0, y1: 0, x2: sz, y2: sz });
+        setAttributes(makeExitLine(), { x1: 0, y1: sz, x2: sz, y2: 0 });
+        colorOnHoverSVGStroke(exitButton, gray, ieBlue);
+
+        const fullscreenButton = createIconSVG(sz);
+        const makeFullscreenPolyline = makePolyline(fullscreenButton, 12);
+        setAttributes(makeFullscreenPolyline(), {
+            points: [
+                [0, 0],
+                [0, sz],
+                [sz, sz],
+            ]
+                .map((p) => p.join(","))
+                .join(" "),
+        });
+        colorOnHoverSVGStroke(fullscreenButton, gray, ieBlue);
+
+        const bigImage = document.createElement("img");
+        this.bigImage = bigImage;
+        bigImage.style.position = "absolute";
+        bigImage.style.filter = `drop-shadow(0px 0px 15px ${ieBlue})`;
+
+        const imageModal = new Modal(
+            "#ffffffee",
+            (time) => {
+                bigImage.style.opacity = time + "";
+            },
+            {
+                onBeginOpen: (backdrop) => {
+                    if (Modal.isAnyModalOpen) return;
+
+                    backdrop.appendChild(bigImage);
+                    backdrop.appendChild(exitButton);
+                    backdrop.appendChild(fullscreenButton);
+
+                    exitButton.onclick = imageModal.beginClose;
+                    fullscreenButton.onclick = () => bigImage.requestFullscreen();
+
+                    imageModal.onLayout = () => {
+                        const size = 15;
+                        const fromEdge = 15;
+
+                        exitButton.style.width = px(size);
+                        exitButton.style.height = px(size);
+                        exitButton.style.left = px(innerWidth - size - fromEdge);
+                        exitButton.style.top = px(fromEdge);
+
+                        fullscreenButton.style.width = px(size);
+                        fullscreenButton.style.height = px(size);
+                        fullscreenButton.style.left = px(innerWidth - size - fromEdge - size * 2);
+                        fullscreenButton.style.top = px(fromEdge);
+
+                        setImageHeight(bigImage, innerHeight * 0.9);
+                        if (bigImage.offsetWidth > innerWidth * 0.9) {
+                            setImageWidth(bigImage, innerWidth * 0.9);
+                        }
+                        centerElementX(bigImage);
+                        centerElementY(bigImage);
+                    };
+                },
+                onTriggerOpen: () => {},
+                onTriggerClose: () => {},
+                onEndClose: () => {},
+            }
+        );
+        this.imageModal = imageModal;
+    };
+
+    openImage = (src: string) => {
+        if (this.bigImage) this.bigImage.src = src;
+        this.imageModal?.beginOpen();
+    };
+
     setup = async () => {
         const page = this.resolveRoute();
         if (page === introPage) {
@@ -423,15 +507,16 @@ export class Site {
 
         window.addEventListener("popstate", () => {
             const page = this.resolveRoute();
-            this.openPageWithoutRoute(page.addPage);
+            this.loadPage(page.addPage);
         });
 
+        this.addImageModal();
         this.addHeaderBar();
         this.addMenuButton();
         this.addLogo();
         this.addCopyright();
 
-        this.openPageWithoutRoute(page.addPage);
+        this.loadPage(page.addPage);
     };
 }
 

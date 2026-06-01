@@ -1,8 +1,8 @@
-import { body, fadeInAnimation, gray, ieBlue, ieGreen } from "./constants";
-import { aligningWithGapsY, centerElementX, centerElementY, isLandscape, px, setImageHeight, setImageWidth, styleText, TextDetails } from "./layout";
-import { Modal } from "./modal";
-import { appendChildForPage, awaitLayout, registerUpdateLayout } from "./page";
-import { createElementSVG, createIconSVG, fetchSVG, makeLine, makePolyline, setAttributes } from "./util";
+import { body, fadeInAnimation, ieGreen, ieBlue } from "./constants";
+import { aligningWithGapsY, isLandscape, px, styleText, TextDetails } from "./layout";
+import { appendChildForPage, awaitLayout } from "./page";
+import { site } from "./site";
+import { createElementSVG, fetchSVG } from "./util";
 
 export interface TextSquare {
     major: HTMLElement;
@@ -83,84 +83,7 @@ export function addScrollImage(src: string): HTMLImageElement {
     scrollImage.style.animation = fadeInAnimation();
     scrollImage.style.cursor = "pointer";
 
-    scrollImage.onclick = () => {
-        if (Modal.isAnyModalOpen) return;
-
-        const bigImage = document.createElement("img");
-        bigImage.src = src;
-        bigImage.style.position = "absolute";
-        bigImage.style.filter = `drop-shadow(0px 0px 15px ${ieBlue})`;
-
-        const sz = 60;
-        const exitButton = createIconSVG(sz);
-        const makeExitButtonLine = makeLine(exitButton, 12);
-        const exitButtonLine1 = makeExitButtonLine();
-        const exitButtonLine2 = makeExitButtonLine();
-        setAttributes(exitButtonLine1, { x1: 0, y1: 0, x2: sz, y2: sz });
-        setAttributes(exitButtonLine2, { x1: 0, y1: sz, x2: sz, y2: 0 });
-        exitButton.style.stroke = gray;
-
-        const fullscreenButton = createIconSVG(sz);
-        const makeFullscreenButtonPolyline = makePolyline(fullscreenButton, 12);
-        const fullscreenButtonPolyline1 = makeFullscreenButtonPolyline();
-
-        function toPolyline(list: number[][]) {
-            return list.map((point) => point.join(",")).join(" ");
-        }
-
-        setAttributes(fullscreenButtonPolyline1, {
-            points: toPolyline([
-                [0, 0],
-                [0, sz],
-                [sz, sz],
-            ]),
-        });
-        fullscreenButton.style.stroke = gray;
-
-        const imageModal = new Modal(
-            "#ffffffee",
-            (time) => {
-                bigImage.style.opacity = time + "";
-            },
-            {
-                onBeginOpen: (backdrop) => {
-                    backdrop.appendChild(bigImage);
-                    backdrop.appendChild(exitButton);
-                    backdrop.appendChild(fullscreenButton);
-                },
-                onTriggerOpen: () => {},
-                onTriggerClose: () => {},
-                onEndClose: () => {},
-            }
-        );
-        imageModal.beginOpen();
-        exitButton.onclick = imageModal.beginClose;
-        fullscreenButton.onclick = () => bigImage.requestFullscreen();
-
-        registerUpdateLayout(() => {
-            const size = 15;
-            const fromEdge = 15;
-
-            exitButton.style.width = px(size);
-            exitButton.style.height = px(size);
-            exitButton.style.left = px(innerWidth - size - fromEdge);
-            exitButton.style.top = px(fromEdge);
-
-            fullscreenButton.style.width = px(size);
-            fullscreenButton.style.height = px(size);
-            fullscreenButton.style.left = px(innerWidth - size - fromEdge - size * 2);
-            fullscreenButton.style.top = px(fromEdge);
-
-            const height = innerHeight * 0.9;
-            setImageHeight(bigImage, height);
-            const minWidth = innerWidth * 0.9;
-            if (bigImage.offsetWidth > minWidth) {
-                setImageWidth(bigImage, minWidth);
-            }
-            centerElementX(bigImage);
-            centerElementY(bigImage);
-        });
-    };
+    scrollImage.onclick = () => site.openImage(src);
 
     awaitLayout(scrollImage.decode().catch(() => console.error(`Failed to decode image: ${src}`)));
     appendChildForPage(scrollContainer, scrollImage);
