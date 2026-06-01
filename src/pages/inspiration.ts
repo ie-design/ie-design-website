@@ -2,7 +2,7 @@ import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 
 import { ieBlue } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, posX, px, sizeX, styleText } from "../layout";
+import { aligningWithGapsX, aligningWithGapsY, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
 import { cleanLastPage, registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape } from "../scroll";
 import { site } from "../site";
@@ -67,6 +67,7 @@ function addInspirationTile(blog: Blog): InspirationTile {
 
 export function addInspirationPage() {
     const inspiration = addScrollSvg("inspiration/inspiration.svg");
+    const andOtherThings = addScrollSvg("inspiration/and-other-things.svg");
 
     const tiles = blogs.map(addInspirationTile);
 
@@ -77,6 +78,7 @@ export function addInspirationPage() {
         const s = getScrollHeight();
 
         centerWithinScrollY(inspiration, 0.75);
+        andOtherThings.style.height = px(0.06 * s);
 
         for (const tile of tiles) styleInspirationTile(tile);
 
@@ -89,6 +91,9 @@ export function addInspirationPage() {
         for (const { element, offset } of elementAlignments) {
             element.style.left = px(offset);
         }
+
+        andOtherThings.style.left = px(posX(inspiration));
+        andOtherThings.style.top = px(posY(inspiration) + sizeY(inspiration) + 0.06 * s);
 
         for (const tile of tiles) alignInspirationTile(tile);
 
