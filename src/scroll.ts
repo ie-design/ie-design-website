@@ -186,7 +186,7 @@ export function addScrollSvg(src: string) {
     const fetchContentPromise = fetchContent();
     awaitLayout(fetchContentPromise);
 
-    appendChildForPage(scrollContainer, scrollSvg);
+    appendChildForPage(scrollContainer, scrollSvg)
     return scrollSvg;
 }
 

@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const theViewFromInsideBlog = new Blog(
-    "03-the-view-from-inside", // -
-    "THE VIEW FROM INSIDE",
+    "THE VIEW FROM INSIDE", // -
     "i.e. design's new studio was 30 years in the making.",
     (b: Blog) => {
         b.addParagraph("By Bethlyn Krakauer");

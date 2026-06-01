@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const rebrandingAFamilyBusinessBlog = new Blog(
-    "06-rebranding-a-family-business", // -
-    "REBRANDING A FAMILY BUSINESS",
+    "REBRANDING A FAMILY BUSINESS", // -
     "A refresh for a 50-year legacy.",
     (b: Blog) => {
         b.addParagraph("By Bethlyn Krakauer");

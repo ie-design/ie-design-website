@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const brandingFromTheNameUpBlog = new Blog(
-    "05-branding-from-the-name-up", // -
-    "BRANDING FROM THE NAME UP",
+    "BRANDING FROM THE NAME UP", // -
     "When a client had an idea for a brand spinoff, we took her concept to reality and launched the business in high style.",
     (b: Blog) => {
         b.addParagraph("By Bethlyn Krakauer");

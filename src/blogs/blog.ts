@@ -5,16 +5,18 @@ import { addScrollImage, addScrollPadding, addScrollText, addScrollVideo, getScr
 
 const IMAGE_SPACING = 0.02;
 const DEFAULT_SPACING = 0.018;
+const thumbnail = "thumbnail.jpg";
 
 export class Blog {
-    constructor(readonly name: string, readonly title: string, readonly subtitle: string, private readonly setup: (b: Blog) => void) {}
+    name = "";
+    nameWithNumber = "";
 
-    tileImage = () => `blog/${this.name}/thumbnail.jpg`;
-    get slug() { return this.name.substring(this.name.indexOf("-") + 1); }
+    constructor(readonly title: string, readonly subtitle: string, private readonly setup: (b: Blog) => void) {}
 
     items: (BoxElement | number)[] = [];
 
-    private path = (src: string) => `blog/${this.name}/${src}`;
+    path = (src: string) => `blog/${this.nameWithNumber}/${src}`;
+    thumbnailPath = () => this.path(thumbnail);
 
     gap = 0;
     push = <T extends HTMLElement>(element: T, followingGap: number): T => {
@@ -97,10 +99,10 @@ export class Blog {
         this.subheads = [];
         this.paragraphs = [];
 
-        this.addImage("thumbnail.jpg");
+        this.addImage(thumbnail);
         this.addSpace();
         this.addHead(this.title);
-        
+
         this.setup(this);
 
         const scrollPadding = addScrollPadding();
@@ -149,4 +151,19 @@ export class Blog {
             }
         });
     };
+}
+
+export function initializeBlogs(blogs: Blog[]) {
+    for (let i = 0; i < blogs.length; i++) {
+        const blog = blogs[i];
+        blog.name = blog.title // -
+            .toLowerCase()
+            .replaceAll(" ", "-")
+            .replaceAll(".", "");
+        blog.nameWithNumber = String(i + 1).padStart(2, "0") + "-" + blog.name;
+    }
+
+    blogs.reverse();
+
+    return blogs;
 }

@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const theStartOfSomethingYumIeBlog = new Blog(
-    "10-the-start-of-something-yum-ie", // -
-    "THE START OF SOMETHING YUM-IE",
+    "THE START OF SOMETHING YUM-IE", // -
     "We always wanted to design chocolate bars and finally did it. Introducing our sweet new brand.",
     (b: Blog) => {
         b.addParagraph("By Bethlyn Krakauer");

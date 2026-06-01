@@ -50,7 +50,7 @@ function alignInspirationTile({ image, major, minor, readMore }: InspirationTile
 }
 
 function addInspirationTile(blog: Blog): InspirationTile {
-    const image = addScrollImage(blog.tileImage());
+    const image = addScrollImage(blog.thumbnailPath());
     const major = addScrollText(blog.title);
     const minor = addScrollText(blog.subtitle);
     const readMore = addScrollText("Read more");

@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const evolvingABrandWithHeartBlog = new Blog(
-    "12-evolving-a-brand-with-heart", // -
-    "EVOLVING A BRAND WITH HEART",
+    "EVOLVING A BRAND WITH HEART", // -
     "Why stewardship is the most important marketing decision a growing organization can make.",
     (b: Blog) => {
         b.addParagraph("By Bethlyn Krakauer");

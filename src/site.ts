@@ -43,7 +43,7 @@ const pillarPages = Object.entries(pillars).map(([pageName, addPage]) => ({
 
 const blogPages = blogs.map((blog) => ({
     addPage: blog.add,
-    route: routeOf(["blog", blog.slug]),
+    route: routeOf(["blog", blog.name]),
     sideItemsShown: false,
 }));
 

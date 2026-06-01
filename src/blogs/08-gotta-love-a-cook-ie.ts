@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const gottaLoveACookIeBlog = new Blog(
-    "08-gotta-love-a-cook-ie", // -
-    "GOTTA LOVE A COOK-IE",
+    "GOTTA LOVE A COOK-IE", // -
     "How a secret recipe works to bring relationships to a whole new level.",
     (b: Blog) => {
         b.addParagraph("By Bethlyn Krakauer");

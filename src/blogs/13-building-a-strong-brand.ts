@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const buildingAStrongBrandBlog = new Blog(
-    "13-building-a-strong-brand", // -
-    "BUILDING A STRONG BRAND",
+    "BUILDING A STRONG BRAND", // -
     "How to know if your brand measures up and when it’s time to evolve.",
     (b: Blog) => {
         b.addParagraph("By Bethlyn Krakauer");

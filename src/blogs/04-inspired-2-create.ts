@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const inspired2CreateBlog = new Blog(
-    "04-inspired-2-create", // -
-    "INSPIRED 2 CREATE",
+    "INSPIRED 2 CREATE", // -
     "A painting inspired by the i.e. design logo combines oil paints, ground up crayons, and a lego.",
     (b: Blog) => {
         b.addParagraph("By Lee Lipscomb");

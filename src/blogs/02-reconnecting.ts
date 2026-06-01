@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const reconnectingBlog = new Blog(
-    "02-reconnecting", // -
-    "RECONNECTING",
+    "RECONNECTING", // -
     "How uncertain times led to a homecoming for i.e. design's senior designer.",
     (b: Blog) => {
         b.addParagraph("By Lee Lipscomb");

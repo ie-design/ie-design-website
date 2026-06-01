@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const remixBlog = new Blog(
-    "07-remix", // -
-    "REMIX",
+    "REMIX", // -
     "A behind-the-scenes look at how we transformed classic memory carriers into objects of art.",
     (b: Blog) => {
         b.addParagraph("By Lee Lipscomb");

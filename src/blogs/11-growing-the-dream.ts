@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const growingTheDreamBlog = new Blog(
-    "11-growing-the-dream", // -
-    "GROWING THE DREAM",
+    "GROWING THE DREAM", // -
     "Building a bold brand for an emerging mental health collective.",
     (b: Blog) => {
         b.addParagraph("By Bethlyn Krakauer");

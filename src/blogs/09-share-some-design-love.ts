@@ -1,8 +1,7 @@
 import { Blog } from "./blog";
 
 export const shareSomeDesignLoveBlog = new Blog(
-    "09-share-some-design-love", // -
-    "SHARE SOME DESIGN LOVE",
+    "SHARE SOME DESIGN LOVE", // -
     "The i.e. design promo journals encourage clients to sketch their big ideas and capture their dreams.",
     (b: Blog) => {
         b.addParagraph("By Lee Lipscomb");
