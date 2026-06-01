@@ -1,22 +1,11 @@
-import { newStudioNewViewBlog } from "../blogs/01-new-studio-new-view";
-import { reconnectingBlog } from "../blogs/02-reconnecting";
-import { theViewFromInsideBlog } from "../blogs/03-the-view-from-inside";
-import { inspired2CreateBlog } from "../blogs/04-inspired-2-create";
-import { brandingFromTheNameUpBlog } from "../blogs/05-branding-from-the-name-up";
-import { rebrandingAFamilyBusinessBlog } from "../blogs/06-rebranding-a-family-business";
-import { remixBlog } from "../blogs/07-remix";
-import { gottaLoveACookIeBlog } from "../blogs/08-gotta-love-a-cook-ie";
-import { shareSomeDesignLoveBlog } from "../blogs/09-share-some-design-love";
-import { theStartOfSomethingYumIeBlog } from "../blogs/10-the-start-of-something-yum-ie";
-import { growingTheDreamBlog } from "../blogs/11-growing-the-dream";
 import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 
 import { ieBlue } from "../constants";
-import { setNavHidden } from "../nav";
 import { aligningWithGapsX, aligningWithGapsY, posX, px, sizeX, styleText } from "../layout";
 import { cleanLastPage, registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape } from "../scroll";
+import { site } from "../site";
 import { interlaced } from "../util";
 
 const INSPIRATION_TILE_WIDTH_PROPORTION = 0.85;
@@ -68,10 +57,7 @@ function addInspirationTile(blog: Blog): InspirationTile {
 
     readMore.style.cursor = "pointer";
     function goToBlog() {
-        cleanLastPage();
-        history.pushState({}, "", "/blog/" + blog.slug);
-        setNavHidden(true);
-        blog.add();
+        site.openPage(blog.add);
     }
     readMore.onclick = goToBlog;
     image.onclick = goToBlog;
