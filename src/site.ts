@@ -298,7 +298,7 @@ export class Site {
     addCopyright = () => {
         const copyright = document.createElement("span");
         copyright.style.position = "absolute";
-        copyright.innerText = "©2025 i.e. design, inc.";
+        copyright.innerText = "©2026 i.e. design, inc.";
         copyright.style.whiteSpace = "nowrap";
         copyright.style.transition = "left 0.4s ease";
         body.appendChild(copyright);
