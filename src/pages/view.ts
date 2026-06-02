@@ -1,7 +1,8 @@
-import { SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, isLandscape, px, sizeX } from "../layout";
+import { ieBlue, SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION } from "../constants";
+import { aligningWithGapsX, aligningWithGapsY, isLandscape, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, px, sizeX, sizeY, styleText } from "../layout";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
-import { addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollX, centerWithinScrollY, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleScrollTextSquare, TextSquare } from "../scroll";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollX, centerWithinScrollY, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleScrollTextSquare, TextSquare } from "../scroll";
+import { pillars } from "../site";
 
 let homeFromIntro: SVGSVGElement | undefined;
 export function setHomeFromIntro(home: SVGSVGElement) {
@@ -27,10 +28,10 @@ export function addViewPage() {
     const textTile2 = addScrollTextSquare("WE BRING VISION, INSIGHT, AND CLARITY TO EVERY PROJECT", "Successful design starts with identifying a client's needs, goals, and aspirations. Our objectivity shines light on what others have missed. We have the ability to see and interpret the inner workings, culture, and nuances of our client's world. We ask questions – lots of questions. Then listen until we gain the deep understanding necessary to build the solid foundation that any enduring brand needs.", "Our small but mighty team brings together a wide range of talents and perspectives, plus a nice list of awards. We throw our hearts into our work and are known for our fierce commitment to the trusted, long-term partnerships we form. For us, it's personal.");
     const skyward = addScrollImage("view/skyward.jpg");
     const textTile3 = addScrollTextSquare("WE SEE WORK IN A DIFFERENT LIGHT", "People like to ask about our design process. The truth is that the approach to each project varies, because each client and their needs are unique. Creative breakthroughs don't follow the clock. They can happen any time of day – or night. Whether an epiphany is illuminated in a scribble, a dream, or as the clouds roll by, we embrace the fact that each project takes on a life of its own.", "What's constant is our ability to listen and focus, to analyze and connect dots, and to remain curious. The most rewarding projects are with clients who value the balance between pushing forward and allowing time for the perfect solution to emerge. That's our happy place.");
+    const nextPillarButton = addNextPillarButton("work");
+    const scrollPadding = addScrollPadding();
 
     const textTiles = [textTile1, textTile2, textTile3];
-
-    const scrollPadding = addScrollPadding();
 
     registerUpdateLayout(() => {
         const HOME_HORIZON_PAD = 0.2;
@@ -48,12 +49,15 @@ export function addViewPage() {
             centerWithinScrollY(insightClarity, 1);
             centerWithinScrollY(skyward, 1);
 
-            for (const textTile of textTiles)
+            for (const textTile of textTiles) {
                 styleScrollTextSquare(
                     textTile, // -
                     { letterSpacing: 0.0046 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.09 * s },
                     { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.03 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.05 * s }
                 );
+            }
+
+            styleNextPillarButton(nextPillarButton, s);
 
             const [elementAlignments, _] = aligningWithGapsX([
                 home, // -
@@ -73,7 +77,9 @@ export function addViewPage() {
                 skyward,
                 IMAGE_TEXT_SQUARE_PAD * s,
                 textTile3.major,
-                IMAGE_TEXT_SQUARE_PAD * s,
+                NEXT_PILLAR_BUTTON_PAD * s,
+                nextPillarButton,
+                NEXT_PILLAR_BUTTON_PAD * s,
                 scrollPadding,
             ]);
 
@@ -82,6 +88,8 @@ export function addViewPage() {
             }
 
             for (const textTile of textTiles) alignScrollTextSquare(textTile, 0.03 * s, 0.03 * s);
+
+            layoutNextPillarButton(nextPillarButton, s);
         } else {
             resizeScrollContainerPortrait();
             const s = getScrollWidth();
@@ -133,6 +141,7 @@ export function addViewPage() {
                 MOBILE_PAD * s,
                 ...mobileTile(textTile3),
                 MOBILE_PAD * s,
+                // nextPillarButton,
                 scrollPadding,
             ]);
             for (const { element, offset } of elementAlignments) {

@@ -1,6 +1,6 @@
 import { blogs } from "./blogs/blogs";
 import { body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen } from "./constants";
-import { centerElementX, centerElementY, centerWithGapY, isLandscape, px, setImageHeight, setImageWidth, styleText } from "./layout";
+import { centerElementX, centerElementY, centerWithGapY, isLandscape, px, setImageHeight, setImageWidth, sizeX, styleText } from "./layout";
 import { Modal } from "./modal";
 import { cleanLastPage, registerUpdateLayout, shouldElementOutlastPage } from "./page";
 import { addConnectPage } from "./pages/connect";
@@ -19,7 +19,7 @@ interface Page {
     sideItemsShown: boolean;
 }
 
-const pillars = {
+export const pillars = {
     view: addViewPage,
     work: addWorkPage,
     evolution: addEvolutionPage,
@@ -495,7 +495,7 @@ export class Site {
     openImage = async (src: string) => {
         const bigImage = this.bigImage;
         if (!bigImage) return;
-        
+
         bigImage.src = src;
         await bigImage.decode();
         this.imageModal?.beginOpen();

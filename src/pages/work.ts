@@ -1,7 +1,7 @@
 import { body, bodySig } from "../constants";
-import { aligningWithGapsX, posX, px, setImageHeight, setImageWidth, sizeX, sizeY } from "../layout";
+import { aligningWithGapsX, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, posX, px, setImageHeight, setImageWidth, sizeX, sizeY } from "../layout";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout, runAllAndClear } from "../page";
-import { TextSquare, addScrollImage, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer, styleScrollTextSquare } from "../scroll";
+import { TextSquare, addNextPillarButton, addScrollImage, addScrollPadding, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer, styleNextPillarButton, styleScrollTextSquare } from "../scroll";
 import { Signal, effect } from "../signal";
 import { Spring, animateSpring } from "../spring";
 import { spaceToFile } from "../util";
@@ -106,7 +106,10 @@ export function addWorkPage() {
         let closestDist = Infinity;
         for (let i = 0; i < workItems.length; i++) {
             const dist = Math.abs(posX(workItems[i].textSquare.major) - center);
-            if (dist < closestDist) { closestDist = dist; closest = i; }
+            if (dist < closestDist) {
+                closestDist = dist;
+                closest = i;
+            }
         }
         currentWorkIndex = closest;
         updateTabTargets();
@@ -116,8 +119,10 @@ export function addWorkPage() {
         updateCurrentWork();
     });
 
-    const cleanupLastLayout = new Set<() => void>();
+    const nextPillarButton = addNextPillarButton("evolution");
+    const scrollPadding = addScrollPadding();
 
+    const cleanupLastLayout = new Set<() => void>();
     registerUpdateLayout(() => {
         runAllAndClear(cleanupLastLayout);
 
@@ -159,6 +164,46 @@ export function addWorkPage() {
                 };
             }
             updateCurrentWork();
+
+            styleNextPillarButton(nextPillarButton, s);
+
+            nextPillarButton.style.display = "block";
+            scrollPadding.style.display = "block";
+
+            for (const workItem of workItems) {
+                styleScrollTextSquare(workItem.textSquare, { letterSpacing: 0.011 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, width: 1 * s, lineHeight: 0.09 * s }, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, width: 1 * s, lineHeight: 0.05 * s });
+                centerWithinScrollY(workItem.image1, 1);
+                centerWithinScrollY(workItem.image2, 1);
+            }
+
+            const items = [];
+            for (const workItem of workItems) {
+                items.push(
+                    workItem.textSquare.major, // -
+                    0.2 * s,
+                    workItem.image1,
+                    0.15 * s,
+                    workItem.image2,
+                    0.22 * s
+                );
+            }
+
+            items.pop();
+            items.push(
+                NEXT_PILLAR_BUTTON_PAD * s, // -
+                nextPillarButton,
+                NEXT_PILLAR_BUTTON_PAD * s,
+                scrollPadding
+            );
+            const [elementAlignments, _] = aligningWithGapsX(items);
+
+            for (const { element, offset } of elementAlignments) {
+                element.style.left = px(offset);
+            }
+
+            for (const workItem of workItems) alignScrollTextSquare(workItem.textSquare, 0.01 * s, 0.01 * s);
+
+            layoutNextPillarButton(nextPillarButton, s);
         } else {
             for (let i = 0; i < workTabs.length; i++) {
                 const { tabImage, spring, springSig } = workTabs[i];
@@ -183,6 +228,9 @@ export function addWorkPage() {
                     }); // ZZZZ bit hacky
                 };
             }
+
+            nextPillarButton.style.display = "none";
+            scrollPadding.style.display = "none";
         }
 
         cleanupLastLayout.add(() => {
@@ -193,30 +241,5 @@ export function addWorkPage() {
                 tabImage.onclick = () => {};
             }
         });
-
-        for (const workItem of workItems) {
-            styleScrollTextSquare(workItem.textSquare, { letterSpacing: 0.011 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, width: 1 * s, lineHeight: 0.09 * s }, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, width: 1 * s, lineHeight: 0.05 * s });
-            centerWithinScrollY(workItem.image1, 1);
-            centerWithinScrollY(workItem.image2, 1);
-        }
-
-        const items = [];
-        for (const workItem of workItems) {
-            items.push(
-                workItem.textSquare.major, // -
-                0.2 * s,
-                workItem.image1,
-                0.15 * s,
-                workItem.image2,
-                0.22 * s
-            );
-        }
-        const [elementAlignments, _] = aligningWithGapsX(items);
-
-        for (const { element, offset } of elementAlignments) {
-            element.style.left = px(offset);
-        }
-
-        for (const workItem of workItems) alignScrollTextSquare(workItem.textSquare, 0.01 * s, 0.01 * s);
     });
 }

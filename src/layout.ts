@@ -104,3 +104,8 @@ export function styleText(scrollText: HTMLElement, s: TextDetails) {
     if (s.width) scrollText.style.width = px(s.width);
     scrollText.style.lineHeight = px(s.lineHeight);
 }
+
+export const NEXT_PILLAR_BUTTON_PAD = 0.1;
+export function layoutNextPillarButton(nextPillarButton: HTMLElement, s: number) {
+    nextPillarButton.style.top = px((s - sizeY(nextPillarButton)) / 2);
+}

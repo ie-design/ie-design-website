@@ -2,9 +2,9 @@ import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 
 import { ieBlue, ieGreen } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
+import { aligningWithGapsX, aligningWithGapsY, LayoutItem, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
 import { cleanLastPage, registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape } from "../scroll";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, styleNextPillarButton } from "../scroll";
 import { site } from "../site";
 import { colorOnHover, interlaced } from "../util";
 
@@ -72,6 +72,7 @@ export function addInspirationPage() {
 
     const tiles = blogs.toReversed().map(addInspirationTile);
 
+    const nextPillarButton = addNextPillarButton("connect");
     const scrollPadding = addScrollPadding();
 
     registerUpdateLayout(() => {
@@ -83,9 +84,17 @@ export function addInspirationPage() {
 
         for (const tile of tiles) styleInspirationTile(tile);
 
-        const tileImagesWithGaps = interlaced(
+        styleNextPillarButton(nextPillarButton, s);
+
+        const tileImagesWithGaps: LayoutItem[] = interlaced(
             tiles.map((t) => t.image),
             0.1 * s
+        );
+        tileImagesWithGaps.push(
+            NEXT_PILLAR_BUTTON_PAD * s, //
+            nextPillarButton,
+            NEXT_PILLAR_BUTTON_PAD * s,
+            scrollPadding
         );
         const [elementAlignments, _] = aligningWithGapsX([inspiration, 0.25 * s, ...tileImagesWithGaps]);
 
@@ -98,7 +107,8 @@ export function addInspirationPage() {
 
         for (const tile of tiles) alignInspirationTile(tile);
 
+        layoutNextPillarButton(nextPillarButton, s);
+
         const lastImage = tiles[tiles.length - 1].image;
-        scrollPadding.style.left = px(posX(lastImage) + sizeX(lastImage) + 0.1 * s);
     });
 }

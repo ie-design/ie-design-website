@@ -1,7 +1,7 @@
 import { fadeInAnimation, gray, ieGreen } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, BoxElement, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
+import { aligningWithGapsX, aligningWithGapsY, BoxElement, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
 import { appendChildForPage, registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer } from "../scroll";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer, styleNextPillarButton } from "../scroll";
 
 interface Quote {
     quote: HTMLParagraphElement;
@@ -90,7 +90,14 @@ export function addEvolutionPage() {
     const promos: HTMLImageElement[] = [];
     for (let i = 1; i <= 5; i++) promos.push(addScrollImage(`evolution/promo-${i}.jpg`));
 
-    const quotes = [addQuote("Our annual promo is always grounded in our identity but it's fun to push limits and reinvent ourselves each year. The best part is <strong>hearing what our clients have to say.</strong>", "BETHLYN KRAKAUER", "Founder, i.e. design, inc."), addQuote("I love how you do stuff. I'm finding that these types of messages are really <strong>transforming relationships</strong> with people. They are just dreamy.", "DEBRA SCHATZKI", "Founder, BPP Wealth Solutions LLC"), addQuote("I see a lot of this special quality in your work. It's not just about being intentional. You always bring in an element of <strong>surprise and delight.</strong>", "JOSH KRAKAUER", "Founder, Sculpt"), addQuote("Your approach works so well because it is really <strong>personal</strong> and equally <strong>professional.</strong>", "ANN SULLIVAN", "Founder, Ann Sullivan Organizing"), addQuote("You truly understand the unique positioning of a prospective client and are able to <strong>tell their story</strong> exactly as it should be told.", "DAVID YUN", "Principal, Varident LLC"), addQuote("Beth is quite frankly one of the <strong>most talented designers</strong> that I have ever had the privilege to work with. She always has a special way of making everything she touches turn to gold!", "DAVID RUSH", "President, ENV")];
+    const quotes = [
+        addQuote("Our annual promo is always grounded in our identity but it's fun to push limits and reinvent ourselves each year. The best part is <strong>hearing what our clients have to say.</strong>", "BETHLYN KRAKAUER", "Founder, i.e. design, inc."), // -
+        addQuote("I love how you do stuff. I'm finding that these types of messages are really <strong>transforming relationships</strong> with people. They are just dreamy.", "DEBRA SCHATZKI", "Founder, BPP Wealth Solutions LLC"),
+        addQuote("I see a lot of this special quality in your work. It's not just about being intentional. You always bring in an element of <strong>surprise and delight.</strong>", "JOSH KRAKAUER", "Founder, Sculpt"),
+        addQuote("Your approach works so well because it is really <strong>personal</strong> and equally <strong>professional.</strong>", "ANN SULLIVAN", "Founder, Ann Sullivan Organizing"),
+        addQuote("You truly understand the unique positioning of a prospective client and are able to <strong>tell their story</strong> exactly as it should be told.", "DAVID YUN", "Principal, Varident LLC"),
+        addQuote("Beth is quite frankly one of the <strong>most talented designers</strong> that I have ever had the privilege to work with. She always has a special way of making everything she touches turn to gold!", "DAVID RUSH", "President, ENV"),
+    ];
 
     const timelineItems = [
         { element: evolution, offsetFactor: 0.06 }, // -
@@ -103,6 +110,7 @@ export function addEvolutionPage() {
         return { timelineLine, timelineItem };
     });
 
+    const nextPillarButton = addNextPillarButton("inspiration");
     const scrollPadding = addScrollPadding();
 
     registerUpdateLayout(() => {
@@ -116,6 +124,8 @@ export function addEvolutionPage() {
         for (const promo of promos) centerWithinScrollY(promo, 1);
         for (const quote of quotes) styleQuote(quote);
 
+        styleNextPillarButton(nextPillarButton, s);
+
         const items: (BoxElement | number)[] = [evolution, 0.2 * s, evolutionHistory];
 
         const maxLength = Math.max(quotes.length, promos.length);
@@ -123,7 +133,12 @@ export function addEvolutionPage() {
             if (i < quotes.length) items.push(0.3 * s, quotes[i].quote);
             if (i < promos.length) items.push(0.3 * s, promos[i]);
         }
-        items.push(0.2 * s, scrollPadding);
+        items.push(
+            NEXT_PILLAR_BUTTON_PAD * s, // -
+            nextPillarButton,
+            NEXT_PILLAR_BUTTON_PAD * s,
+            scrollPadding
+        );
 
         const [elementAlignments, _] = aligningWithGapsX(items);
 
@@ -145,5 +160,7 @@ export function addEvolutionPage() {
             timelineLine.style.top = px(posY(element) + sizeY(element) + offset);
             timelineLine.style.height = px(sizeY(scrollContainer) - (posY(element) + sizeY(element)) - offset);
         }
+
+        layoutNextPillarButton(nextPillarButton, s);
     });
 }

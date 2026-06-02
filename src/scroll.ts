@@ -1,8 +1,8 @@
 import { body, fadeInAnimation, ieGreen, ieBlue } from "./constants";
 import { aligningWithGapsY, isLandscape, px, styleText, TextDetails } from "./layout";
 import { appendChildForPage, awaitLayout } from "./page";
-import { site } from "./site";
-import { createElementSVG, fetchSVG } from "./util";
+import { pillars, site } from "./site";
+import { colorOnHover, createElementSVG, fetchSVG } from "./util";
 
 export interface TextSquare {
     major: HTMLElement;
@@ -149,9 +149,22 @@ export function addScrollTextSquare(majorText: string, ...minorTexts: string[]):
     return { major, minors };
 }
 
+export function addNextPillarButton(pageName: keyof typeof pillars) {
+    const nextPillarButton = addScrollText(pageName.toUpperCase() + " →");
+    nextPillarButton.style.cursor = "pointer";
+    nextPillarButton.style.whiteSpace = "nowrap";
+    nextPillarButton.onclick = () => site.openPage(pillars[pageName]);
+    colorOnHover(nextPillarButton, ieBlue, ieGreen);
+    return nextPillarButton;
+}
+
 export function styleScrollTextSquare({ major, minors }: TextSquare, majorTextDetails: TextDetails, minorTextDetails: TextDetails) {
     styleText(major, majorTextDetails);
     for (const minor of minors) styleText(minor, minorTextDetails);
+}
+
+export function styleNextPillarButton(nextPillarButton: HTMLElement, s: number) {
+    styleText(nextPillarButton, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.04 * s, lineHeight: 0.04 * s });
 }
 
 export function getScrollHeight() {
