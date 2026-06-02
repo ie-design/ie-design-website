@@ -5,6 +5,8 @@ const pageCleanups = new Set<() => void>();
 const awaitBeforeLayouts = new Set<Promise<void>>();
 const beforeLayouts = new Set<() => void>();
 
+awaitBeforeLayouts.add(Promise.all([...document.fonts].map((f) => f.load())).then(() => {}));
+
 export function awaitLayout(promise: Promise<void>) {
     awaitBeforeLayouts.add(promise);
 }
