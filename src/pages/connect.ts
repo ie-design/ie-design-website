@@ -63,6 +63,7 @@ export function addConnectPage() {
 
         for (const icon of icons) {
             icon.style.width = px(s * 0.055);
+            icon.style.height = px(s * 0.055);
             const lastText = texts[texts.length - 1];
             icon.style.top = px(posY(lastText) + sizeY(lastText) + 0.03 * s);
         }
