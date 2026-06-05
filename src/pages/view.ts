@@ -1,8 +1,7 @@
-import { ieBlue, SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, isLandscape, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, px, sizeX, sizeY, styleText } from "../layout";
+import { SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION } from "../constants";
+import { aligningWithGapsX, aligningWithGapsY, isLandscape, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, px } from "../layout";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
-import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollX, centerWithinScrollY, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleScrollTextSquare, TextSquare } from "../scroll";
-import { pillars } from "../site";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollX, centerWithinScrollY, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleNextPillarButtonMobile, styleScrollTextSquare, TextSquare } from "../scroll";
 
 let homeFromIntro: SVGSVGElement | undefined;
 export function setHomeFromIntro(home: SVGSVGElement) {
@@ -52,8 +51,9 @@ export function addViewPage() {
             for (const textTile of textTiles) {
                 styleScrollTextSquare(
                     textTile, // -
-                    { letterSpacing: 0.0046 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.09 * s },
-                    { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.03 * s, width: SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s, lineHeight: 0.05 * s }
+                    { letterSpacing: 0.0046 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * s, lineHeight: 0.09 * s },
+                    { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.03 * s, lineHeight: 0.05 * s },
+                    SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s
                 );
             }
 
@@ -104,8 +104,9 @@ export function addViewPage() {
             for (const textTile of textTiles)
                 styleScrollTextSquare(
                     textTile, // -
-                    { letterSpacing: 0.02 * s, fontWeight: 350, color: "#B3B3B3", fontSize: 0.06 * s, width: 1 * s, lineHeight: 0.08 * s },
-                    { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.028 * s, width: 1 * s, lineHeight: 0.05 * s }
+                    { letterSpacing: 0.003 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.06 * s, lineHeight: 0.08 * s },
+                    { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.028 * s, lineHeight: 0.05 * s },
+                    1 * s
                 );
 
             const TEXT_TILE_WIDTH = 0.85;
@@ -121,6 +122,9 @@ export function addViewPage() {
                 for (const minor of textTile.minors) x.push(0.04 * s, minor);
                 return x;
             }
+
+            styleNextPillarButtonMobile(nextPillarButton, s);
+            centerWithinScrollX(nextPillarButton, 0.2);
 
             const [elementAlignments, _] = aligningWithGapsY([
                 home, // -
@@ -140,8 +144,9 @@ export function addViewPage() {
                 skyward,
                 MOBILE_PAD * s,
                 ...mobileTile(textTile3),
-                MOBILE_PAD * s,
-                // nextPillarButton,
+                NEXT_PILLAR_BUTTON_PAD * s,
+                nextPillarButton,
+                NEXT_PILLAR_BUTTON_PAD * s,
                 scrollPadding,
             ]);
             for (const { element, offset } of elementAlignments) {

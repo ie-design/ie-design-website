@@ -10,7 +10,7 @@ export function createElementSVG<K extends keyof SVGElementTagNameMap>(qualified
     return document.createElementNS("http://www.w3.org/2000/svg", qualifiedName);
 }
 
-export function interlaced<T, Within>(items: T[], within: Within) {
+export function interlaceWithBetween<T, Within>(items: T[], within: Within) {
     const itemsInterlaced = [];
     for (const item of items) {
         itemsInterlaced.push(item);
@@ -75,3 +75,14 @@ export const makePolyline = (svg: SVGSVGElement, strokeWidth: number) => () => {
     svg.appendChild(line);
     return line;
 };
+
+export function interleaveArrays<A, B>(...arrays: (A | B)[][]): (A | B)[] {
+    const result: (A | B)[] = [];
+    const maxLength = Math.max(...arrays.map((a) => a.length));
+    for (let i = 0; i < maxLength; i++) {
+        for (const array of arrays) {
+            if (i < array.length) result.push(array[i]);
+        }
+    }
+    return result;
+}

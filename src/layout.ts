@@ -1,17 +1,19 @@
-import { interlaced } from "./util";
+import { interlaceWithBetween } from "./util";
 
 interface ElementAlignment {
     element: BoxElement;
     offset: number;
 }
 
-export interface TextDetails {
+export interface TextStyle {
     letterSpacing: number;
     fontWeight: number;
     color: string;
     fontSize: number;
-    width?: number;
-    lineHeight: number;
+}
+
+export interface TextDetails extends TextStyle {
+    lineHeight: number; // multi-line text always sets an explicit line height
 }
 
 export type BoxElement = HTMLElement | SVGSVGElement;
@@ -59,7 +61,6 @@ export function sizeY(element: BoxElement) {
     return element instanceof HTMLElement ? element.offsetHeight : element.clientHeight;
 }
 
-// ZZZZ want a short hand for common simple use
 export const aligningWithGapsX = axisAligningWithGaps(sizeX);
 export const aligningWithGapsY = axisAligningWithGaps(sizeY);
 
@@ -68,7 +69,7 @@ export function isLandscape() {
 }
 
 export function centerWithGapY(elements: HTMLElement[], gap: number, center: number) {
-    const elementsWithGaps = interlaced(elements, gap);
+    const elementsWithGaps = interlaceWithBetween(elements, gap);
     const [elementAlignments, totalHeight] = aligningWithGapsY(elementsWithGaps);
 
     for (const { element, offset } of elementAlignments) {
@@ -94,15 +95,58 @@ export function setImageHeight(image: HTMLImageElement, height: number) {
     image.style.width = px((height / image.naturalHeight) * image.naturalWidth);
 }
 
-export function styleText(scrollText: HTMLElement, s: TextDetails) {
+function applyTextStyle(scrollText: HTMLElement, s: TextStyle) {
     scrollText.style.fontFamily = "Spartan";
     scrollText.style.position = "absolute";
     scrollText.style.fontWeight = "" + s.fontWeight;
     scrollText.style.color = s.color;
     scrollText.style.letterSpacing = px(s.letterSpacing);
     scrollText.style.fontSize = px(s.fontSize);
-    if (s.width) scrollText.style.width = px(s.width);
+}
+
+// Multi-line text: wraps within an externally-set width (setSizeX) and always has an explicit line height.
+export function styleText(scrollText: HTMLElement, s: TextDetails) {
+    applyTextStyle(scrollText, s);
     scrollText.style.lineHeight = px(s.lineHeight);
+}
+
+// Single-line text: never wraps and takes no line height, so its box is font-intrinsic and hugs the text.
+export function styleSingleLineText(scrollText: HTMLElement, s: TextStyle) {
+    applyTextStyle(scrollText, s);
+    scrollText.style.lineHeight = "normal";
+    scrollText.style.whiteSpace = "nowrap";
+}
+
+export function setSizeX(element: BoxElement, value: number) {
+    element.style.width = px(value);
+}
+
+export function setSizeY(element: BoxElement, value: number) {
+    element.style.height = px(value);
+}
+
+export function setPosX(element: BoxElement, value: number) {
+    element.style.left = px(value);
+}
+
+export function setPosY(element: BoxElement, value: number) {
+    element.style.top = px(value);
+}
+
+// width and top offset of a text element's last rendered line, both position-independent (depend only on wrapping)
+export function lastLineMetrics(textEl: HTMLElement) {
+    const range = document.createRange();
+    range.selectNodeContents(textEl);
+    const rects = range.getClientRects();
+    const first = rects[0];
+    const last = rects[rects.length - 1];
+    return { width: last.width, top: last.top - first.top };
+}
+
+export function layout(size: () => void, position: () => void, postPosition?: () => void) {
+    size();
+    position();
+    postPosition?.();
 }
 
 export const NEXT_PILLAR_BUTTON_PAD = 0.1;

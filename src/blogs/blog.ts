@@ -1,4 +1,4 @@
-import { aligningWithGapsY, LayoutItem, px, sizeX, styleText } from "../layout";
+import { aligningWithGapsY, LayoutItem, px, setSizeX, sizeX, styleText } from "../layout";
 import { ieBlue, ieGreen } from "../constants";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollText, addScrollVideo, getScrollHeight, resizeScrollContainerFull } from "../scroll";
@@ -146,9 +146,18 @@ export class Blog {
 
             for (const video of this.videos) video.style.width = px(fit);
 
-            for (const head of this.heads) styleText(head, { letterSpacing: 0.0002 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.025 * s, width: fit, lineHeight: 0.02 * s });
-            for (const subhead of this.subheads) styleText(subhead, { letterSpacing: 0.0002 * s, fontWeight: 600, color: "#000000", fontSize: 0.011 * s, width: fit, lineHeight: 0.02 * s });
-            for (const paragraph of this.paragraphs) styleText(paragraph, { letterSpacing: 0.0002 * s, fontWeight: 350, color: "#000000", fontSize: 0.011 * s, width: fit, lineHeight: 0.019 * s });
+            for (const head of this.heads) {
+                styleText(head, { letterSpacing: 0.0002 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.025 * s, lineHeight: 0.02 * s });
+                setSizeX(head, fit);
+            }
+            for (const subhead of this.subheads) {
+                styleText(subhead, { letterSpacing: 0.0002 * s, fontWeight: 600, color: "#000000", fontSize: 0.011 * s, lineHeight: 0.02 * s });
+                setSizeX(subhead, fit);
+            }
+            for (const paragraph of this.paragraphs) {
+                styleText(paragraph, { letterSpacing: 0.0002 * s, fontWeight: 350, color: "#000000", fontSize: 0.011 * s, lineHeight: 0.019 * s });
+                setSizeX(paragraph, fit);
+            }
 
             const itemsScaled = this.items.map((item) => (typeof item === "number" ? item * s : item));
             const [elementAlignments, _] = aligningWithGapsY(itemsScaled);

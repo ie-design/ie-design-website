@@ -171,7 +171,7 @@ export function addWorkPage() {
             scrollPadding.style.display = "block";
 
             for (const workItem of workItems) {
-                styleScrollTextSquare(workItem.textSquare, { letterSpacing: 0.011 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, width: 1 * s, lineHeight: 0.09 * s }, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, width: 1 * s, lineHeight: 0.05 * s });
+                styleScrollTextSquare(workItem.textSquare, { letterSpacing: 0.011 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, lineHeight: 0.09 * s }, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, lineHeight: 0.05 * s }, 1 * s);
                 centerWithinScrollY(workItem.image1, 1);
                 centerWithinScrollY(workItem.image2, 1);
             }

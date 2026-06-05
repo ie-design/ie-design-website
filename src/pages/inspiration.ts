@@ -2,11 +2,11 @@ import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 
 import { ieBlue, ieGreen } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, LayoutItem, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
+import { aligningWithGapsX, aligningWithGapsY, LayoutItem, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, posX, posY, px, setSizeX, sizeX, sizeY, styleText } from "../layout";
 import { cleanLastPage, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, styleNextPillarButton } from "../scroll";
 import { site } from "../site";
-import { colorOnHover, interlaced } from "../util";
+import { colorOnHover, interlaceWithBetween } from "../util";
 
 const INSPIRATION_TILE_WIDTH_PROPORTION = 0.85;
 
@@ -20,9 +20,10 @@ interface InspirationTile {
 function styleInspirationTile({ image, major, minor, readMore }: InspirationTile) {
     const s = getScrollHeight();
 
-    styleText(major, { letterSpacing: 0.001 * s, fontWeight: 400, color: "#000000", fontSize: 0.036 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.09 * s });
-    styleText(minor, { letterSpacing: 0.0005 * s, fontWeight: 350, color: "#000000", fontSize: 0.027 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.05 * s });
-    styleText(readMore, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.03 * s, width: INSPIRATION_TILE_WIDTH_PROPORTION * s, lineHeight: 0.05 * s });
+    styleText(major, { letterSpacing: 0.001 * s, fontWeight: 400, color: "#000000", fontSize: 0.036 * s, lineHeight: 0.09 * s });
+    styleText(minor, { letterSpacing: 0.0005 * s, fontWeight: 350, color: "#000000", fontSize: 0.027 * s, lineHeight: 0.05 * s });
+    styleText(readMore, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.03 * s, lineHeight: 0.05 * s });
+    for (const text of [major, minor, readMore]) setSizeX(text, INSPIRATION_TILE_WIDTH_PROPORTION * s);
 
     image.style.height = px(0.55 * s);
 }
@@ -86,7 +87,7 @@ export function addInspirationPage() {
 
         styleNextPillarButton(nextPillarButton, s);
 
-        const tileImagesWithGaps: LayoutItem[] = interlaced(
+        const tileImagesWithGaps: LayoutItem[] = interlaceWithBetween(
             tiles.map((t) => t.image),
             0.1 * s
         );

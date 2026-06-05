@@ -1,5 +1,5 @@
 import { gray, ieGreen } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, posX, posY, px, sizeX, sizeY, styleText } from "../layout";
+import { aligningWithGapsX, aligningWithGapsY, posX, posY, px, setSizeX, sizeX, sizeY, styleText } from "../layout";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape } from "../scroll";
 import { colorOnHoverSVGFill } from "../util";
@@ -39,8 +39,12 @@ export function addConnectPage() {
         connect.style.width = px(width);
         centerWithinScrollY(letsMeet, 0.8);
 
-        for (const text of texts) styleText(text, { letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.028 * s, width, lineHeight: 0.05 * s });
-        styleText(who, { letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.028 * s, width: 1 * s, lineHeight: 0.05 * s });
+        for (const text of texts) {
+            styleText(text, { letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.028 * s, lineHeight: 0.05 * s });
+            setSizeX(text, width);
+        }
+        styleText(who, { letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.028 * s, lineHeight: 0.05 * s });
+        setSizeX(who, 1 * s);
 
         const [elementAlignments, _] = aligningWithGapsY([
             connect, // -
