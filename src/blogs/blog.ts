@@ -155,7 +155,7 @@ export class Blog {
                 setSizeX(subhead, fit);
             }
             for (const paragraph of this.paragraphs) {
-                styleText(paragraph, { letterSpacing: 0.0002 * s, fontWeight: 350, color: "#000000", fontSize: 0.011 * s, lineHeight: 0.019 * s });
+                styleText(paragraph, { letterSpacing: 0.0002 * s, fontWeight: 300, color: "#000000", fontSize: 0.011 * s, lineHeight: 0.019 * s });
                 setSizeX(paragraph, fit);
             }
 

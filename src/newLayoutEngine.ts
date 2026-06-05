@@ -85,14 +85,58 @@ export function gap(fraction: number): Node {
     return mk({ spacer: fraction });
 }
 
+function aspectRatio(image: BoxElement): number {
+    if (image instanceof SVGSVGElement) {
+        const vb = image.viewBox.baseVal;
+        return vb.width / vb.height;
+    }
+    if (image instanceof HTMLImageElement) return image.naturalWidth / image.naturalHeight;
+    return 1;
+}
+
 // Drive an element's height (cross axis of an X-flow) to a fraction of the scale and center it on that axis.
-export function imageHeight(image: BoxElement, scale: number): Node {
-    return el(image, { style: (c) => setSizeY(image, scale * c.s), align: Align.Center });
+export function imageWithHeight(image: BoxElement, scale: number): Node {
+    return el(image, {
+        style: (c) => {
+            const h = scale * c.s;
+            setSizeY(image, h);
+            setSizeX(image, h * aspectRatio(image));
+        },
+        align: Align.Center,
+    });
 }
 
 // Drive an element's width (cross axis of a Y-flow) to a fraction of the scale and center it on that axis.
-export function imageWidth(image: BoxElement, scale: number): Node {
-    return el(image, { style: (c) => setSizeX(image, scale * c.s), align: Align.Center });
+export function imageWithWidth(image: BoxElement, scale: number): Node {
+    return el(image, {
+        style: (c) => {
+            const w = scale * c.s;
+            setSizeX(image, w);
+            setSizeY(image, w / aspectRatio(image));
+        },
+        align: Align.Center,
+    });
+}
+
+// Fill the parent's width, deriving height from the image's aspect ratio.
+export function imageWithFillWidth(image: BoxElement): Node {
+    return el(image, {
+        style: (c) => {
+            setSizeX(image, c.parent.w);
+            setSizeY(image, c.parent.w / aspectRatio(image));
+        },
+    });
+}
+
+// Fill the parent's height, deriving width from the image's aspect ratio.
+export function imageWithFillHeight(image: BoxElement): Node {
+    return el(image, {
+        style: (c) => {
+            setSizeY(image, c.parent.h);
+            setSizeX(image, c.parent.h * aspectRatio(image));
+        },
+        align: Align.Center,
+    });
 }
 
 // --- 1. size ---------------------------------------------------------------

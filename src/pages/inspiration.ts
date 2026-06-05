@@ -1,59 +1,25 @@
 import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
-
 import { ieBlue, ieGreen } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, LayoutItem, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, posX, posY, px, setSizeX, sizeX, sizeY, styleText } from "../layout";
-import { cleanLastPage, registerUpdateLayout } from "../page";
-import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, styleNextPillarButton } from "../scroll";
+import { isLandscape, NEXT_PILLAR_BUTTON_PAD, styleSingleLineText, styleText } from "../layout";
+import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, Node, run, setSizeX, setSizeY } from "../newLayoutEngine";
+import { registerUpdateLayout } from "../page";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleNextPillarButtonMobile } from "../scroll";
 import { site } from "../site";
 import { colorOnHover, interlaceWithBetween } from "../util";
 
-const INSPIRATION_TILE_WIDTH_PROPORTION = 0.85;
 
 interface InspirationTile {
     image: HTMLImageElement;
-    major: HTMLElement;
-    minor: HTMLElement;
+    title: HTMLElement;
+    description: HTMLElement;
     readMore: HTMLElement;
 }
 
-function styleInspirationTile({ image, major, minor, readMore }: InspirationTile) {
-    const s = getScrollHeight();
-
-    styleText(major, { letterSpacing: 0.001 * s, fontWeight: 400, color: "#000000", fontSize: 0.036 * s, lineHeight: 0.09 * s });
-    styleText(minor, { letterSpacing: 0.0005 * s, fontWeight: 350, color: "#000000", fontSize: 0.027 * s, lineHeight: 0.05 * s });
-    styleText(readMore, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.03 * s, lineHeight: 0.05 * s });
-    for (const text of [major, minor, readMore]) setSizeX(text, INSPIRATION_TILE_WIDTH_PROPORTION * s);
-
-    image.style.height = px(0.55 * s);
-}
-
-function alignInspirationTile({ image, major, minor, readMore }: InspirationTile) {
-    const s = getScrollHeight();
-
-    major.style.left = image.style.left;
-    minor.style.left = image.style.left;
-    readMore.style.left = image.style.left;
-
-    const [elementAlignments, _] = aligningWithGapsY([
-        image, // -
-        0.03 * s,
-        major,
-        -0.01 * s,
-        minor,
-        0.01 * s,
-        readMore,
-    ]);
-
-    for (const { element, offset } of elementAlignments) {
-        element.style.top = px(offset + 0.15 * s);
-    }
-}
-
-function addInspirationTile(blog: Blog): InspirationTile {
+function addInspirationTile(blog: Blog) {
     const image = addScrollImage(blog.thumbnailPath());
-    const major = addScrollText(blog.title);
-    const minor = addScrollText(blog.subtitle);
+    const title = addScrollText(blog.title);
+    const description = addScrollText(blog.subtitle);
     const readMore = addScrollText("Read more");
 
     readMore.style.cursor = "pointer";
@@ -64,7 +30,49 @@ function addInspirationTile(blog: Blog): InspirationTile {
     readMore.onclick = goToBlog;
     image.onclick = goToBlog;
 
-    return { image, major, minor, readMore };
+    return { image, title, description, readMore };
+}
+
+function tileDesktop({ image, title, description, readMore }: InspirationTile): Node {
+    return flow(
+        Axis.Y,
+        [
+            imageWithFillWidth(image), // -
+            gap(0.03),
+            el(title, { style: (c) => styleSingleLineText(title, { letterSpacing: 0, fontWeight: 400, color: "#000000", fontSize: 0.036 * c.s }) }),
+            gap(0.01),
+            el(description, {
+                style: (c) => {
+                    styleText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: "#000000", fontSize: 0.027 * c.s, lineHeight: 0.05 * c.s });
+                    setSizeX(description, c.parent.w);
+                },
+            }),
+            gap(0.01),
+            el(readMore, { style: (c) => styleSingleLineText(readMore, { letterSpacing: 0, fontWeight: 400, color: ieBlue, fontSize: 0.03 * c.s }) }),
+        ],
+        { w: (c) => 0.8 * c.s, place: (self, s) => (self.y = 0.15 * s) }
+    );
+}
+
+function tileMobile({ image, title, description, readMore }: InspirationTile): Node {
+    return flow(
+        Axis.Y,
+        [
+            imageWithFillWidth(image), // -
+            gap(0.04),
+            el(title, { style: (c) => styleSingleLineText(title, { letterSpacing: 0, fontWeight: 400, color: "#000000", fontSize: 0.04 * c.s }), align: Align.Center }),
+            gap(0.02),
+            el(description, {
+                style: (c) => {
+                    styleText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.05 * c.s });
+                    setSizeX(description, c.parent.w);
+                },
+            }),
+            gap(0.02),
+            el(readMore, { style: (c) => styleSingleLineText(readMore, { letterSpacing: 0, fontWeight: 400, color: ieBlue, fontSize: 0.032 * c.s }), align: Align.Center }),
+        ],
+        { w: (c) => c.s, align: Align.Start }
+    );
 }
 
 export function addInspirationPage() {
@@ -76,40 +84,58 @@ export function addInspirationPage() {
     const nextPillarButton = addNextPillarButton("connect");
     const scrollPadding = addScrollPadding();
 
+    const desktopLayout = flow(
+        Axis.X,
+        [
+            flow(
+                Axis.Y,
+                [
+                    el(inspiration, { style: (c) => setSizeY(inspiration, 0.75 * c.s) }), // -
+                    gap(0.06),
+                    el(andOtherThings, { style: (c) => setSizeY(andOtherThings, 0.06 * c.s) }),
+                ],
+                { align: Align.Center }
+            ),
+            gap(0.25),
+            ...interlaceWithBetween(tiles.map(tileDesktop), gap(0.1)),
+            gap(NEXT_PILLAR_BUTTON_PAD),
+            el(nextPillarButton, { style: (c) => styleNextPillarButton(nextPillarButton, c.s), align: Align.Center }),
+            gap(NEXT_PILLAR_BUTTON_PAD),
+            el(scrollPadding),
+        ],
+        { h: (c) => c.s }
+    );
+
+    const mobileLayout = flow(
+        Axis.Y,
+        [
+            gap(0.1),
+            imageWithWidth(inspiration, 0.9),
+            gap(0.05),
+            imageWithWidth(andOtherThings, 0.9),
+            gap(0.1),
+            ...interlaceWithBetween(tiles.map(tileMobile), gap(0.08)),
+            gap(NEXT_PILLAR_BUTTON_PAD),
+            el(nextPillarButton, {
+                style: (c) => {
+                    styleNextPillarButtonMobile(nextPillarButton, c.s);
+                    setSizeX(nextPillarButton, 0.2 * c.s);
+                },
+                align: Align.Center,
+            }),
+            gap(NEXT_PILLAR_BUTTON_PAD),
+            el(scrollPadding),
+        ],
+        { w: (c) => c.s }
+    );
+
     registerUpdateLayout(() => {
-        resizeScrollContainerLandscape();
-        const s = getScrollHeight();
-
-        centerWithinScrollY(inspiration, 0.75);
-        andOtherThings.style.height = px(0.06 * s);
-
-        for (const tile of tiles) styleInspirationTile(tile);
-
-        styleNextPillarButton(nextPillarButton, s);
-
-        const tileImagesWithGaps: LayoutItem[] = interlaceWithBetween(
-            tiles.map((t) => t.image),
-            0.1 * s
-        );
-        tileImagesWithGaps.push(
-            NEXT_PILLAR_BUTTON_PAD * s, //
-            nextPillarButton,
-            NEXT_PILLAR_BUTTON_PAD * s,
-            scrollPadding
-        );
-        const [elementAlignments, _] = aligningWithGapsX([inspiration, 0.25 * s, ...tileImagesWithGaps]);
-
-        for (const { element, offset } of elementAlignments) {
-            element.style.left = px(offset);
+        if (isLandscape()) {
+            resizeScrollContainerLandscape();
+            run(desktopLayout, getScrollHeight());
+        } else {
+            resizeScrollContainerPortrait();
+            run(mobileLayout, getScrollWidth());
         }
-
-        andOtherThings.style.left = px(posX(inspiration));
-        andOtherThings.style.top = px(posY(inspiration) + sizeY(inspiration) + 0.06 * s);
-
-        for (const tile of tiles) alignInspirationTile(tile);
-
-        layoutNextPillarButton(nextPillarButton, s);
-
-        const lastImage = tiles[tiles.length - 1].image;
     });
 }

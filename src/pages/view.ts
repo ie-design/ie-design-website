@@ -1,6 +1,6 @@
 import { SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION } from "../constants";
 import { isLandscape, NEXT_PILLAR_BUTTON_PAD } from "../layout";
-import { Align, Axis, el, flow, gap, imageHeight, imageWidth, Node, run, setSizeX } from "../newLayoutEngine";
+import { Align, Axis, el, flow, gap, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, Node, run, setSizeX } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleNextPillarButtonMobile, styleScrollTextSquare, TextSquare } from "../scroll";
 import { interlaceWithBetween } from "../util";
@@ -60,19 +60,19 @@ export function addViewPage() {
     const desktopLayout = flow(
         Axis.X,
         [
-            imageHeight(home, 0.95), // -
+            imageWithHeight(home, 0.95), // -
             gap(0.2),
-            imageHeight(horizon, 1),
+            imageWithFillHeight(horizon),
             gap(0.13),
-            imageHeight(freshLook, 0.8),
+            imageWithHeight(freshLook, 0.8),
             gap(0.13),
             ...interlaceWithBetween(
                 [
-                    imageHeight(greatBrands, 1), // -
+                    imageWithFillHeight(greatBrands), // -
                     textSquareDesktop(textTile1),
-                    imageHeight(insightClarity, 1),
+                    imageWithFillHeight(insightClarity),
                     textSquareDesktop(textTile2),
-                    imageHeight(skyward, 1),
+                    imageWithFillHeight(skyward),
                     textSquareDesktop(textTile3),
                 ],
                 gap(0.17)
@@ -90,14 +90,14 @@ export function addViewPage() {
         [
             ...interlaceWithBetween(
                 [
-                    imageWidth(home, 0.95), // -
-                    imageWidth(horizon, 1),
-                    imageWidth(freshLook, 0.85),
-                    imageWidth(greatBrands, 1),
+                    imageWithWidth(home, 0.95), // -
+                    imageWithFillWidth(horizon),
+                    imageWithWidth(freshLook, 0.85),
+                    imageWithFillWidth(greatBrands),
                     textSquareMobile(textTile1),
-                    imageWidth(insightClarity, 1),
+                    imageWithFillWidth(insightClarity),
                     textSquareMobile(textTile2),
-                    imageWidth(skyward, 1),
+                    imageWithFillWidth(skyward),
                     textSquareMobile(textTile3),
                 ],
                 gap(0.08)

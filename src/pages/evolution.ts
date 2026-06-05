@@ -1,6 +1,6 @@
 import { fadeInAnimation, gray, ieGreen } from "../constants";
 import { isLandscape, lastLineMetrics, NEXT_PILLAR_BUTTON_PAD, sizeY, styleSingleLineText, styleText } from "../layout";
-import { Align, Axis, Box, el, flow, gap, imageHeight, imageWidth, Node, run, setPosX, setPosY, setSizeX } from "../newLayoutEngine";
+import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, Node, run, setPosX, setPosY, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, styleNextPillarButton } from "../scroll";
 import { interlaceWithBetween, interleaveArrays } from "../util";
@@ -24,12 +24,12 @@ function addQuote(quoteText: string, authorText: string, titleText: string): Quo
 }
 
 function styleQuote({ quote, author, title, openQuote, closeQuote }: Quote, s: number) {
-    styleText(quote, { letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.032 * s, lineHeight: 0.065 * s });
+    styleText(quote, { letterSpacing: 0.0009 * s, fontWeight: 300, color: "#000000", fontSize: 0.032 * s, lineHeight: 0.065 * s });
 
-    styleSingleLineText(author, { letterSpacing: 0.001 * s, fontWeight: 350, color: "#000000", fontSize: 0.035 * s });
-    styleSingleLineText(title, { letterSpacing: 0.00075 * s, fontWeight: 350, color: "#000000", fontSize: 0.025 * s });
+    styleSingleLineText(author, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.035 * s });
+    styleSingleLineText(title, { letterSpacing: 0.00075 * s, fontWeight: 300, color: "#000000", fontSize: 0.025 * s });
 
-    const quoteTextDetails = { letterSpacing: 0.001 * s, fontWeight: 350, color: ieGreen, fontSize: 0.15 * s };
+    const quoteTextDetails = { letterSpacing: 0.001 * s, fontWeight: 300, color: ieGreen, fontSize: 0.15 * s };
     styleSingleLineText(openQuote, quoteTextDetails);
     styleSingleLineText(closeQuote, quoteTextDetails);
 }
@@ -153,15 +153,15 @@ export function addEvolutionPage() {
     const desktopLayout = flow(
         Axis.X,
         [
-            withTimelineDesktop(imageHeight(evolution, 0.75), 0.06),
+            withTimelineDesktop(imageWithHeight(evolution, 0.75), 0.06),
             gap(0.2),
             withTimelineDesktop(
                 flow(
                     Axis.Y,
                     [
-                        imageHeight(logoFull, 0.45), // -
+                        imageWithHeight(logoFull, 0.45), // -
                         gap(0.1),
-                        imageHeight(evolutionHistory, 0.3),
+                        imageWithHeight(evolutionHistory, 0.3),
                     ],
                     { align: Align.Center }
                 ),
@@ -171,7 +171,7 @@ export function addEvolutionPage() {
             ...interlaceWithBetween(
                 interleaveArrays(
                     quotes.map((q) => withTimelineDesktop(quoteGroupDesktop(q), 0.09)),
-                    promos.map((promo) => withTimelineDesktop(imageHeight(promo, 1), -0.001))
+                    promos.map((promo) => withTimelineDesktop(imageWithFillHeight(promo), -0.001))
                 ),
                 gap(0.3)
             ),
@@ -187,16 +187,16 @@ export function addEvolutionPage() {
         Axis.Y,
         [
             gap(0.2),
-            withTimelineMobile(imageWidth(evolution, 0.8), 0.02),
+            withTimelineMobile(imageWithWidth(evolution, 0.8), 0.02),
             gap(0.1),
-            imageWidth(logoFull, 0.45), // -
+            imageWithWidth(logoFull, 0.45), // -
             gap(0.1),
-            imageWidth(evolutionHistory, 0.8),
+            imageWithWidth(evolutionHistory, 0.8),
             gap(0.3),
             ...interlaceWithBetween(
                 interleaveArrays(
                     quotes.map((q) => withTimelineMobile(quoteGroupMobile(q), 0.09)),
-                    promos.map((promo) => withTimelineMobile(imageWidth(promo, 1), -0.001))
+                    promos.map((promo) => withTimelineMobile(imageWithWidth(promo, 1), -0.001))
                 ),
                 gap(0.3)
             ),

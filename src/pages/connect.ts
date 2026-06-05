@@ -1,6 +1,6 @@
 import { ieGreen } from "../constants";
 import { isLandscape, styleSingleLineText, styleText } from "../layout";
-import { Align, anchored, Axis, el, flow, gap, imageHeight, imageWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
+import { Align, anchored, Axis, el, flow, gap, imageWithHeight, imageWithFillWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
 import { colorOnHoverSVGFill, interlaceWithBetween } from "../util";
@@ -38,7 +38,7 @@ export function addConnectPage() {
     ];
     const scrollPadding = addScrollPadding();
 
-    const desktopTextStyle = (s: number) => ({ letterSpacing: 0.0009 * s, fontWeight: 350, color: "#000000", fontSize: 0.028 * s });
+    const desktopTextStyle = (s: number) => ({ letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.025 * s });
     const desktopLayout = flow(
         Axis.X,
         [
@@ -59,7 +59,7 @@ export function addConnectPage() {
                         ),
                         gap(0.03)
                     ),
-                    gap(0.01),
+                    gap(0.04),
                     flow(Axis.X, interlaceWithBetween(icons.map(iconSquare), gap(0.03))),
                 ],
                 { place: (self, s) => (self.y = 0.05 * s) }
@@ -70,10 +70,7 @@ export function addConnectPage() {
                 [
                     el(letsMeet, { style: (c) => setSizeY(letsMeet, 0.8 * c.s), anchor: true }), // -
                     gap(0.04),
-                    el(who, {
-                        style: (c) => styleSingleLineText(who, desktopTextStyle(c.s)),
-                        align: Align.Center,
-                    }),
+                    el(who, { style: (c) => styleSingleLineText(who, desktopTextStyle(c.s)) }),
                 ],
                 { h: (c) => c.s }
             ),
@@ -88,7 +85,7 @@ export function addConnectPage() {
             gap(0.1),
             el(connect, { style: (c) => setSizeX(connect, 0.8 * c.s), align: Align.Center }), // -
             gap(0.09),
-            imageWidth(letsMeet, 1),
+            imageWithFillWidth(letsMeet),
             gap(0.05),
             flow(
                 Axis.Y,
