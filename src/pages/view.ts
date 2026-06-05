@@ -1,7 +1,9 @@
 import { SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION } from "../constants";
-import { aligningWithGapsX, aligningWithGapsY, isLandscape, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, px } from "../layout";
+import { isLandscape, NEXT_PILLAR_BUTTON_PAD } from "../layout";
+import { Align, Axis, el, flow, gap, imageHeight, imageWidth, Node, run, setSizeX } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
-import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollX, centerWithinScrollY, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleNextPillarButtonMobile, styleScrollTextSquare, TextSquare } from "../scroll";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleNextPillarButtonMobile, styleScrollTextSquare, TextSquare } from "../scroll";
+import { interlaceWithBetween } from "../util";
 
 let homeFromIntro: SVGSVGElement | undefined;
 export function setHomeFromIntro(home: SVGSVGElement) {
@@ -17,6 +19,31 @@ function homeMaybeFromIntro() {
     return h;
 }
 
+function textSquareItems(square: TextSquare, majorToMinorGap: number, betweenMinorsGap: number): Node[] {
+    return [
+        el(square.major),
+        gap(majorToMinorGap),
+        ...interlaceWithBetween(
+            square.minors.map((m) => el(m)),
+            gap(betweenMinorsGap)
+        ),
+    ];
+}
+
+function textSquareDesktop(square: TextSquare) {
+    return flow(Axis.Y, textSquareItems(square, 0.03, 0.03), {
+        style: (c) => styleScrollTextSquare(square, { letterSpacing: 0.0046 * c.s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * c.s, lineHeight: 0.09 * c.s }, { letterSpacing: 0.001 * c.s, fontWeight: 300, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.05 * c.s }, SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * c.s),
+        align: Align.Center,
+    });
+}
+
+function textSquareMobile(square: TextSquare) {
+    return flow(Axis.Y, textSquareItems(square, 0.04, 0.04), {
+        style: (c) => styleScrollTextSquare(square, { letterSpacing: 0.003 * c.s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.06 * c.s, lineHeight: 0.08 * c.s }, { letterSpacing: 0.001 * c.s, fontWeight: 300, color: "#000000", fontSize: 0.028 * c.s, lineHeight: 0.05 * c.s }, 0.85 * c.s),
+        align: Align.Center,
+    });
+}
+
 export function addViewPage() {
     const home = homeMaybeFromIntro();
     const horizon = addScrollImage("view/horizon.jpg");
@@ -30,128 +57,72 @@ export function addViewPage() {
     const nextPillarButton = addNextPillarButton("work");
     const scrollPadding = addScrollPadding();
 
-    const textTiles = [textTile1, textTile2, textTile3];
+    const desktopLayout = flow(
+        Axis.X,
+        [
+            imageHeight(home, 0.95), // -
+            gap(0.2),
+            imageHeight(horizon, 1),
+            gap(0.13),
+            imageHeight(freshLook, 0.8),
+            gap(0.13),
+            ...interlaceWithBetween(
+                [
+                    imageHeight(greatBrands, 1), // -
+                    textSquareDesktop(textTile1),
+                    imageHeight(insightClarity, 1),
+                    textSquareDesktop(textTile2),
+                    imageHeight(skyward, 1),
+                    textSquareDesktop(textTile3),
+                ],
+                gap(0.17)
+            ),
+            gap(NEXT_PILLAR_BUTTON_PAD),
+            el(nextPillarButton, { style: (c) => styleNextPillarButton(nextPillarButton, c.s), align: Align.Center }),
+            gap(NEXT_PILLAR_BUTTON_PAD),
+            el(scrollPadding),
+        ],
+        { h: (c) => c.s }
+    );
+
+    const mobileLayout = flow(
+        Axis.Y,
+        [
+            ...interlaceWithBetween(
+                [
+                    imageWidth(home, 0.95), // -
+                    imageWidth(horizon, 1),
+                    imageWidth(freshLook, 0.85),
+                    imageWidth(greatBrands, 1),
+                    textSquareMobile(textTile1),
+                    imageWidth(insightClarity, 1),
+                    textSquareMobile(textTile2),
+                    imageWidth(skyward, 1),
+                    textSquareMobile(textTile3),
+                ],
+                gap(0.08)
+            ),
+            gap(NEXT_PILLAR_BUTTON_PAD),
+            el(nextPillarButton, {
+                style: (c) => {
+                    styleNextPillarButtonMobile(nextPillarButton, c.s);
+                    setSizeX(nextPillarButton, 0.2 * c.s);
+                },
+                align: Align.Center,
+            }),
+            gap(NEXT_PILLAR_BUTTON_PAD),
+            el(scrollPadding),
+        ],
+        { w: (c) => c.s }
+    );
 
     registerUpdateLayout(() => {
-        const HOME_HORIZON_PAD = 0.2;
-        const FRESH_LOOK_PAD = 0.13;
-        const IMAGE_TEXT_SQUARE_PAD = 0.17;
-
         if (isLandscape()) {
             resizeScrollContainerLandscape();
-            const s = getScrollHeight();
-
-            centerWithinScrollY(home, 0.95);
-            centerWithinScrollY(horizon, 1);
-            centerWithinScrollY(freshLook, 0.8);
-            centerWithinScrollY(greatBrands, 1);
-            centerWithinScrollY(insightClarity, 1);
-            centerWithinScrollY(skyward, 1);
-
-            for (const textTile of textTiles) {
-                styleScrollTextSquare(
-                    textTile, // -
-                    { letterSpacing: 0.0046 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * s, lineHeight: 0.09 * s },
-                    { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.03 * s, lineHeight: 0.05 * s },
-                    SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION * s
-                );
-            }
-
-            styleNextPillarButton(nextPillarButton, s);
-
-            const [elementAlignments, _] = aligningWithGapsX([
-                home, // -
-                HOME_HORIZON_PAD * s,
-                horizon,
-                FRESH_LOOK_PAD * s,
-                freshLook,
-                FRESH_LOOK_PAD * s,
-                greatBrands,
-                IMAGE_TEXT_SQUARE_PAD * s,
-                textTile1.major,
-                IMAGE_TEXT_SQUARE_PAD * s,
-                insightClarity,
-                IMAGE_TEXT_SQUARE_PAD * s,
-                textTile2.major,
-                IMAGE_TEXT_SQUARE_PAD * s,
-                skyward,
-                IMAGE_TEXT_SQUARE_PAD * s,
-                textTile3.major,
-                NEXT_PILLAR_BUTTON_PAD * s,
-                nextPillarButton,
-                NEXT_PILLAR_BUTTON_PAD * s,
-                scrollPadding,
-            ]);
-
-            for (const { element, offset } of elementAlignments) {
-                element.style.left = px(offset);
-            }
-
-            for (const textTile of textTiles) alignScrollTextSquare(textTile, 0.03 * s, 0.03 * s);
-
-            layoutNextPillarButton(nextPillarButton, s);
+            run(desktopLayout, getScrollHeight());
         } else {
             resizeScrollContainerPortrait();
-            const s = getScrollWidth();
-
-            centerWithinScrollX(home, 0.95);
-            centerWithinScrollX(horizon, 1);
-            centerWithinScrollX(freshLook, 0.85);
-            centerWithinScrollX(greatBrands, 1);
-            centerWithinScrollX(insightClarity, 1);
-            centerWithinScrollX(skyward, 1);
-
-            for (const textTile of textTiles)
-                styleScrollTextSquare(
-                    textTile, // -
-                    { letterSpacing: 0.003 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.06 * s, lineHeight: 0.08 * s },
-                    { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.028 * s, lineHeight: 0.05 * s },
-                    1 * s
-                );
-
-            const TEXT_TILE_WIDTH = 0.85;
-            for (const textTile of textTiles) {
-                centerWithinScrollX(textTile.major, TEXT_TILE_WIDTH);
-                for (const minor of textTile.minors) centerWithinScrollX(minor, TEXT_TILE_WIDTH);
-            }
-
-            const MOBILE_PAD = 0.08;
-
-            function mobileTile(textTile: TextSquare) {
-                const x = [textTile.major, 0.0 * s];
-                for (const minor of textTile.minors) x.push(0.04 * s, minor);
-                return x;
-            }
-
-            styleNextPillarButtonMobile(nextPillarButton, s);
-            centerWithinScrollX(nextPillarButton, 0.2);
-
-            const [elementAlignments, _] = aligningWithGapsY([
-                home, // -
-                MOBILE_PAD * s,
-                horizon,
-                MOBILE_PAD * s,
-                freshLook,
-                MOBILE_PAD * s,
-                greatBrands,
-                MOBILE_PAD * s,
-                ...mobileTile(textTile1),
-                MOBILE_PAD * s,
-                insightClarity,
-                MOBILE_PAD * s,
-                ...mobileTile(textTile2),
-                MOBILE_PAD * s,
-                skyward,
-                MOBILE_PAD * s,
-                ...mobileTile(textTile3),
-                NEXT_PILLAR_BUTTON_PAD * s,
-                nextPillarButton,
-                NEXT_PILLAR_BUTTON_PAD * s,
-                scrollPadding,
-            ]);
-            for (const { element, offset } of elementAlignments) {
-                element.style.top = px(offset);
-            }
+            run(mobileLayout, getScrollWidth());
         }
     });
 }

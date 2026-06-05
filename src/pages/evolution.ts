@@ -1,6 +1,6 @@
 import { fadeInAnimation, gray, ieGreen } from "../constants";
 import { isLandscape, lastLineMetrics, NEXT_PILLAR_BUTTON_PAD, sizeY, styleSingleLineText, styleText } from "../layout";
-import { Align, Axis, Box, el, flow, gap, Node, run, setPosX, setPosY, setSizeX, setSizeY } from "../newLayoutEngine";
+import { Align, Axis, Box, el, flow, gap, imageHeight, imageWidth, Node, run, setPosX, setPosY, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, styleNextPillarButton } from "../scroll";
 import { interlaceWithBetween, interleaveArrays } from "../util";
@@ -139,15 +139,15 @@ export function addEvolutionPage() {
     const desktopLayout = flow(
         Axis.X,
         [
-            withTimeline(el(evolution, { style: (c) => setSizeY(evolution, 0.75 * c.s), align: Align.Center }), 0.06),
+            withTimeline(imageHeight(evolution, 0.75), 0.06),
             gap(0.2),
             withTimeline(
                 flow(
                     Axis.Y,
                     [
-                        el(logoFull, { style: (c) => setSizeY(logoFull, 0.45 * c.s), align: Align.Center }), // -
+                        imageHeight(logoFull, 0.45), // -
                         gap(0.1),
-                        el(evolutionHistory, { style: (c) => setSizeY(evolutionHistory, 0.3 * c.s), align: Align.Center }),
+                        imageHeight(evolutionHistory, 0.3),
                     ],
                     { align: Align.Center }
                 ),
@@ -157,7 +157,7 @@ export function addEvolutionPage() {
             ...interlaceWithBetween(
                 interleaveArrays(
                     quotes.map((q) => withTimeline(quoteGroupDesktop(q), 0.09)),
-                    promos.map((promo) => withTimeline(el(promo, { style: (c) => setSizeY(promo, c.s), align: Align.Center }), -0.001))
+                    promos.map((promo) => withTimeline(imageHeight(promo, 1), -0.001))
                 ),
                 gap(0.3)
             ),
@@ -173,16 +173,16 @@ export function addEvolutionPage() {
         Axis.Y,
         [
             gap(0.2),
-            withTimeline(el(evolution, { style: (c) => setSizeX(evolution, 0.8 * c.s), align: Align.Center }), 0.06),
+            withTimeline(imageWidth(evolution, 0.8), 0.06),
             gap(0.1),
-            el(logoFull, { style: (c) => setSizeX(logoFull, 0.45 * c.s), align: Align.Center }), // -
+            imageWidth(logoFull, 0.45), // -
             gap(0.1),
-            el(evolutionHistory, { style: (c) => setSizeX(evolutionHistory, 0.8 * c.s), align: Align.Center }),
+            imageWidth(evolutionHistory, 0.8),
             gap(0.3),
             ...interlaceWithBetween(
                 interleaveArrays(
                     quotes.map((q) => withTimeline(quoteGroupMobile(q), 0.09)),
-                    promos.map((promo) => withTimeline(el(promo, { style: (c) => setSizeX(promo, c.s), align: Align.Center }), -0.001))
+                    promos.map((promo) => withTimeline(imageWidth(promo, 1), -0.001))
                 ),
                 gap(0.3)
             ),

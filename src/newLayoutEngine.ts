@@ -1,4 +1,4 @@
-import { BoxElement, px, sizeX, sizeY } from "./layout";
+import { BoxElement, px, setSizeX, setSizeY, sizeX, sizeY } from "./layout";
 
 // A small two-pass layout engine over "virtual boxes".
 //
@@ -83,6 +83,16 @@ export function virtual(opts: Opts = {}): Node {
 
 export function gap(fraction: number): Node {
     return mk({ spacer: fraction });
+}
+
+// Drive an element's height (cross axis of an X-flow) to a fraction of the scale and center it on that axis.
+export function imageHeight(image: BoxElement, scale: number): Node {
+    return el(image, { style: (c) => setSizeY(image, scale * c.s), align: Align.Center });
+}
+
+// Drive an element's width (cross axis of a Y-flow) to a fraction of the scale and center it on that axis.
+export function imageWidth(image: BoxElement, scale: number): Node {
+    return el(image, { style: (c) => setSizeX(image, scale * c.s), align: Align.Center });
 }
 
 // --- 1. size ---------------------------------------------------------------
