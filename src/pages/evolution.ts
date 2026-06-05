@@ -98,20 +98,34 @@ function createTimelineLine() {
     timelineLine.style.position = "absolute";
     timelineLine.style.animation = fadeInAnimation();
     timelineLine.style.backgroundColor = gray;
-    timelineLine.style.width = "1px";
     appendChildForPage(scrollContainer, timelineLine);
     return timelineLine;
 }
 
-// Give a node a timeline line that, after layout, hangs from the bottom of its box to the bottom of the scroll area.
-function withTimeline(node: Node, offsetFactor: number) {
+// Desktop: a vertical line hanging from the bottom of the node's box down to the bottom of the scroll area.
+function withTimelineDesktop(node: Node, offsetFactor: number) {
     const line = createTimelineLine();
+    line.style.width = "1px";
     node.post = () => {
         const offset = offsetFactor * getScrollHeight();
         const bottom = node.box.y + node.box.h;
         setPosX(line, node.box.x + node.box.w / 2);
         setPosY(line, bottom + offset);
         line.style.height = sizeY(scrollContainer) - bottom - offset + "px";
+    };
+    return node;
+}
+
+// Mobile: a horizontal line running from the left of the scroll area to the left edge of the node's box.
+function withTimelineMobile(node: Node, offsetFactor: number) {
+    const line = createTimelineLine();
+    line.style.height = "1px";
+    node.post = () => {
+        const offset = offsetFactor * getScrollWidth();
+        const left = node.box.x;
+        setPosX(line, 0);
+        setPosY(line, node.box.y + node.box.h / 2);
+        line.style.width = left - offset + "px";
     };
     return node;
 }
@@ -139,9 +153,9 @@ export function addEvolutionPage() {
     const desktopLayout = flow(
         Axis.X,
         [
-            withTimeline(imageHeight(evolution, 0.75), 0.06),
+            withTimelineDesktop(imageHeight(evolution, 0.75), 0.06),
             gap(0.2),
-            withTimeline(
+            withTimelineDesktop(
                 flow(
                     Axis.Y,
                     [
@@ -156,8 +170,8 @@ export function addEvolutionPage() {
             gap(0.3),
             ...interlaceWithBetween(
                 interleaveArrays(
-                    quotes.map((q) => withTimeline(quoteGroupDesktop(q), 0.09)),
-                    promos.map((promo) => withTimeline(imageHeight(promo, 1), -0.001))
+                    quotes.map((q) => withTimelineDesktop(quoteGroupDesktop(q), 0.09)),
+                    promos.map((promo) => withTimelineDesktop(imageHeight(promo, 1), -0.001))
                 ),
                 gap(0.3)
             ),
@@ -173,7 +187,7 @@ export function addEvolutionPage() {
         Axis.Y,
         [
             gap(0.2),
-            withTimeline(imageWidth(evolution, 0.8), 0.06),
+            withTimelineMobile(imageWidth(evolution, 0.8), 0.02),
             gap(0.1),
             imageWidth(logoFull, 0.45), // -
             gap(0.1),
@@ -181,8 +195,8 @@ export function addEvolutionPage() {
             gap(0.3),
             ...interlaceWithBetween(
                 interleaveArrays(
-                    quotes.map((q) => withTimeline(quoteGroupMobile(q), 0.09)),
-                    promos.map((promo) => withTimeline(imageWidth(promo, 1), -0.001))
+                    quotes.map((q) => withTimelineMobile(quoteGroupMobile(q), 0.09)),
+                    promos.map((promo) => withTimelineMobile(imageWidth(promo, 1), -0.001))
                 ),
                 gap(0.3)
             ),
