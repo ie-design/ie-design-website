@@ -64,7 +64,8 @@ export class Site {
     sideItemsShownSig = new Signal();
 
     leftAlign = () => innerHeight * 0.1;
-    headerIconSize = () => getHeaderBarHeight() * 0.4;
+    headerIconSizeDesktop = () => getHeaderBarHeight() * 0.4;
+    headerIconSizeMobile = () => getHeaderBarHeight() * 0.5;
 
     pushRoute = (route: string) => {
         history.pushState({}, "", import.meta.env.BASE_URL.slice(0, -1) + route);
@@ -247,11 +248,20 @@ export class Site {
         body.appendChild(menuButton);
 
         effect(() => {
-            const size = this.headerIconSize();
-            menuButton.style.width = px(size);
-            menuButton.style.height = px(size);
-            menuButton.style.left = px(innerWidth - size - this.leftAlign());
-            menuButton.style.top = px((getHeaderBarHeight() - size) / 2);
+            if (isLandscape()) {
+                const size = this.headerIconSizeDesktop();
+                menuButton.style.width = px(size);
+                menuButton.style.height = px(size);
+                menuButton.style.left = px(innerWidth - size - this.leftAlign());
+                menuButton.style.top = px((getHeaderBarHeight() - size) / 2);
+            } else {
+                const size = this.headerIconSizeMobile();
+                const gapToEdge = (getHeaderBarHeight() - size) / 2;
+                menuButton.style.width = px(size);
+                menuButton.style.height = px(size);
+                menuButton.style.left = px(innerWidth - size - gapToEdge);
+                menuButton.style.top = px(gapToEdge);
+            }
         }, [bodySig]);
     };
 
@@ -287,11 +297,20 @@ export class Site {
         };
 
         effect(() => {
-            const size = this.headerIconSize();
-            logo.style.width = px(size);
-            logo.style.height = px(size);
-            logo.style.left = px(this.leftAlign());
-            logo.style.top = px((getHeaderBarHeight() - size) / 2);
+            if (isLandscape()) {
+                const size = this.headerIconSizeDesktop();
+                logo.style.width = px(size);
+                logo.style.height = px(size);
+                logo.style.left = px(this.leftAlign());
+                logo.style.top = px((getHeaderBarHeight() - size) / 2);
+            } else {
+                const size = this.headerIconSizeMobile();
+                const gapToEdge = (getHeaderBarHeight() - size) / 2;
+                logo.style.width = px(size);
+                logo.style.height = px(size);
+                logo.style.left = px(gapToEdge);
+                logo.style.top = px(gapToEdge);
+            }
         }, [bodySig]);
     };
 

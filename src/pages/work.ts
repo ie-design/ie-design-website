@@ -267,15 +267,15 @@ export function addWorkPage() {
                             textSquareItems(
                                 item.textSquare.major,
                                 (s) => ({ letterSpacing: 0.004 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, lineHeight: 0.05 * s }),
-                                0.05,
+                                0.06,
                                 item.textSquare.minors,
                                 (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, lineHeight: 0.05 * s }),
                                 0.02,
                                 (s) => 0.85 * s
                             ), // -
-                            gap(0.2),
-                            imageWithWidth(item.image1, 1),
                             gap(0.15),
+                            imageWithWidth(item.image1, 1),
+                            gap(0.06),
                             imageWithWidth(item.image2, 1),
                         ])
                     ),
