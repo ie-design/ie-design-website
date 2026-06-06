@@ -33,7 +33,7 @@ export interface Ctx {
     parent: Box; // containing block, for percent-of-parent sizing
 }
 
-export interface Node {
+export interface LayoutNode {
     // binding
     el?: BoxElement; // omit for a purely virtual box
     box: Box; // resolved geometry (live; referenced by place callbacks)
@@ -45,11 +45,12 @@ export interface Node {
 
     // container
     dir?: Axis; // marks this node a flow container along dir
-    children?: Node[];
+    children?: LayoutNode[];
     anchored?: boolean; // place the anchor child centered, others before/after it
 
     // placement within parent
-    align?: Align; // cross-axis alignment in parent flow (default "start")
+    align?: Align; // cross-axis alignment in parent flow (default Start)
+    alignAlongFlow?: Align; // main-axis alignment in parent flow (default Start); container must have explicit main-axis size
     spacer?: number; // pure gap: advances parent main axis by spacer * s, no element
     anchor?: boolean; // this child is the base box of an anchored container
     float?: boolean; // skipped by flow accumulation; positioned only via place()
@@ -59,29 +60,29 @@ export interface Node {
     post?: () => void; // after DOM sync (e.g. getClientRects fixups)
 }
 
-type Opts = Omit<Partial<Node>, "box">;
+type Opts = Omit<Partial<LayoutNode>, "box">;
 
-function mk(opts: Opts): Node {
+function mk(opts: Opts): LayoutNode {
     return { ...opts, box: { x: 0, y: 0, w: 0, h: 0 } };
 }
 
-export function el(element: BoxElement, opts: Opts = {}): Node {
+export function el(element: BoxElement, opts: Opts = {}): LayoutNode {
     return mk({ el: element, ...opts });
 }
 
-export function flow(dir: Axis, children: Node[], opts: Opts = {}): Node {
+export function flow(dir: Axis, children: LayoutNode[], opts: Opts = {}): LayoutNode {
     return mk({ dir, children, ...opts });
 }
 
-export function anchored(dir: Axis, children: Node[], opts: Opts = {}): Node {
+export function anchored(dir: Axis, children: LayoutNode[], opts: Opts = {}): LayoutNode {
     return mk({ dir, children, anchored: true, ...opts });
 }
 
-export function virtual(opts: Opts = {}): Node {
+export function virtual(opts: Opts = {}): LayoutNode {
     return mk(opts);
 }
 
-export function gap(fraction: number): Node {
+export function gap(fraction: number): LayoutNode {
     return mk({ spacer: fraction });
 }
 
@@ -94,54 +95,51 @@ function aspectRatio(image: BoxElement): number {
     return 1;
 }
 
-// Drive an element's height (cross axis of an X-flow) to a fraction of the scale and center it on that axis.
-export function imageWithHeight(image: BoxElement, scale: number): Node {
+export function imageByWidth(image: BoxElement, getW: (c: Ctx) => number, opts: Opts = {}): LayoutNode {
     return el(image, {
         style: (c) => {
-            const h = scale * c.s;
-            setSizeY(image, h);
-            setSizeX(image, h * aspectRatio(image));
-        },
-        align: Align.Center,
-    });
-}
-
-// Drive an element's width (cross axis of a Y-flow) to a fraction of the scale and center it on that axis.
-export function imageWithWidth(image: BoxElement, scale: number): Node {
-    return el(image, {
-        style: (c) => {
-            const w = scale * c.s;
+            const w = getW(c);
             setSizeX(image, w);
             setSizeY(image, w / aspectRatio(image));
         },
-        align: Align.Center,
+        ...opts,
     });
 }
 
-// Fill the parent's width, deriving height from the image's aspect ratio.
-export function imageWithFillWidth(image: BoxElement): Node {
+export function imageByHeight(image: BoxElement, getH: (c: Ctx) => number, opts: Opts = {}): LayoutNode {
     return el(image, {
         style: (c) => {
-            setSizeX(image, c.parent.w);
-            setSizeY(image, c.parent.w / aspectRatio(image));
+            const h = getH(c);
+            setSizeY(image, h);
+            setSizeX(image, h * aspectRatio(image));
         },
+        ...opts,
     });
 }
 
-// Fill the parent's height, deriving width from the image's aspect ratio.
-export function imageWithFillHeight(image: BoxElement): Node {
-    return el(image, {
-        style: (c) => {
-            setSizeY(image, c.parent.h);
-            setSizeX(image, c.parent.h * aspectRatio(image));
-        },
-        align: Align.Center,
-    });
+export function imageWithWidth(image: BoxElement, scale: number): LayoutNode {
+    return imageByWidth(image, (c) => scale * c.s, { align: Align.Center });
+}
+
+export function imageWithHeight(image: BoxElement, scale: number): LayoutNode {
+    return imageByHeight(image, (c) => scale * c.s, { align: Align.Center });
+}
+
+export function imageWithParentWidth(image: BoxElement, scale: number): LayoutNode {
+    return imageByWidth(image, (c) => scale * c.parent.w, { align: Align.Center });
+}
+
+export function imageWithFillWidth(image: BoxElement): LayoutNode {
+    return imageWithParentWidth(image, 1);
+}
+
+export function imageWithFillHeight(image: BoxElement): LayoutNode {
+    return imageByHeight(image, (c) => c.parent.h, { align: Align.Center });
 }
 
 // --- 1. size ---------------------------------------------------------------
 
-function resolve(node: Node, ctx: Ctx) {
+function resolve(node: LayoutNode, ctx: Ctx) {
     if (node.spacer != null) return; // size handled by the parent flow
 
     if (node.children) {
@@ -164,7 +162,7 @@ function resolve(node: Node, ctx: Ctx) {
 }
 
 // content sizes: main axis = sum of children + gaps, cross axis = max of children
-function aggregate(node: Node, s: number) {
+function aggregate(node: LayoutNode, s: number) {
     const main = node.dir === Axis.X ? "w" : "h";
     const cross = node.dir === Axis.X ? "h" : "w";
 
@@ -176,7 +174,7 @@ function aggregate(node: Node, s: number) {
             sum += child.spacer * s;
             continue;
         }
-        sum += child.box[main];
+        if (!child.alignAlongFlow) sum += child.box[main];
         max = Math.max(max, child.box[cross]);
     }
 
@@ -186,13 +184,13 @@ function aggregate(node: Node, s: number) {
 
 // --- 2. position (skeleton) ------------------------------------------------
 
-function positionChildren(node: Node, s: number) {
+function positionChildren(node: LayoutNode, s: number) {
     if (!node.children) return;
     if (node.anchored) positionAnchored(node, s);
     else positionFlow(node, s);
 }
 
-function positionSkeleton(node: Node, x: number, y: number, s: number) {
+function positionSkeleton(node: LayoutNode, x: number, y: number, s: number) {
     node.box.x = x;
     node.box.y = y;
     positionChildren(node, s);
@@ -205,7 +203,7 @@ function alignOffset(align: Align = Align.Start, extent: number, size: number) {
 }
 
 // place one child at a given main-axis coordinate, applying its cross-axis alignment
-function placeChild(node: Node, child: Node, main: number, s: number) {
+function placeChild(node: LayoutNode, child: LayoutNode, main: number, s: number) {
     const horiz = node.dir === Axis.X;
     const crossOrigin = horiz ? node.box.y : node.box.x;
     const crossExtent = horiz ? node.box.h : node.box.w;
@@ -214,10 +212,12 @@ function placeChild(node: Node, child: Node, main: number, s: number) {
     positionSkeleton(child, horiz ? main : cross, horiz ? cross : main, s);
 }
 
-function positionFlow(node: Node, s: number) {
+function positionFlow(node: LayoutNode, s: number) {
     const horiz = node.dir === Axis.X;
     const mainSize = horiz ? "w" : "h";
     let cursor = horiz ? node.box.x : node.box.y;
+
+    if (node.children!.some((c) => c.alignAlongFlow) && !(horiz ? node.w : node.h)) console.error(`newLayoutEngine: alignAlongFlow requires an explicit ${horiz ? "w" : "h"} on the container`);
 
     for (const child of node.children!) {
         if (child.spacer != null) {
@@ -228,13 +228,19 @@ function positionFlow(node: Node, s: number) {
             positionSkeleton(child, 0, 0, s); // real position comes from its place()
             continue;
         }
+        if (child.alignAlongFlow) {
+            const mainOrigin = horiz ? node.box.x : node.box.y;
+            const offset = alignOffset(child.alignAlongFlow, node.box[mainSize], child.box[mainSize]);
+            placeChild(node, child, mainOrigin + offset, s);
+            continue; // does not advance cursor
+        }
         placeChild(node, child, cursor, s);
         cursor += child.box[mainSize];
     }
 }
 
 // center the anchor on the main axis, then flow other items backward/forward off its edges
-function positionAnchored(node: Node, s: number) {
+function positionAnchored(node: LayoutNode, s: number) {
     const horiz = node.dir === Axis.X;
     const mainPos = horiz ? "x" : "y";
     const mainSize = horiz ? "w" : "h";
@@ -270,7 +276,7 @@ function positionAnchored(node: Node, s: number) {
 
 // --- 3 & 4. overrides + sync ----------------------------------------------
 
-function runPlace(node: Node, s: number) {
+function runPlace(node: LayoutNode, s: number) {
     // pre-order: a parent/earlier sibling is placed before later ones
     if (node.place) {
         node.place(node.box, s);
@@ -279,7 +285,7 @@ function runPlace(node: Node, s: number) {
     node.children?.forEach((c) => runPlace(c, s));
 }
 
-function sync(node: Node) {
+function sync(node: LayoutNode) {
     if (node.el) {
         node.el.style.left = px(node.box.x);
         node.el.style.top = px(node.box.y);
@@ -287,12 +293,12 @@ function sync(node: Node) {
     node.children?.forEach(sync);
 }
 
-function runPost(node: Node) {
+function runPost(node: LayoutNode) {
     node.post?.();
     node.children?.forEach(runPost);
 }
 
-export function run(root: Node, s: number) {
+export function run(root: LayoutNode, s: number) {
     resolve(root, { s, parent: { x: 0, y: 0, w: 0, h: s } });
     positionSkeleton(root, 0, 0, s);
     runPlace(root, s);

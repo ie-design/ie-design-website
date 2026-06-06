@@ -1,3 +1,4 @@
+import { link } from "../util";
 import { Blog } from "./blog";
 
 export const shareSomeDesignLoveBlog = new Blog(
@@ -16,9 +17,9 @@ export const shareSomeDesignLoveBlog = new Blog(
         b.addSubhead("They sure look nice.");
         b.addParagraph("").append(
             "I know what you are thinking. “How can I get a set of these fantastic books?” You become a client! We give them as a thank you for completing a project with us. These books are part of our everyday process. We put pen to paper long before we touch a keyboard or a mouse. It’s fun to view the initial brainstorming and see the progression of ideas and even the nugget that became the final solution. To be the next page in our sketchbook, ", // -
-            b.link("email", "mailto:beth@ie-design.com"),
+            link("email", "mailto:beth@ie-design.com"),
             " us. See more of our branded client gifts ",
-            b.link("here", "https://ie-design.com/evolution"),
+            link("here", "https://ie-design.com/evolution"),
             "."
         );
         b.addSpace();

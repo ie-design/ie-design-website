@@ -1,6 +1,6 @@
 import { SCROLL_TEXT_WIDTH_HEIGHT_PROPORTION } from "../constants";
 import { isLandscape, NEXT_PILLAR_BUTTON_PAD } from "../layout";
-import { Align, Axis, el, flow, gap, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, Node, run, setSizeX } from "../newLayoutEngine";
+import { Align, Axis, el, flow, gap, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleNextPillarButtonMobile, styleScrollTextSquare, TextSquare } from "../scroll";
 import { interlaceWithBetween } from "../util";
@@ -19,7 +19,7 @@ function homeMaybeFromIntro() {
     return h;
 }
 
-function textSquareItems(square: TextSquare, majorToMinorGap: number, betweenMinorsGap: number): Node[] {
+function textSquareItems(square: TextSquare, majorToMinorGap: number, betweenMinorsGap: number): LayoutNode[] {
     return [
         el(square.major),
         gap(majorToMinorGap),

@@ -2,12 +2,11 @@ import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 import { ieBlue, ieGreen } from "../constants";
 import { isLandscape, NEXT_PILLAR_BUTTON_PAD, styleSingleLineText, styleText } from "../layout";
-import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, Node, run, setSizeX, setSizeY } from "../newLayoutEngine";
+import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, LayoutNode, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleNextPillarButtonMobile } from "../scroll";
 import { site } from "../site";
 import { colorOnHover, interlaceWithBetween } from "../util";
-
 
 interface InspirationTile {
     image: HTMLImageElement;
@@ -19,7 +18,7 @@ interface InspirationTile {
 function addInspirationTile(blog: Blog) {
     const image = addScrollImage(blog.thumbnailPath());
     const title = addScrollText(blog.title);
-    const description = addScrollText(blog.subtitle);
+    const description = addScrollText(blog.description);
     const readMore = addScrollText("Read more");
 
     readMore.style.cursor = "pointer";
@@ -33,7 +32,7 @@ function addInspirationTile(blog: Blog) {
     return { image, title, description, readMore };
 }
 
-function tileDesktop({ image, title, description, readMore }: InspirationTile): Node {
+function tileDesktop({ image, title, description, readMore }: InspirationTile): LayoutNode {
     return flow(
         Axis.Y,
         [
@@ -54,24 +53,30 @@ function tileDesktop({ image, title, description, readMore }: InspirationTile): 
     );
 }
 
-function tileMobile({ image, title, description, readMore }: InspirationTile): Node {
+function tileMobile({ image, title, description, readMore }: InspirationTile): LayoutNode {
     return flow(
         Axis.Y,
         [
             imageWithFillWidth(image), // -
-            gap(0.04),
-            el(title, { style: (c) => styleSingleLineText(title, { letterSpacing: 0, fontWeight: 400, color: "#000000", fontSize: 0.04 * c.s }), align: Align.Center }),
-            gap(0.02),
-            el(description, {
-                style: (c) => {
-                    styleText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.05 * c.s });
-                    setSizeX(description, c.parent.w);
-                },
-            }),
-            gap(0.02),
-            el(readMore, { style: (c) => styleSingleLineText(readMore, { letterSpacing: 0, fontWeight: 400, color: ieBlue, fontSize: 0.032 * c.s }), align: Align.Center }),
+            gap(0.07),
+            flow(
+                Axis.Y,
+                [
+                    el(title, { style: (c) => styleSingleLineText(title, { letterSpacing: 0, fontWeight: 400, color: "#000000", fontSize: 0.04 * c.s }) }),
+                    gap(0.02),
+                    el(description, {
+                        style: (c) => {
+                            styleText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.05 * c.s });
+                            setSizeX(description, c.parent.w);
+                        },
+                    }),
+                    gap(0.02),
+                    el(readMore, { style: (c) => styleSingleLineText(readMore, { letterSpacing: 0, fontWeight: 400, color: ieBlue, fontSize: 0.032 * c.s }) }),
+                ],
+                { w: (c) => c.s * 0.85, align: Align.Center }
+            ),
         ],
-        { w: (c) => c.s, align: Align.Start }
+        { w: (c) => c.s }
     );
 }
 
@@ -114,7 +119,7 @@ export function addInspirationPage() {
             gap(0.05),
             imageWithWidth(andOtherThings, 0.9),
             gap(0.1),
-            ...interlaceWithBetween(tiles.map(tileMobile), gap(0.08)),
+            ...interlaceWithBetween(tiles.map(tileMobile), gap(0.12)),
             gap(NEXT_PILLAR_BUTTON_PAD),
             el(nextPillarButton, {
                 style: (c) => {

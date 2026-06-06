@@ -1,4 +1,4 @@
-import { fadeInAnimation } from "./constants";
+import { ieBlue, ieGreen } from "./constants";
 
 export const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
 
@@ -85,4 +85,20 @@ export function interleaveArrays<A, B>(...arrays: (A | B)[][]): (A | B)[] {
         }
     }
     return result;
+}
+
+export function link(text: string, href: string) {
+    const a = document.createElement("a");
+    a.style.cursor = "pointer";
+    a.href = href;
+    a.target = "_blank";
+    a.innerText = text;
+    colorOnHover(a, ieBlue, ieGreen);
+    a.style.textDecoration = "none";
+    return a;
+}
+
+export function appendParagraph(p: HTMLParagraphElement, ...nodes: (string | Node)[]) {
+    p.append(...nodes);
+    return p;
 }

@@ -3,7 +3,7 @@ import { isLandscape, styleSingleLineText, styleText } from "../layout";
 import { Align, anchored, Axis, el, flow, gap, imageWithHeight, imageWithFillWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
-import { colorOnHoverSVGFill, interlaceWithBetween } from "../util";
+import { appendParagraph, colorOnHoverSVGFill, interlaceWithBetween, link } from "../util";
 
 function addIcon(imageSrc: string, clickLink: string) {
     const icon = addScrollSvg(imageSrc);
@@ -29,7 +29,7 @@ export function addConnectPage() {
     const texts = [
         addScrollText("Our clients look to us for more than award-winning design. They value our role as trusted advisor, support, and confidant."), // -
         addScrollText("We look for synergy and compatibility in every relationship we build so the work experience doesn’t feel like work at all."),
-        addScrollText("If your gut is telling you we should connect, now is the perfect time to email."),
+        appendParagraph(addScrollText(""), "If your gut is telling you we should connect, now is the perfect time to ", link("email", "mailto:beth@ie-design.com"), "."),
     ];
     const icons = [
         addIcon("connect/instagram-icon.svg", "https://www.instagram.com/iedesigninc"), // -

@@ -1,6 +1,6 @@
 import { fadeInAnimation, gray, ieGreen } from "../constants";
 import { isLandscape, lastLineMetrics, NEXT_PILLAR_BUTTON_PAD, sizeY, styleSingleLineText, styleText } from "../layout";
-import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, Node, run, setPosX, setPosY, setSizeX } from "../newLayoutEngine";
+import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setPosX, setPosY, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, styleNextPillarButton } from "../scroll";
 import { interlaceWithBetween, interleaveArrays } from "../util";
@@ -102,8 +102,7 @@ function createTimelineLine() {
     return timelineLine;
 }
 
-// Desktop: a vertical line hanging from the bottom of the node's box down to the bottom of the scroll area.
-function withTimelineDesktop(node: Node, offsetFactor: number) {
+function withTimelineDesktop(node: LayoutNode, offsetFactor: number) {
     const line = createTimelineLine();
     line.style.width = "1px";
     node.post = () => {
@@ -116,8 +115,7 @@ function withTimelineDesktop(node: Node, offsetFactor: number) {
     return node;
 }
 
-// Mobile: a horizontal line running from the left of the scroll area to the left edge of the node's box.
-function withTimelineMobile(node: Node, offsetFactor: number) {
+function withTimelineMobile(node: LayoutNode, offsetFactor: number) {
     const line = createTimelineLine();
     line.style.height = "1px";
     node.post = () => {

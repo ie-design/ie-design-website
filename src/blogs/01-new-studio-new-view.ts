@@ -27,7 +27,7 @@ export const newStudioNewViewBlog = new Blog(
 
         b.addSpace();
         b.addImage("scaffold-view.jpg");
-        b.addImageSpace();
+        b.addImagePairSpace();
         b.addImagePair("tiles.jpg", "scaffold-window.jpg");
     }
 );

@@ -1,3 +1,4 @@
+import { link } from "../util";
 import { Blog } from "./blog";
 
 export const rebrandingAFamilyBusinessBlog = new Blog(
@@ -9,7 +10,7 @@ export const rebrandingAFamilyBusinessBlog = new Blog(
         b.addParagraph("The first step was determining whether or not to change the company’s name. As second-generation owners, the two brothers were beginning to contemplate a succession plan to set the company up for success after their own retirement. They asked us to consider a name that wasn’t tied directly to them.");
         b.addParagraph("").append(
             "As we got to know Bill and Chip, we came to appreciate the strong, personal nature of the long-term relationships that characterized their business. It became clear that there was a great deal of equity in the Krempa name. To simplify and modernize the brand without losing valuable brand equity, we dropped “Associates,” allowing us to capitalize on the strength of the shorter (and already secured) ", // -
-            b.link("Krempa.com", "https://krempa.com/"), // -
+            link("Krempa.com", "https://krempa.com/"), // -
             "."
         );
         b.addParagraph("Along with simplifying the name, we introduced a new tagline incorporating the date of the company’s inception.");

@@ -13,9 +13,9 @@ export const reconnectingBlog = new Blog(
         b.addParagraph("The minute the phone rang, I snapped out of these memories and realized I wasn't sure exactly why I was calling. Standing in my kitchen in Nashville, I felt a moment of panic and then Beth's friendly voice broke the silence. As mutual fans of examining coincidences as potential opportunities, we realized that we were at similar creative crossroads and that this call was right on time. She wanted to relaunch i.e. design and I wanted to work with her again. The pandemic made the fact that we were separated by 1,500 miles irrelevant. At the end of our call, Beth echoed the past when she said, \"Let's take a shot and see how it goes.\"");
         b.addSpace();
         b.addParagraph("Some of Lee's design work with i.e. design from the early 2000s. Copper, the wonder dog, taking in the Nashville sunrise, 2021.");
-        b.addImageSpace();
+        b.addImagePairSpace();
         b.addImagePair("hudson-river-studios.jpg", "px.jpg");
-        b.addImageSpace();
+        b.addImagePairSpace();
         b.addImagePair("kwe.jpg", "copper.jpg");
         b.addSpace();
         b.addParagraph("Lee Lipscomb is i.e. design's Senior Designer. Her dog, Copper, has a nicer bed than she does");

@@ -1,13 +1,18 @@
-import { aligningWithGapsY, LayoutItem, px, setSizeX, sizeX, styleText } from "../layout";
 import { ieBlue, ieGreen } from "../constants";
+import { isLandscape, styleText } from "../layout";
+import { Align, Axis, el, flow, gap, imageWithParentWidth, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollPadding, addScrollText, addScrollVideo, getScrollHeight, resizeScrollContainerFull } from "../scroll";
+import { addScrollImage, addScrollPadding, addScrollText, addScrollVideo, getScrollWidth, resizeScrollContainerFull, resizeScrollContainerPortrait } from "../scroll";
 import { site } from "../site";
 import { colorOnHover } from "../util";
 
-const IMAGE_SPACING = 0.02;
-const DEFAULT_SPACING = 0.018;
+const IMAGE_PAIR_SPACING = 0.02;
+const DEFAULT_DESKTOP_SPACING = 0.018;
+const DEFAULT_MOBILE_SPACING = 0.045;
 const thumbnail = "thumbnail.jpg";
+
+const desktopFlow = (...children: LayoutNode[]) => flow(Axis.Y, children, { w: (c) => c.s * 0.8, align: Align.Center });
+const mobileFlow = (...children: LayoutNode[]) => flow(Axis.Y, children, { w: (c) => c.s * 0.85, align: Align.Center });
 
 export class Blog {
     name = "";
@@ -15,91 +20,147 @@ export class Blog {
     prevBlog?: Blog;
     nextBlog?: Blog;
 
-    constructor(readonly title: string, readonly subtitle: string, private readonly setup: (b: Blog) => void) {}
+    constructor(readonly title: string, readonly description: string, private readonly setup: (b: Blog) => void) {}
 
-    items: LayoutItem[] = [];
+    private desktopNodes: LayoutNode[] = [];
+    private mobileNodes: LayoutNode[] = [];
 
     path = (src: string) => `blog/${this.nameWithNumber}/${src}`;
     thumbnailPath = () => this.path(thumbnail);
 
-    gap = 0;
-    push = <T extends HTMLElement>(element: T, followingGap: number): T => {
-        if (this.gap && element instanceof HTMLParagraphElement) this.items.push(this.gap);
-        this.items.push(element);
-        this.gap = followingGap;
-        return element;
-    };
-
     addSpace = () => {
-        this.items.push(0.04);
+        this.desktopNodes.push(gap(0.04));
+        this.mobileNodes.push(gap(0.08));
     };
-    addImageSpace = () => {
-        this.items.push(IMAGE_SPACING);
+    addImagePairSpace = () => {
+        this.desktopNodes.push(gap(IMAGE_PAIR_SPACING));
+        this.mobileNodes.push(gap(IMAGE_PAIR_SPACING));
     };
 
-    imagesAndScales = new Map<HTMLImageElement, number>();
-    addImage = (src: string, scale?: number) => {
+    addImage = (src: string, scale = 1) => {
         const img = addScrollImage(this.path(src));
-        this.imagesAndScales.set(img, scale ?? 1);
-        return this.push(img, 0);
+        this.desktopNodes.push(desktopFlow(imageWithParentWidth(img, scale)));
+        this.mobileNodes.push(imageWithParentWidth(img, scale));
+        return img;
     };
 
-    imagePairs: [HTMLImageElement, HTMLImageElement][] = [];
     addImagePair = (leftSrc: string, rightSrc: string): [HTMLImageElement, HTMLImageElement] => {
         const leftImage = addScrollImage(this.path(leftSrc));
         const rightImage = addScrollImage(this.path(rightSrc));
-        this.imagePairs.push([leftImage, rightImage]);
-        this.push(leftImage, 0);
+        this.desktopNodes.push(
+            desktopFlow(
+                flow(Axis.X, [imageWithWidth(leftImage, (1 - IMAGE_PAIR_SPACING) / 2), gap(IMAGE_PAIR_SPACING), imageWithWidth(rightImage, (1 - IMAGE_PAIR_SPACING) / 2)], { w: (c) => c.parent.w }) // -
+            )
+        );
+        this.mobileNodes.push(
+            mobileFlow(
+                flow(Axis.X, [imageWithWidth(leftImage, (1 - IMAGE_PAIR_SPACING) / 2), gap(IMAGE_PAIR_SPACING), imageWithWidth(rightImage, (1 - IMAGE_PAIR_SPACING) / 2)], { w: (c) => c.parent.w }) // -
+            )
+        );
         return [leftImage, rightImage];
     };
 
-    videos: HTMLVideoElement[] = [];
     addVideo = (src: string, poster?: string) => {
         const video = addScrollVideo(this.path(src), poster ? this.path(poster) : undefined);
-        this.videos.push(video);
-        return this.push(video, DEFAULT_SPACING);
+        this.desktopNodes.push(
+            desktopFlow(
+                el(video, { style: (c) => setSizeX(video, c.parent.w) }), // -
+                gap(DEFAULT_DESKTOP_SPACING)
+            )
+        );
+        this.mobileNodes.push(
+            mobileFlow(
+                el(video, { style: (c) => setSizeX(video, c.parent.w) }), // -
+                gap(DEFAULT_MOBILE_SPACING)
+            )
+        );
+        return video;
     };
 
-    heads: HTMLParagraphElement[] = [];
     addHead = (text: string) => {
-        const el = addScrollText(text);
-        this.heads.push(el);
-        return this.push(el, DEFAULT_SPACING);
+        const elem = addScrollText(text);
+        this.desktopNodes.push(
+            desktopFlow(
+                el(elem, {
+                    style: (c) => {
+                        styleText(elem, { letterSpacing: 0, fontWeight: 400, color: "#B3B3B3", fontSize: 0.025 * c.s, lineHeight: 0.02 * c.s });
+                        setSizeX(elem, c.parent.w);
+                    },
+                }),
+                gap(DEFAULT_DESKTOP_SPACING)
+            )
+        );
+        this.mobileNodes.push(
+            mobileFlow(
+                el(elem, {
+                    style: (c) => {
+                        styleText(elem, { letterSpacing: 0.005 * c.s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.06 * c.s, lineHeight: 0.08 * c.s });
+                        setSizeX(elem, c.parent.w);
+                    },
+                }),
+                gap(DEFAULT_MOBILE_SPACING)
+            )
+        );
+        return elem;
     };
 
-    subheads: HTMLParagraphElement[] = [];
     addSubhead = (text: string) => {
-        const el = addScrollText(text);
-        this.subheads.push(el);
-        return this.push(el, 0.015);
+        const elem = addScrollText(text);
+        this.desktopNodes.push(
+            desktopFlow(
+                el(elem, {
+                    style: (c) => {
+                        styleText(elem, { letterSpacing: 0, fontWeight: 600, color: "#000000", fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s });
+                        setSizeX(elem, c.parent.w);
+                    },
+                }),
+                gap(0.015)
+            )
+        );
+        this.mobileNodes.push(
+            mobileFlow(
+                el(elem, {
+                    style: (c) => {
+                        styleText(elem, { letterSpacing: 0, fontWeight: 600, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.055 * c.s });
+                        setSizeX(elem, c.parent.w);
+                    },
+                }),
+                gap(0.015)
+            )
+        );
+        return elem;
     };
 
-    paragraphs: HTMLParagraphElement[] = [];
     addParagraph = (text: string) => {
-        const el = addScrollText(text);
-        this.paragraphs.push(el);
-        return this.push(el, DEFAULT_SPACING);
-    };
-
-    link = (text: string, href: string) => {
-        const a = document.createElement("a");
-        a.href = href;
-        a.target = "_blank";
-        a.innerText = text;
-        colorOnHover(a, ieBlue, ieGreen);
-        a.style.textDecoration = "none";
-        return a;
+        const elem = addScrollText(text);
+        this.desktopNodes.push(
+            desktopFlow(
+                el(elem, {
+                    style: (c) => {
+                        styleText(elem, { letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s });
+                        setSizeX(elem, c.parent.w);
+                    },
+                }),
+                gap(DEFAULT_DESKTOP_SPACING)
+            )
+        );
+        this.mobileNodes.push(
+            mobileFlow(
+                el(elem, {
+                    style: (c) => {
+                        styleText(elem, { letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.055 * c.s });
+                        setSizeX(elem, c.parent.w);
+                    },
+                }),
+                gap(DEFAULT_MOBILE_SPACING)
+            )
+        );
+        return elem;
     };
 
     add = () => {
-        this.items = [];
-        this.gap = 0;
-        this.imagesAndScales = new Map();
-        this.imagePairs = [];
-        this.videos = [];
-        this.heads = [];
-        this.subheads = [];
-        this.paragraphs = [];
+        this.desktopNodes = [];
+        this.mobileNodes = [];
 
         this.addImage(thumbnail);
         this.addSpace();
@@ -107,80 +168,69 @@ export class Blog {
 
         this.setup(this);
 
-        const navButtons: HTMLParagraphElement[] = [];
-        function addNavButton(navBlog: Blog | undefined, title: (blog: Blog) => string) {
+        function addNavButton(navBlog: Blog | undefined, label: (blog: Blog) => string) {
             if (navBlog) {
-                const navButton = addScrollText(title(navBlog));
-                navButton.style.cursor = "pointer";
-                colorOnHover(navButton, ieBlue, ieGreen);
-                navButton.onclick = () => site.openPage(navBlog.add);
-                navButtons.push(navButton);
-                return navButton;
+                const btn = addScrollText(label(navBlog));
+                btn.style.cursor = "pointer";
+                colorOnHover(btn, ieBlue, ieGreen);
+                btn.onclick = () => site.openPage(navBlog.add);
+                return btn;
             }
         }
         const prevButton = addNavButton(this.prevBlog, (b) => "← " + b.title);
         const nextButton = addNavButton(this.nextBlog, (b) => b.title + " →");
-        this.items.push(0.06, navButtons);
 
         const scrollPadding = addScrollPadding();
-        this.items.push(0.05, scrollPadding);
+
+        function navButtonNodeDesktop(btn: HTMLParagraphElement | undefined, alignAlongFlow: Align) {
+            return btn ? el(btn, { style: (c) => styleText(btn, { letterSpacing: 0, fontWeight: 500, color: ieBlue, fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s }), alignAlongFlow }) : undefined;
+        }
+        const desktopLayout = flow(
+            Axis.Y,
+            [
+                ...this.desktopNodes, // -
+                gap(0.06),
+                desktopFlow(
+                    flow(
+                        Axis.X,
+                        [navButtonNodeDesktop(prevButton, Align.Start), navButtonNodeDesktop(nextButton, Align.End)].filter((x) => x !== undefined),
+                        { w: (c) => c.parent.w }
+                    )
+                ),
+                gap(0.05),
+                el(scrollPadding),
+            ],
+            { w: (c) => c.s }
+        );
+
+        function navButtonNodeMobile(btn: HTMLParagraphElement | undefined, alignAlongFlow: Align) {
+            return btn ? el(btn, { style: (c) => styleText(btn, { letterSpacing: 0, fontWeight: 500, color: ieBlue, fontSize: 0.02 * c.s, lineHeight: 0.06 * c.s }), alignAlongFlow }) : undefined;
+        }
+        const mobileLayout = flow(
+            Axis.Y,
+            [
+                ...this.mobileNodes,
+                gap(0.06),
+                mobileFlow(
+                    flow(
+                        Axis.X,
+                        [navButtonNodeMobile(prevButton, Align.Start), navButtonNodeMobile(nextButton, Align.End)].filter((x) => x !== undefined),
+                        { w: (c) => c.parent.w }
+                    )
+                ),
+                gap(0.05),
+                el(scrollPadding),
+            ],
+            { w: (c) => c.s }
+        );
 
         registerUpdateLayout(() => {
-            resizeScrollContainerFull();
-
-            const s = innerWidth;
-            const h = getScrollHeight();
-            const leftMargin = h * 0.3;
-            const fit = innerWidth - leftMargin * 2;
-
-            for (const [image, scale] of this.imagesAndScales) {
-                const scaledWidth = fit * scale;
-                image.style.width = px(scaledWidth);
-            }
-
-            const halfImageWidth = (fit - IMAGE_SPACING * s) / 2;
-            for (const [leftImage, rightImage] of this.imagePairs) {
-                leftImage.style.width = px(halfImageWidth);
-                rightImage.style.width = px(halfImageWidth);
-            }
-
-            for (const video of this.videos) video.style.width = px(fit);
-
-            for (const head of this.heads) {
-                styleText(head, { letterSpacing: 0.0002 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.025 * s, lineHeight: 0.02 * s });
-                setSizeX(head, fit);
-            }
-            for (const subhead of this.subheads) {
-                styleText(subhead, { letterSpacing: 0.0002 * s, fontWeight: 600, color: "#000000", fontSize: 0.011 * s, lineHeight: 0.02 * s });
-                setSizeX(subhead, fit);
-            }
-            for (const paragraph of this.paragraphs) {
-                styleText(paragraph, { letterSpacing: 0.0002 * s, fontWeight: 300, color: "#000000", fontSize: 0.011 * s, lineHeight: 0.019 * s });
-                setSizeX(paragraph, fit);
-            }
-
-            const itemsScaled = this.items.map((item) => (typeof item === "number" ? item * s : item));
-            const [elementAlignments, _] = aligningWithGapsY(itemsScaled);
-            for (const { element, offset } of elementAlignments) {
-                element.style.top = px(offset);
-                element.style.left = px(leftMargin);
-            }
-
-            for (const [image, scale] of this.imagesAndScales) {
-                const scaledWidth = fit * scale;
-                image.style.left = px(leftMargin + (fit - scaledWidth) / 2);
-            }
-
-            for (const [leftImage, rightImage] of this.imagePairs) {
-                rightImage.style.top = leftImage.style.top;
-                rightImage.style.left = px(leftMargin + halfImageWidth + IMAGE_SPACING * s);
-            }
-
-            const navStyle = { letterSpacing: 0.0002 * s, fontWeight: 500, color: ieBlue, fontSize: 0.011 * s, lineHeight: 0.02 * s };
-            if (prevButton) styleText(prevButton, navStyle);
-            if (nextButton) {
-                styleText(nextButton, navStyle);
-                nextButton.style.left = px(leftMargin + fit - sizeX(nextButton));
+            if (isLandscape()) {
+                resizeScrollContainerFull();
+                run(desktopLayout, innerWidth);
+            } else {
+                resizeScrollContainerFull();
+                run(mobileLayout, innerWidth);
             }
         });
     };
