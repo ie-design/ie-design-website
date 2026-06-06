@@ -1,8 +1,8 @@
 import { body } from "../constants";
-import { isLandscape, NEXT_PILLAR_BUTTON_PAD, posX } from "../layout";
-import { Align, applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, LayoutNode, run, textSquareItems, virtual } from "../newLayoutEngine";
+import { isLandscape, NEXT_PILLAR_BUTTON_PAD, posX, posY } from "../layout";
+import { Align, applyBox, Axis, center, containAspect, Ctx, debugBoxWith, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, textSquareItems, virtual } from "../newLayoutEngine";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout } from "../page";
-import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollTextSquare, getScrollHeight, resizeScrollContainerLandscape, scrollContainer, styleNextPillarButton, TextSquare } from "../scroll";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollTextSquare, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, styleNextPillarButton, TextSquare } from "../scroll";
 import { effect, Signal } from "../signal";
 import { animateSpringToTarget, Spring } from "../spring";
 import { findWithMin, interlaceWithBetween, interlaceWithFactory, spaceToFile } from "../util";
@@ -61,6 +61,7 @@ export function addWorkPage() {
         const tabImage = document.createElement("img");
         tabImage.style.position = "absolute";
         tabImage.style.cursor = "pointer";
+        tabImage.style.zIndex = "1";
         tabImage.src = `work/${spaceToFile(workContent.name)}/tab.png`;
 
         awaitLayout(tabImage.decode());
@@ -69,7 +70,14 @@ export function addWorkPage() {
         return tabImage;
     });
 
+    const tuckedTabShelf = document.createElement("div");
+    tuckedTabShelf.style.position = "absolute";
+    tuckedTabShelf.style.background = "white";
+    appendChildForPage(body, tuckedTabShelf);
+
     // layout
+
+    const debugBox = debugBoxWith((div) => appendChildForPage(body, div));
 
     const cellCount = tabImages.length * 2 - 1;
     const cellWidth = (c: Ctx) => c.parent.w / cellCount;
@@ -84,7 +92,7 @@ export function addWorkPage() {
         containAspect(() => cellCount * tabAspect(), B_MAX_WIDTH, B_MAX_HEIGHT)
     );
 
-    const allTabsWithY: LayoutNode[] = [];
+    const allFloating: LayoutNode[] = [];
     const buildTabsWithY = (getY: (tabNode: LayoutNode) => number) => {
         const tabsWithY = tabReadyNormal.map((tabNode) =>
             virtual({
@@ -97,7 +105,7 @@ export function addWorkPage() {
                 },
             })
         );
-        allTabsWithY.push(...tabsWithY);
+        allFloating.push(...tabsWithY);
         return tabsWithY;
     };
 
@@ -105,9 +113,22 @@ export function addWorkPage() {
     const tabTuckedNormal = buildTabsWithY((tabNode) => innerHeight - tabNode.box.w / 2);
     const tabTuckedHover = buildTabsWithY((tabNode) => innerHeight - tabNode.box.w);
 
-    const fromLeft = () => innerHeight * 0.34;
-    const fromRight = () => innerHeight * 0.2;
-    const tabsOuterBounds = center([tabsTightContainer, ...allTabsWithY], {
+    const tuckedTabShelfNode = el(tuckedTabShelf, {
+        float: true,
+        place: (self) => {
+            const h = tabTuckedHover[0].box.w * 1.5;
+            self.x = 0;
+            self.y = innerHeight - h;
+            self.w = innerWidth;
+            self.h = h;
+        },
+        post: () => applyBox(tuckedTabShelf, tuckedTabShelfNode.box),
+    });
+    allFloating.push(tuckedTabShelfNode);
+
+    const fromLeft = () => (isLandscape() ? innerHeight * 0.34 : innerWidth * 0.08);
+    const fromRight = () => (isLandscape() ? innerHeight * 0.2 : innerWidth * 0.08);
+    const tabsOuterBounds = center([tabsTightContainer, ...allFloating], {
         w: () => innerWidth - fromRight() - fromLeft(),
         h: () => A_HEIGHT * innerHeight,
         place: (self) => (self.x = fromLeft()),
@@ -162,6 +183,8 @@ export function addWorkPage() {
     async function enterWorkView(initialIndex: number) {
         mode = "tucked";
 
+        // elements
+
         const workItems: WorkItem[] = workContents.map((workContent) => ({
             textSquare: addScrollTextSquare(workContent.name.toUpperCase(), ...workContent.description),
             image1: addScrollImage(`work/${spaceToFile(workContent.name)}/1.jpg`),
@@ -171,24 +194,53 @@ export function addWorkPage() {
         const nextPillarButton = addNextPillarButton("evolution");
         const scrollPadding = addScrollPadding();
 
-        const workTextSquareDesktop = (square: TextSquare) =>
-            textSquareItems(
-                square.major,
-                (s) => ({ letterSpacing: 0.011 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, lineHeight: 0.05 * s }),
-                0.05,
-                square.minors,
-                (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, lineHeight: 0.05 * s }),
-                0.02,
-                (s) => 1 * s
-            );
+        // action
 
-        const workItemsLayout = flow(
+        const workItemsWithTabs = workItems.map((workItem, i) => ({ workItem, tabAnimation: tabAnimations[i] }));
+
+        const scrollToWork = (workItem: WorkItem) => {
+            const major = workItem.textSquare.major;
+            const q = isLandscape() ? { left: posX(major) } : { top: posY(major) - getHeaderBarHeight() };
+            scrollContainer.scroll({ ...q, behavior: "smooth" });
+        };
+
+        for (const w of workItemsWithTabs) {
+            w.tabAnimation.chase();
+            w.tabAnimation.img.onclick = () => scrollToWork(w.workItem);
+        }
+
+        scrollContainer.addEventListener("scroll", () => {
+            const closest = findWithMin(workItemsWithTabs, (w) => {
+                if (isLandscape()) {
+                    const center = scrollContainer.scrollLeft + scrollContainer.clientWidth / 2;
+                    return Math.abs(posX(w.workItem.textSquare.major) - center);
+                } else {
+                    const center = scrollContainer.scrollTop - scrollContainer.clientHeight / 2;
+                    return Math.abs(posY(w.workItem.textSquare.major) - center);
+                }
+            });
+            if (closest.tabAnimation.isCurrentViewed) return;
+
+            tabAnimations.forEach((t) => t.setCurrentViewed(t === closest.tabAnimation));
+        });
+
+        // layout
+
+        const desktopLayout = flow(
             Axis.X,
             [
                 ...interlaceWithBetween(
                     workItems.map((item) =>
                         flow(Axis.X, [
-                            workTextSquareDesktop(item.textSquare), // -
+                            textSquareItems(
+                                item.textSquare.major,
+                                (s) => ({ letterSpacing: 0.004 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, lineHeight: 0.05 * s }),
+                                0.05,
+                                item.textSquare.minors,
+                                (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, lineHeight: 0.05 * s }),
+                                0.02,
+                                (s) => 1 * s
+                            ), // -
                             gap(0.2),
                             imageWithHeight(item.image1, 1),
                             gap(0.15),
@@ -205,28 +257,44 @@ export function addWorkPage() {
             { h: (c) => c.s }
         );
 
-        const workItemsWithTabs = workItems.map((workItem, i) => ({ workItem, tabAnimation: tabAnimations[i] }));
-
-        const scrollToWork = (workItem: WorkItem) => scrollContainer.scroll({ left: posX(workItem.textSquare.major), behavior: "smooth" });
-
-        for (const w of workItemsWithTabs) {
-            w.tabAnimation.chase();
-            w.tabAnimation.img.onclick = () => scrollToWork(w.workItem);
-        }
-
-        scrollContainer.addEventListener("scroll", () => {
-            const center = scrollContainer.scrollLeft + scrollContainer.clientWidth / 2;
-            const closest = findWithMin(workItemsWithTabs, (w) => Math.abs(posX(w.workItem.textSquare.major) - center));
-            if (closest.tabAnimation.isCurrentViewed) return;
-
-            tabAnimations.forEach((t) => t.setCurrentViewed(t === closest.tabAnimation));
-        });
+        const mobileLayout = flow(
+            Axis.Y,
+            [
+                gap(0.1),
+                ...interlaceWithBetween(
+                    workItems.map((item) =>
+                        flow(Axis.Y, [
+                            textSquareItems(
+                                item.textSquare.major,
+                                (s) => ({ letterSpacing: 0.004 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, lineHeight: 0.05 * s }),
+                                0.05,
+                                item.textSquare.minors,
+                                (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, lineHeight: 0.05 * s }),
+                                0.02,
+                                (s) => 0.85 * s
+                            ), // -
+                            gap(0.2),
+                            imageWithWidth(item.image1, 1),
+                            gap(0.15),
+                            imageWithWidth(item.image2, 1),
+                        ])
+                    ),
+                    gap(0.2)
+                ),
+                gap(NEXT_PILLAR_BUTTON_PAD),
+                el(nextPillarButton, { style: (c) => styleNextPillarButton(nextPillarButton, c.s), align: Align.Center }),
+                gap(NEXT_PILLAR_BUTTON_PAD),
+                el(scrollPadding),
+            ],
+            { h: (c) => c.s }
+        );
 
         await flushPageContent(); // appendChildForPage only stages elements; flush attaches them + awaits decodes
         registerUpdateLayout(() => {
             if (isLandscape()) {
-                run(workItemsLayout, getScrollHeight());
+                run(desktopLayout, getScrollHeight());
             } else {
+                run(mobileLayout, getScrollWidth());
             }
         });
 
@@ -234,7 +302,11 @@ export function addWorkPage() {
     }
 
     registerUpdateLayout(() => {
-        resizeScrollContainerLandscape();
+        if (isLandscape()) {
+            resizeScrollContainerLandscape();
+        } else {
+            resizeScrollContainerPortrait();
+        }
 
         run(tabsOuterBounds, 0); // s doesn't matter here
         tabAnimations.forEach((t) => t.relayout());
