@@ -1,17 +1,18 @@
 import { blogs } from "./blogs/blogs";
 import { body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen } from "./constants";
-import { centerElementX, centerElementY, centerWithGapY, isLandscape, px, setImageHeight, setImageWidth, sizeX, styleText } from "./layout";
+import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
 import { Modal } from "./modal";
+import { Axis, flow, imageWithHeight, imageWithWidth, run } from "./newLayoutEngine";
 import { cleanLastPage, registerUpdateLayout, shouldElementOutlastPage } from "./page";
 import { addConnectPage } from "./pages/connect";
 import { addEvolutionPage } from "./pages/evolution";
 import { addInspirationPage } from "./pages/inspiration";
 import { addViewPage, setHomeFromIntro } from "./pages/view";
 import { addWorkPage } from "./pages/work";
-import { addScrollSvg, centerWithinScrollY, getHeaderBarHeight, getScrollHeight, resizeScrollContainerLandscape } from "./scroll";
+import { addScrollSvg, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
-import { colorOnHover, colorOnHoverSVGStroke, createIconSVG, fetchSVG, getElementByIdSVG, makeLine, makePolyline, setAttributes, sleep } from "./util";
+import { colorOnHover, colorOnHoverSVGStroke, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, makeLine, makePolyline, setAttributes, sleep } from "./util";
 
 interface Page {
     addPage: () => void;
@@ -327,7 +328,7 @@ export class Site {
             if (isLandscape()) {
                 copyright.style.left = px(this.sideItemsShown ? this.leftAlign() : -300);
                 copyright.style.top = px(innerHeight * 0.9);
-                styleText(copyright, { letterSpacing: 0.3, fontWeight: 500, color: gray, fontSize: 0.012 * innerHeight, lineHeight: 20 });
+                styleSingleLineText(copyright, { letterSpacing: 0.3, fontWeight: 500, color: gray, fontSize: 0.012 * innerHeight });
                 copyright.style.visibility = "visible";
             } else {
                 // ZZZZ need to do something here
@@ -415,11 +416,16 @@ export class Site {
         setHomeFromIntro(home);
         home.style.animation = "";
 
+        const desktopLayout = flow(Axis.X, [imageWithHeight(home, 0.95)], { h: (c) => c.s });
+        const mobileLayout = flow(Axis.Y, [imageWithWidth(home, 0.95)], { w: (c) => c.s });
+
         registerUpdateLayout(() => {
             if (isLandscape()) {
                 resizeScrollContainerLandscape();
-                centerWithinScrollY(home, 0.95);
-                home.style.left = px(0);
+                run(desktopLayout, getScrollHeight());
+            } else {
+                resizeScrollContainerPortrait();
+                run(mobileLayout, getScrollWidth());
             }
         });
 
@@ -544,3 +550,59 @@ export class Site {
 }
 
 export const site = new Site();
+
+// ZZZZ these will later be removed in favor of new layout system
+
+interface ElementAlignment {
+    element: BoxElement;
+    offset: number;
+}
+
+type LayoutItem = BoxElement | BoxElement[] | number;
+
+function centerElementX(element: HTMLElement) {
+    element.style.left = px(innerWidth / 2 - sizeX(element) / 2);
+}
+
+function centerElementY(element: HTMLElement) {
+    element.style.top = px(innerHeight / 2 - sizeY(element) / 2);
+}
+
+export function setImageWidth(image: HTMLImageElement, width: number) {
+    image.style.width = px(width);
+    image.style.height = px((width / image.naturalWidth) * image.naturalHeight);
+}
+
+export function setImageHeight(image: HTMLImageElement, height: number) {
+    image.style.height = px(height);
+    image.style.width = px((height / image.naturalHeight) * image.naturalWidth);
+}
+
+function axisAligningWithGaps(axisSize: (element: BoxElement) => number) {
+    return (elementsOrGaps: LayoutItem[]): [ElementAlignment[], number] => {
+        const elementAlignments: ElementAlignment[] = [];
+        let runningTotal = 0;
+        for (const item of elementsOrGaps) {
+            if (Array.isArray(item)) {
+                for (const element of item) elementAlignments.push({ element, offset: runningTotal });
+                runningTotal += Math.max(...item.map(axisSize));
+            } else if (item instanceof HTMLElement || item instanceof SVGSVGElement) {
+                elementAlignments.push({ element: item, offset: runningTotal });
+                runningTotal += axisSize(item);
+            } else {
+                runningTotal += item;
+            }
+        }
+        return [elementAlignments, runningTotal];
+    };
+}
+
+const aligningWithGapsY = axisAligningWithGaps(sizeY);
+function centerWithGapY(elements: HTMLElement[], gap: number, center: number) {
+    const elementsWithGaps = interlaceWithBetween(elements, gap);
+    const [elementAlignments, totalHeight] = aligningWithGapsY(elementsWithGaps);
+
+    for (const { element, offset } of elementAlignments) {
+        element.style.top = px(offset + center - totalHeight / 2);
+    }
+}

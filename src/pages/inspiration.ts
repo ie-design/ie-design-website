@@ -1,7 +1,7 @@
 import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 import { ieBlue, ieGreen } from "../constants";
-import { isLandscape, NEXT_PILLAR_BUTTON_PAD, styleSingleLineText, styleText } from "../layout";
+import { isLandscape, NEXT_PILLAR_BUTTON_PAD, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, LayoutNode, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleNextPillarButtonMobile } from "../scroll";
@@ -42,7 +42,7 @@ function tileDesktop({ image, title, description, readMore }: InspirationTile): 
             gap(0.01),
             el(description, {
                 style: (c) => {
-                    styleText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: "#000000", fontSize: 0.027 * c.s, lineHeight: 0.05 * c.s });
+                    styleMultiLineText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: "#000000", fontSize: 0.027 * c.s, lineHeight: 0.05 * c.s });
                     setSizeX(description, c.parent.w);
                 },
             }),
@@ -66,7 +66,7 @@ function tileMobile({ image, title, description, readMore }: InspirationTile): L
                     gap(0.02),
                     el(description, {
                         style: (c) => {
-                            styleText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.05 * c.s });
+                            styleMultiLineText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.05 * c.s });
                             setSizeX(description, c.parent.w);
                         },
                     }),

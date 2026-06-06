@@ -1,4 +1,4 @@
-import { BoxElement, px, setImageWidth, setPosX, setPosY, setSizeX, setSizeY, sizeX, sizeY, styleText, TextDetails, TextStyle } from "./layout";
+import { BoxElement, MultiLineTextStyle, px, setPosX, setPosY, setSizeX, setSizeY, sizeX, sizeY, styleMultiLineText } from "./layout";
 import { interlaceWithBetween, mapRange } from "./util";
 
 // A small two-pass layout engine over "virtual boxes".
@@ -159,10 +159,10 @@ export function containAspect(aspect: number | (() => number), maxWFrac: number,
 // style callbacks let callers style each el inline; omit to style at the container instead.
 export function textSquareItems(
     major: BoxElement, // -
-    majorStyle: (s: number) => TextDetails,
+    majorStyle: (s: number) => MultiLineTextStyle,
     majorToMinorGap: number,
     minors: BoxElement[],
-    minorStyle: (s: number) => TextDetails,
+    minorStyle: (s: number) => MultiLineTextStyle,
     betweenMinorsGap: number,
     width: (s: number) => number
 ) {
@@ -171,7 +171,7 @@ export function textSquareItems(
         [
             el(major, {
                 style: (c) => {
-                    styleText(major, majorStyle(c.s));
+                    styleMultiLineText(major, majorStyle(c.s));
                     setSizeX(major, width(c.s));
                 },
             }),
@@ -180,7 +180,7 @@ export function textSquareItems(
                 minors.map((minor) =>
                     el(minor, {
                         style: (c) => {
-                            styleText(minor, minorStyle(c.s));
+                            styleMultiLineText(minor, minorStyle(c.s));
                             setSizeX(minor, width(c.s));
                         },
                     })

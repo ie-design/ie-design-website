@@ -1,13 +1,12 @@
 import { body } from "../constants";
 import { isLandscape, NEXT_PILLAR_BUTTON_PAD, posX, posY } from "../layout";
-import { Align, applyBox, Axis, center, containAspect, Ctx, debugBoxWith, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, textSquareItems, virtual } from "../newLayoutEngine";
+import { Align, applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, textSquareItems, virtual } from "../newLayoutEngine";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollTextSquare, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, styleNextPillarButton, TextSquare } from "../scroll";
 import { effect, Signal } from "../signal";
 import { animateSpringToTarget, Spring } from "../spring";
 import { findWithMin, interlaceWithBetween, interlaceWithFactory, spaceToFile } from "../util";
 
-const A_WIDTH = 1;
 const A_HEIGHT = 1;
 const B_MAX_WIDTH = 1;
 const B_MAX_HEIGHT = 0.9;
@@ -76,8 +75,6 @@ export function addWorkPage() {
     appendChildForPage(body, tuckedTabShelf);
 
     // layout
-
-    const debugBox = debugBoxWith((div) => appendChildForPage(body, div));
 
     const cellCount = tabImages.length * 2 - 1;
     const cellWidth = (c: Ctx) => c.parent.w / cellCount;

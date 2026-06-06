@@ -1,5 +1,5 @@
 import { fadeInAnimation, gray, ieGreen } from "../constants";
-import { isLandscape, lastLineMetrics, NEXT_PILLAR_BUTTON_PAD, sizeY, styleSingleLineText, styleText } from "../layout";
+import { isLandscape, lastLineMetrics, NEXT_PILLAR_BUTTON_PAD, sizeY, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setPosX, setPosY, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, styleNextPillarButton } from "../scroll";
@@ -24,7 +24,7 @@ function addQuote(quoteText: string, authorText: string, titleText: string): Quo
 }
 
 function styleQuote({ quote, author, title, openQuote, closeQuote }: Quote, s: number) {
-    styleText(quote, { letterSpacing: 0.0009 * s, fontWeight: 300, color: "#000000", fontSize: 0.032 * s, lineHeight: 0.065 * s });
+    styleMultiLineText(quote, { letterSpacing: 0.0009 * s, fontWeight: 300, color: "#000000", fontSize: 0.032 * s, lineHeight: 0.065 * s });
 
     styleSingleLineText(author, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.035 * s });
     styleSingleLineText(title, { letterSpacing: 0.00075 * s, fontWeight: 300, color: "#000000", fontSize: 0.025 * s });

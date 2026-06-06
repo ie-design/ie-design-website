@@ -1,8 +1,8 @@
 import { ieBlue, ieGreen } from "../constants";
-import { isLandscape, styleText } from "../layout";
+import { isLandscape, styleMultiLineText } from "../layout";
 import { Align, Axis, el, flow, gap, imageWithParentWidth, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
-import { addScrollImage, addScrollPadding, addScrollText, addScrollVideo, getScrollWidth, resizeScrollContainerFull, resizeScrollContainerPortrait } from "../scroll";
+import { addScrollImage, addScrollPadding, addScrollText, addScrollVideo, resizeScrollContainerFull } from "../scroll";
 import { site } from "../site";
 import { colorOnHover } from "../util";
 
@@ -83,7 +83,7 @@ export class Blog {
             desktopFlow(
                 el(elem, {
                     style: (c) => {
-                        styleText(elem, { letterSpacing: 0, fontWeight: 400, color: "#B3B3B3", fontSize: 0.025 * c.s, lineHeight: 0.02 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 400, color: "#B3B3B3", fontSize: 0.025 * c.s, lineHeight: 0.02 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -94,7 +94,7 @@ export class Blog {
             mobileFlow(
                 el(elem, {
                     style: (c) => {
-                        styleText(elem, { letterSpacing: 0.005 * c.s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.06 * c.s, lineHeight: 0.08 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0.005 * c.s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.06 * c.s, lineHeight: 0.08 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -110,7 +110,7 @@ export class Blog {
             desktopFlow(
                 el(elem, {
                     style: (c) => {
-                        styleText(elem, { letterSpacing: 0, fontWeight: 600, color: "#000000", fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 600, color: "#000000", fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -121,7 +121,7 @@ export class Blog {
             mobileFlow(
                 el(elem, {
                     style: (c) => {
-                        styleText(elem, { letterSpacing: 0, fontWeight: 600, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.055 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 600, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.055 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -137,7 +137,7 @@ export class Blog {
             desktopFlow(
                 el(elem, {
                     style: (c) => {
-                        styleText(elem, { letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -148,7 +148,7 @@ export class Blog {
             mobileFlow(
                 el(elem, {
                     style: (c) => {
-                        styleText(elem, { letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.055 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.055 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -183,7 +183,7 @@ export class Blog {
         const scrollPadding = addScrollPadding();
 
         function navButtonNodeDesktop(btn: HTMLParagraphElement | undefined, alignAlongFlow: Align) {
-            return btn ? el(btn, { style: (c) => styleText(btn, { letterSpacing: 0, fontWeight: 500, color: ieBlue, fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s }), alignAlongFlow }) : undefined;
+            return btn ? el(btn, { style: (c) => styleMultiLineText(btn, { letterSpacing: 0, fontWeight: 500, color: ieBlue, fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s }), alignAlongFlow }) : undefined;
         }
         const desktopLayout = flow(
             Axis.Y,
@@ -204,7 +204,7 @@ export class Blog {
         );
 
         function navButtonNodeMobile(btn: HTMLParagraphElement | undefined, alignAlongFlow: Align) {
-            return btn ? el(btn, { style: (c) => styleText(btn, { letterSpacing: 0, fontWeight: 500, color: ieBlue, fontSize: 0.02 * c.s, lineHeight: 0.06 * c.s }), alignAlongFlow }) : undefined;
+            return btn ? el(btn, { style: (c) => styleMultiLineText(btn, { letterSpacing: 0, fontWeight: 500, color: ieBlue, fontSize: 0.02 * c.s, lineHeight: 0.06 * c.s }), alignAlongFlow }) : undefined;
         }
         const mobileLayout = flow(
             Axis.Y,

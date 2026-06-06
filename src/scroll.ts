@@ -1,5 +1,5 @@
-import { body, fadeInAnimation, ieGreen, ieBlue } from "./constants";
-import { aligningWithGapsY, isLandscape, px, setSizeX, styleText, TextDetails } from "./layout";
+import { body, fadeInAnimation, ieBlue, ieGreen } from "./constants";
+import { isLandscape, px, styleSingleLineText } from "./layout";
 import { appendChildForPage, awaitLayout } from "./page";
 import { pillars, site } from "./site";
 import { colorOnHover, createElementSVG, fetchSVG } from "./util";
@@ -159,11 +159,11 @@ export function addNextPillarButton(pageName: keyof typeof pillars) {
 }
 
 export function styleNextPillarButton(nextPillarButton: HTMLElement, s: number) {
-    styleText(nextPillarButton, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.04 * s, lineHeight: 0.04 * s });
+    styleSingleLineText(nextPillarButton, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.04 * s });
 }
 
 export function styleNextPillarButtonMobile(nextPillarButton: HTMLElement, s: number) {
-    styleText(nextPillarButton, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.04 * s, lineHeight: 0.04 * s });
+    styleSingleLineText(nextPillarButton, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.04 * s });
 }
 
 export function getScrollHeight() {
@@ -174,29 +174,6 @@ export function getScrollHeight() {
 export function getScrollWidth() {
     const SCROLL_WIDTH_PROPORTION = 1;
     return innerWidth * SCROLL_WIDTH_PROPORTION;
-}
-
-export function alignScrollTextSquare({ major, minors }: TextSquare, majorToMinorGap: number, betweenMinorsGap: number) {
-    const items: (HTMLElement | number)[] = [];
-
-    items.push(major, majorToMinorGap);
-
-    for (const minor of minors) {
-        items.push(minor, betweenMinorsGap);
-    }
-    items.pop(); // remove final gap, only want betweens
-
-    const scrollHeight = getScrollHeight();
-    const [elementAlignments, totalHeight] = aligningWithGapsY(items);
-    const groupTop = (scrollHeight - totalHeight) / 2;
-
-    for (const { element, offset } of elementAlignments) {
-        element.style.top = px(groupTop + offset);
-    }
-
-    for (const minor of minors) {
-        minor.style.left = major.style.left;
-    }
 }
 
 export function centerWithinScrollY(element: HTMLElement | SVGSVGElement, scale: number) {

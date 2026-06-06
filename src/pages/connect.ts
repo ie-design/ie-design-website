@@ -1,6 +1,6 @@
 import { ieGreen } from "../constants";
-import { isLandscape, styleSingleLineText, styleText } from "../layout";
-import { Align, anchored, Axis, el, flow, gap, imageWithHeight, imageWithFillWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
+import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
+import { Align, anchored, Axis, el, flow, gap, imageWithFillWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
 import { appendParagraph, colorOnHoverSVGFill, interlaceWithBetween, link } from "../util";
@@ -51,7 +51,7 @@ export function addConnectPage() {
                         texts.map((t) =>
                             el(t, {
                                 style: (c) => {
-                                    styleText(t, { ...desktopTextStyle(c.s), lineHeight: 0.05 * c.s });
+                                    styleMultiLineText(t, { ...desktopTextStyle(c.s), lineHeight: 0.05 * c.s });
                                     setSizeX(t, 0.55 * c.s);
                                 },
                                 align: Align.Center,
@@ -96,7 +96,7 @@ export function addConnectPage() {
                         texts.map((t) =>
                             el(t, {
                                 style: (c) => {
-                                    styleText(t, { lineHeight: 0.04 * c.s, ...mobileTextStyle(c.s) });
+                                    styleMultiLineText(t, { lineHeight: 0.04 * c.s, ...mobileTextStyle(c.s) });
                                     setSizeX(t, c.parent.w);
                                 },
                             })
