@@ -1,4 +1,5 @@
-import { BoxElement, px, setSizeX, setSizeY, sizeX, sizeY } from "./layout";
+import { BoxElement, px, setImageWidth, setPosX, setPosY, setSizeX, setSizeY, sizeX, sizeY, styleText, TextDetails, TextStyle } from "./layout";
+import { interlaceWithBetween, mapRange } from "./util";
 
 // A small two-pass layout engine over "virtual boxes".
 //
@@ -57,7 +58,7 @@ export interface LayoutNode {
 
     // escape hatches
     place?: (self: Box, s: number) => void; // relative override, runs after the skeleton is positioned
-    post?: () => void; // after DOM sync (e.g. getClientRects fixups)
+    post?: (self: Box) => void; // after DOM sync (e.g. getClientRects fixups)
 }
 
 type Opts = Omit<Partial<LayoutNode>, "box">;
@@ -76,6 +77,15 @@ export function flow(dir: Axis, children: LayoutNode[], opts: Opts = {}): Layout
 
 export function anchored(dir: Axis, children: LayoutNode[], opts: Opts = {}): LayoutNode {
     return mk({ dir, children, anchored: true, ...opts });
+}
+
+// A container that centers its first child on both axes. Remaining children share
+// the container too (typically float overlays positioned via their own place()).
+export function center(children: LayoutNode[], opts: Opts = {}): LayoutNode {
+    const [primary] = children;
+    primary.anchor = true;
+    primary.align = Align.Center;
+    return anchored(Axis.X, children, opts);
 }
 
 export function virtual(opts: Opts = {}): LayoutNode {
@@ -135,6 +145,51 @@ export function imageWithFillWidth(image: BoxElement): LayoutNode {
 
 export function imageWithFillHeight(image: BoxElement): LayoutNode {
     return imageByHeight(image, (c) => c.parent.h, { align: Align.Center });
+}
+
+// Largest box of the given aspect (w / h) that fits within (maxWFrac × parent.w) by (maxHFrac × parent.h).
+// aspect may be a thunk, read at layout time (e.g. for media measured after decode).
+export function containAspect(aspect: number | (() => number), maxWFrac: number, maxHFrac: number): Opts {
+    const ar = typeof aspect === "function" ? aspect : () => aspect;
+    const width = (c: Ctx) => Math.min(maxWFrac * c.parent.w, maxHFrac * c.parent.h * ar());
+    return { w: width, h: (c) => width(c) / ar() };
+}
+
+// Children for a text square: a major above its minors, gapped. Optional per-element
+// style callbacks let callers style each el inline; omit to style at the container instead.
+export function textSquareItems(
+    major: BoxElement, // -
+    majorStyle: (s: number) => TextDetails,
+    majorToMinorGap: number,
+    minors: BoxElement[],
+    minorStyle: (s: number) => TextDetails,
+    betweenMinorsGap: number,
+    width: (s: number) => number
+) {
+    return flow(
+        Axis.Y,
+        [
+            el(major, {
+                style: (c) => {
+                    styleText(major, majorStyle(c.s));
+                    setSizeX(major, width(c.s));
+                },
+            }),
+            gap(majorToMinorGap),
+            ...interlaceWithBetween(
+                minors.map((minor) =>
+                    el(minor, {
+                        style: (c) => {
+                            styleText(minor, minorStyle(c.s));
+                            setSizeX(minor, width(c.s));
+                        },
+                    })
+                ),
+                gap(betweenMinorsGap)
+            ),
+        ],
+        { align: Align.Center }
+    );
 }
 
 // --- 1. size ---------------------------------------------------------------
@@ -294,7 +349,7 @@ function sync(node: LayoutNode) {
 }
 
 function runPost(node: LayoutNode) {
-    node.post?.();
+    node.post?.(node.box);
     node.children?.forEach(runPost);
 }
 
@@ -333,5 +388,38 @@ export function below(self: Box, ref: Box, gap = 0) {
     self.y = ref.y + ref.h + gap;
 }
 
+// Write a resolved box onto a DOM element directly (position + size), for elements driven outside the tree.
+export function applyBox(el: BoxElement, box: Box) {
+    setPosX(el, box.x);
+    setPosY(el, box.y);
+    setSizeX(el, box.w);
+    setSizeY(el, box.h);
+}
+
+export function interpolateBoxes(box1: Box, box2: Box, t: number) {
+    return {
+        x: mapRange(t, 0, 1, box1.x, box2.x),
+        y: mapRange(t, 0, 1, box1.y, box2.y),
+        w: mapRange(t, 0, 1, box1.w, box2.w),
+        h: mapRange(t, 0, 1, box1.h, box2.h),
+    };
+}
+
 // Direct px setters live in layout.ts; re-exported here for escape-hatch code that writes the DOM outside the tree.
 export { setSizeX, setSizeY, setPosX, setPosY } from "./layout";
+
+export const debugBoxWith = (withBox: (div: Element) => void) => (node: LayoutNode, color: string) => {
+    const div = document.createElement("div");
+    div.style.position = "absolute";
+    div.style.background = color;
+    div.style.pointerEvents = "none";
+    withBox(div);
+    node.el = div;
+    const prevPost = node.post;
+    node.post = (box) => {
+        prevPost?.(box);
+        div.style.width = px(node.box.w);
+        div.style.height = px(node.box.h);
+    };
+    return node;
+};

@@ -158,15 +158,6 @@ export function addNextPillarButton(pageName: keyof typeof pillars) {
     return nextPillarButton;
 }
 
-export function styleScrollTextSquare({ major, minors }: TextSquare, majorTextDetails: TextDetails, minorTextDetails: TextDetails, width: number) {
-    styleText(major, majorTextDetails);
-    setSizeX(major, width);
-    for (const minor of minors) {
-        styleText(minor, minorTextDetails);
-        setSizeX(minor, width);
-    }
-}
-
 export function styleNextPillarButton(nextPillarButton: HTMLElement, s: number) {
     styleText(nextPillarButton, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.04 * s, lineHeight: 0.04 * s });
 }

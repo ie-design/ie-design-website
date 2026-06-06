@@ -95,7 +95,7 @@ export function setImageHeight(image: HTMLImageElement, height: number) {
     image.style.width = px((height / image.naturalHeight) * image.naturalWidth);
 }
 
-function applyTextStyle(scrollText: HTMLElement, s: TextStyle) {
+function applyTextStyle(scrollText: BoxElement, s: TextStyle) {
     scrollText.style.fontFamily = "Spartan";
     scrollText.style.position = "absolute";
     scrollText.style.fontWeight = "" + s.fontWeight;
@@ -105,13 +105,13 @@ function applyTextStyle(scrollText: HTMLElement, s: TextStyle) {
 }
 
 // Multi-line text: wraps within an externally-set width (setSizeX) and always has an explicit line height.
-export function styleText(scrollText: HTMLElement, s: TextDetails) {
+export function styleText(scrollText: BoxElement, s: TextDetails) {
     applyTextStyle(scrollText, s);
     scrollText.style.lineHeight = px(s.lineHeight);
 }
 
 // Single-line text: never wraps and takes no line height, so its box is font-intrinsic and hugs the text.
-export function styleSingleLineText(scrollText: HTMLElement, s: TextStyle) {
+export function styleSingleLineText(scrollText: BoxElement, s: TextStyle) {
     applyTextStyle(scrollText, s);
     scrollText.style.lineHeight = "normal";
     scrollText.style.whiteSpace = "nowrap";

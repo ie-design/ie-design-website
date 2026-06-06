@@ -20,6 +20,28 @@ export function interlaceWithBetween<T, Within>(items: T[], within: Within) {
     return itemsInterlaced;
 }
 
+export function interlaceWithFactory<T, Within>(items: T[], make: () => Within) {
+    const itemsInterlaced: (T | Within)[] = [];
+    for (let i = 0; i < items.length; i++) {
+        itemsInterlaced.push(items[i]);
+        if (i < items.length - 1) itemsInterlaced.push(make());
+    }
+    return itemsInterlaced;
+}
+
+export function findWithMin<T>(items: T[], key: (item: T) => number): T {
+    let best = items[0];
+    let bestKey = key(best);
+    for (let i = 1; i < items.length; i++) {
+        const k = key(items[i]);
+        if (k < bestKey) {
+            bestKey = k;
+            best = items[i];
+        }
+    }
+    return best;
+}
+
 export function mapRange(n: number, start1: number, stop1: number, start2: number, stop2: number) {
     return ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2;
 }

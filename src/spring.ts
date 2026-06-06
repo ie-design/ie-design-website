@@ -32,6 +32,11 @@ export class Spring {
 
 const DEFAULT_ANIMATION_TOLERANCE = 0.01;
 
+export function animateSpringToTarget(spring: Spring, signal: Signal, target: number) {
+    spring.target = target;
+    animateSpring(spring, signal);
+}
+
 export function animateSpring(spring: Spring, signal: Signal) {
     if (spring.isAnimating) return;
 

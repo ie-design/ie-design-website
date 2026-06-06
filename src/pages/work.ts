@@ -1,10 +1,16 @@
-import { body, bodySig } from "../constants";
-import { aligningWithGapsX, layoutNextPillarButton, NEXT_PILLAR_BUTTON_PAD, posX, px, setImageHeight, setImageWidth, sizeX, sizeY } from "../layout";
-import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout, runAllAndClear } from "../page";
-import { TextSquare, addNextPillarButton, addScrollImage, addScrollPadding, addScrollTextSquare, alignScrollTextSquare, centerWithinScrollY, getScrollHeight, resizeScrollContainerLandscape, scrollContainer, styleNextPillarButton, styleScrollTextSquare } from "../scroll";
-import { Signal, effect } from "../signal";
-import { Spring, animateSpring } from "../spring";
-import { spaceToFile } from "../util";
+import { body } from "../constants";
+import { isLandscape, NEXT_PILLAR_BUTTON_PAD, posX } from "../layout";
+import { Align, applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, LayoutNode, run, textSquareItems, virtual } from "../newLayoutEngine";
+import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout } from "../page";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollTextSquare, getScrollHeight, resizeScrollContainerLandscape, scrollContainer, styleNextPillarButton, TextSquare } from "../scroll";
+import { effect, Signal } from "../signal";
+import { animateSpringToTarget, Spring } from "../spring";
+import { findWithMin, interlaceWithBetween, interlaceWithFactory, spaceToFile } from "../util";
+
+const A_WIDTH = 1;
+const A_HEIGHT = 1;
+const B_MAX_WIDTH = 1;
+const B_MAX_HEIGHT = 0.9;
 
 interface WorkContent {
     name: string;
@@ -49,27 +55,9 @@ const workContents: WorkContent[] = [
 ];
 
 export function addWorkPage() {
-    const workItems: WorkItem[] = [];
+    // elements
 
-    function populateWorkItems() {
-        for (const workContent of workContents) {
-            const textSquare = addScrollTextSquare(workContent.name.toUpperCase(), ...workContent.description);
-            const image1 = addScrollImage(`work/${spaceToFile(workContent.name)}/1.jpg`);
-            const image2 = addScrollImage(`work/${spaceToFile(workContent.name)}/2.jpg`);
-
-            workItems.push({ textSquare, image1, image2 });
-        }
-    }
-
-    let activated = false;
-    let currentWorkIndex = -1;
-    let hoveredIndex = -1;
-
-    function scrollToWork(workItem: WorkItem) {
-        scrollContainer.scroll({ left: posX(workItem.textSquare.major), behavior: "smooth" });
-    }
-
-    const workTabs = workContents.map((workContent) => {
+    const tabImages = workContents.map((workContent) => {
         const tabImage = document.createElement("img");
         tabImage.style.position = "absolute";
         tabImage.style.cursor = "pointer";
@@ -78,168 +66,177 @@ export function addWorkPage() {
         awaitLayout(tabImage.decode());
         appendChildForPage(body, tabImage);
 
-        const spring = new Spring(innerHeight);
-        spring.setStiffnessCritical(150);
-        const springSig = new Signal();
-
-        effect(() => {
-            tabImage.style.top = px(spring.position);
-        }, [springSig]);
-
-        return { tabImage, spring, springSig };
+        return tabImage;
     });
 
-    function updateTabTargets() {
-        if (!activated) return;
-        for (let i = 0; i < workTabs.length; i++) {
-            const { tabImage, spring, springSig } = workTabs[i];
-            const isActive = i === hoveredIndex || i === currentWorkIndex;
-            spring.target = isActive ? innerHeight - sizeX(tabImage) : innerHeight - sizeX(tabImage) / 2;
-            animateSpring(spring, springSig);
-        }
-    }
+    // layout
 
-    function updateCurrentWork() {
-        if (!activated || workItems.length === 0) return;
-        const center = scrollContainer.scrollLeft - scrollContainer.clientWidth / 2;
-        let closest = 0;
-        let closestDist = Infinity;
-        for (let i = 0; i < workItems.length; i++) {
-            const dist = Math.abs(posX(workItems[i].textSquare.major) - center);
-            if (dist < closestDist) {
-                closestDist = dist;
-                closest = i;
-            }
-        }
-        currentWorkIndex = closest;
-        updateTabTargets();
-    }
+    const cellCount = tabImages.length * 2 - 1;
+    const cellWidth = (c: Ctx) => c.parent.w / cellCount;
+    const tabAspect = () => tabImages[0].naturalWidth / tabImages[0].naturalHeight;
+    const tabHeight = (c: Ctx) => cellWidth(c) / tabAspect();
 
-    scrollContainer.addEventListener("scroll", () => {
-        updateCurrentWork();
+    const tabReadyNormal = tabImages.map(() => virtual({ w: cellWidth, h: tabHeight }));
+
+    const tabsTightContainer = flow(
+        Axis.X,
+        interlaceWithFactory(tabReadyNormal, () => virtual({ w: cellWidth })),
+        containAspect(() => cellCount * tabAspect(), B_MAX_WIDTH, B_MAX_HEIGHT)
+    );
+
+    const allTabsWithY: LayoutNode[] = [];
+    const buildTabsWithY = (getY: (tabNode: LayoutNode) => number) => {
+        const tabsWithY = tabReadyNormal.map((tabNode) =>
+            virtual({
+                float: true,
+                place: (self) => {
+                    self.x = tabNode.box.x;
+                    self.y = getY(tabNode);
+                    self.w = tabNode.box.w;
+                    self.h = tabNode.box.h;
+                },
+            })
+        );
+        allTabsWithY.push(...tabsWithY);
+        return tabsWithY;
+    };
+
+    const tabReadyHover = buildTabsWithY((tabNode) => tabNode.box.y - tabNode.box.w / 2);
+    const tabTuckedNormal = buildTabsWithY((tabNode) => innerHeight - tabNode.box.w / 2);
+    const tabTuckedHover = buildTabsWithY((tabNode) => innerHeight - tabNode.box.w);
+
+    const fromLeft = () => innerHeight * 0.34;
+    const fromRight = () => innerHeight * 0.2;
+    const tabsOuterBounds = center([tabsTightContainer, ...allTabsWithY], {
+        w: () => innerWidth - fromRight() - fromLeft(),
+        h: () => A_HEIGHT * innerHeight,
+        place: (self) => (self.x = fromLeft()),
     });
 
-    const nextPillarButton = addNextPillarButton("evolution");
-    const scrollPadding = addScrollPadding();
+    // animation
 
-    const cleanupLastLayout = new Set<() => void>();
-    registerUpdateLayout(() => {
-        runAllAndClear(cleanupLastLayout);
+    type Mode = "ready" | "tucked";
+    let mode: Mode = "ready";
 
-        resizeScrollContainerLandscape();
-        const s = getScrollHeight();
+    class TabAnimation {
+        private spring = new Spring(0);
+        private sig = new Signal();
+        private hovered = false;
+        isCurrentViewed = false;
 
-        const boundLeft = posX(scrollContainer) * 0.8;
-        const boundRight = innerWidth * 0.95;
-        const boundWidth = boundRight - boundLeft;
+        constructor(readonly img: HTMLImageElement, readonly i: number) {
+            this.spring.setStiffnessCritical(150);
+            effect(() => applyBox(this.img, { ...tabReadyNormal[this.i].box, y: this.spring.position }), [this.sig]);
 
-        for (const { tabImage } of workTabs) setImageHeight(tabImage, s);
-
-        const countWithSpaces = workTabs.length * 2 - 1;
-        const tabTotalSizeX = sizeX(workTabs[0].tabImage) * countWithSpaces;
-        let k = (boundWidth - tabTotalSizeX) / 2;
-
-        if (boundWidth < tabTotalSizeX) {
-            for (const { tabImage } of workTabs) setImageWidth(tabImage, boundWidth / countWithSpaces);
-            k = 0;
-        }
-        for (let i = 0; i < workTabs.length; i++) {
-            const { tabImage } = workTabs[i];
-            tabImage.style.left = px(boundLeft + sizeX(tabImage) * i * 2 + k);
+            this.img.onmouseenter = () => this.setHovered(true);
+            this.img.onmouseleave = () => this.setHovered(false);
+            this.img.onclick = () => enterWorkView(this.i);
         }
 
-        if (activated) {
-            for (let i = 0; i < workTabs.length; i++) {
-                const { tabImage } = workTabs[i];
-                tabImage.onmouseenter = () => {
-                    hoveredIndex = i;
-                    updateTabTargets();
-                };
-                tabImage.onmouseleave = () => {
-                    hoveredIndex = -1;
-                    updateTabTargets();
-                };
-                tabImage.onclick = () => {
-                    scrollToWork(workItems[i]);
-                };
-            }
-            updateCurrentWork();
+        private setHovered = (hovered: boolean) => {
+            this.hovered = hovered;
+            this.chase();
+        };
 
-            styleNextPillarButton(nextPillarButton, s);
+        private targetY = () => {
+            const [normal, hover] = mode === "ready" ? [tabReadyNormal, tabReadyHover] : [tabTuckedNormal, tabTuckedHover];
+            return (this.hovered || this.isCurrentViewed ? hover : normal)[this.i].box.y;
+        };
 
-            nextPillarButton.style.display = "block";
-            scrollPadding.style.display = "block";
+        setCurrentViewed = (currentViewed: boolean) => {
+            this.isCurrentViewed = currentViewed;
+            this.chase();
+        };
 
-            for (const workItem of workItems) {
-                styleScrollTextSquare(workItem.textSquare, { letterSpacing: 0.011 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, lineHeight: 0.09 * s }, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, lineHeight: 0.05 * s }, 1 * s);
-                centerWithinScrollY(workItem.image1, 1);
-                centerWithinScrollY(workItem.image2, 1);
-            }
+        chase = () => animateSpringToTarget(this.spring, this.sig, this.targetY());
 
-            const items = [];
-            for (const workItem of workItems) {
-                items.push(
-                    workItem.textSquare.major, // -
-                    0.2 * s,
-                    workItem.image1,
-                    0.15 * s,
-                    workItem.image2,
-                    0.22 * s
-                );
-            }
+        relayout = () => {
+            this.spring.target = this.targetY();
+            if (!this.spring.isAnimating) this.spring.position = this.spring.target;
+            this.sig.update();
+        };
+    }
 
-            items.pop();
-            items.push(
-                NEXT_PILLAR_BUTTON_PAD * s, // -
-                nextPillarButton,
-                NEXT_PILLAR_BUTTON_PAD * s,
-                scrollPadding
+    const tabAnimations = tabImages.map((img, i) => new TabAnimation(img, i));
+
+    async function enterWorkView(initialIndex: number) {
+        mode = "tucked";
+
+        const workItems: WorkItem[] = workContents.map((workContent) => ({
+            textSquare: addScrollTextSquare(workContent.name.toUpperCase(), ...workContent.description),
+            image1: addScrollImage(`work/${spaceToFile(workContent.name)}/1.jpg`),
+            image2: addScrollImage(`work/${spaceToFile(workContent.name)}/2.jpg`),
+        }));
+
+        const nextPillarButton = addNextPillarButton("evolution");
+        const scrollPadding = addScrollPadding();
+
+        const workTextSquareDesktop = (square: TextSquare) =>
+            textSquareItems(
+                square.major,
+                (s) => ({ letterSpacing: 0.011 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, lineHeight: 0.05 * s }),
+                0.05,
+                square.minors,
+                (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, lineHeight: 0.05 * s }),
+                0.02,
+                (s) => 1 * s
             );
-            const [elementAlignments, _] = aligningWithGapsX(items);
 
-            for (const { element, offset } of elementAlignments) {
-                element.style.left = px(offset);
-            }
+        const workItemsLayout = flow(
+            Axis.X,
+            [
+                ...interlaceWithBetween(
+                    workItems.map((item) =>
+                        flow(Axis.X, [
+                            workTextSquareDesktop(item.textSquare), // -
+                            gap(0.2),
+                            imageWithHeight(item.image1, 1),
+                            gap(0.15),
+                            imageWithHeight(item.image2, 1),
+                        ])
+                    ),
+                    gap(0.2)
+                ),
+                gap(NEXT_PILLAR_BUTTON_PAD),
+                el(nextPillarButton, { style: (c) => styleNextPillarButton(nextPillarButton, c.s), align: Align.Center }),
+                gap(NEXT_PILLAR_BUTTON_PAD),
+                el(scrollPadding),
+            ],
+            { h: (c) => c.s }
+        );
 
-            for (const workItem of workItems) alignScrollTextSquare(workItem.textSquare, 0.01 * s, 0.01 * s);
+        const workItemsWithTabs = workItems.map((workItem, i) => ({ workItem, tabAnimation: tabAnimations[i] }));
 
-            layoutNextPillarButton(nextPillarButton, s);
-        } else {
-            for (let i = 0; i < workTabs.length; i++) {
-                const { tabImage, spring, springSig } = workTabs[i];
-                spring.target = (innerHeight - sizeY(tabImage)) / 2;
-                animateSpring(spring, springSig);
+        const scrollToWork = (workItem: WorkItem) => scrollContainer.scroll({ left: posX(workItem.textSquare.major), behavior: "smooth" });
 
-                tabImage.onmouseenter = () => {
-                    spring.target = (innerHeight - sizeY(tabImage)) / 2 - sizeX(tabImage) / 2;
-                    animateSpring(spring, springSig);
-                };
-                tabImage.onmouseleave = () => {
-                    spring.target = (innerHeight - sizeY(tabImage)) / 2;
-                    animateSpring(spring, springSig);
-                };
-                tabImage.onclick = () => {
-                    activated = true;
-
-                    populateWorkItems();
-                    flushPageContent().then(() => {
-                        bodySig.update();
-                        scrollToWork(workItems[i]);
-                    }); // ZZZZ bit hacky
-                };
-            }
-
-            nextPillarButton.style.display = "none";
-            scrollPadding.style.display = "none";
+        for (const w of workItemsWithTabs) {
+            w.tabAnimation.chase();
+            w.tabAnimation.img.onclick = () => scrollToWork(w.workItem);
         }
 
-        cleanupLastLayout.add(() => {
-            hoveredIndex = -1;
-            for (const { tabImage } of workTabs) {
-                tabImage.onmouseenter = () => {};
-                tabImage.onmouseleave = () => {};
-                tabImage.onclick = () => {};
+        scrollContainer.addEventListener("scroll", () => {
+            const center = scrollContainer.scrollLeft + scrollContainer.clientWidth / 2;
+            const closest = findWithMin(workItemsWithTabs, (w) => Math.abs(posX(w.workItem.textSquare.major) - center));
+            if (closest.tabAnimation.isCurrentViewed) return;
+
+            tabAnimations.forEach((t) => t.setCurrentViewed(t === closest.tabAnimation));
+        });
+
+        await flushPageContent(); // appendChildForPage only stages elements; flush attaches them + awaits decodes
+        registerUpdateLayout(() => {
+            if (isLandscape()) {
+                run(workItemsLayout, getScrollHeight());
+            } else {
             }
         });
+
+        scrollToWork(workItems[initialIndex]);
+    }
+
+    registerUpdateLayout(() => {
+        resizeScrollContainerLandscape();
+
+        run(tabsOuterBounds, 0); // s doesn't matter here
+        tabAnimations.forEach((t) => t.relayout());
     });
 }
