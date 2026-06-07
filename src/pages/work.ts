@@ -1,8 +1,9 @@
-import { body } from "../constants";
-import { isLandscape, NEXT_PILLAR_BUTTON_PAD, posX, posY } from "../layout";
-import { Align, applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, textSquareItems, virtual } from "../newLayoutEngine";
+import { footer, textSquareItems } from "../components";
+import { body, white, workTextColor } from "../constants";
+import { isLandscape, posX, posY } from "../layout";
+import { applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, virtual } from "../newLayoutEngine";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout } from "../page";
-import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollTextSquare, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, styleNextPillarButton, TextSquare } from "../scroll";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollTextSquare, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, TextSquare } from "../scroll";
 import { effect, Signal } from "../signal";
 import { animateSpringToTarget, Spring } from "../spring";
 import { findWithMin, interlaceWithBetween, interlaceWithFactory, spaceToFile } from "../util";
@@ -71,7 +72,7 @@ export function addWorkPage() {
 
     const tuckedTabShelf = document.createElement("div");
     tuckedTabShelf.style.position = "absolute";
-    tuckedTabShelf.style.background = "white";
+    tuckedTabShelf.style.background = white;
     appendChildForPage(body, tuckedTabShelf);
 
     // layout
@@ -231,10 +232,10 @@ export function addWorkPage() {
                         flow(Axis.X, [
                             textSquareItems(
                                 item.textSquare.major,
-                                (s) => ({ letterSpacing: 0.004 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, lineHeight: 0.05 * s }),
+                                (s) => ({ letterSpacing: 0.004 * s, fontWeight: 400, color: workTextColor, fontSize: 0.065 * s, lineHeight: 0.05 * s }),
                                 0.05,
                                 item.textSquare.minors,
-                                (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, lineHeight: 0.05 * s }),
+                                (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: workTextColor, fontSize: 0.03 * s, lineHeight: 0.05 * s }),
                                 0.02,
                                 (s) => 1 * s
                             ), // -
@@ -246,27 +247,24 @@ export function addWorkPage() {
                     ),
                     gap(0.2)
                 ),
-                gap(NEXT_PILLAR_BUTTON_PAD),
-                el(nextPillarButton, { style: (c) => styleNextPillarButton(nextPillarButton, c.s), align: Align.Center }),
-                gap(NEXT_PILLAR_BUTTON_PAD),
-                el(scrollPadding),
+                ...footer(nextPillarButton, scrollPadding),
             ],
             { h: (c) => c.s }
         );
 
         const mobileLayout = flow(
             Axis.Y,
+
             [
-                gap(0.1),
                 ...interlaceWithBetween(
                     workItems.map((item) =>
                         flow(Axis.Y, [
                             textSquareItems(
                                 item.textSquare.major,
-                                (s) => ({ letterSpacing: 0.004 * s, fontWeight: 400, color: "#333333", fontSize: 0.065 * s, lineHeight: 0.05 * s }),
+                                (s) => ({ letterSpacing: 0.004 * s, fontWeight: 400, color: workTextColor, fontSize: 0.065 * s, lineHeight: 0.05 * s }),
                                 0.06,
                                 item.textSquare.minors,
-                                (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: "#333333", fontSize: 0.03 * s, lineHeight: 0.05 * s }),
+                                (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: workTextColor, fontSize: 0.03 * s, lineHeight: 0.05 * s }),
                                 0.02,
                                 (s) => 0.85 * s
                             ), // -
@@ -278,11 +276,9 @@ export function addWorkPage() {
                     ),
                     gap(0.2)
                 ),
-                gap(NEXT_PILLAR_BUTTON_PAD),
-                el(nextPillarButton, { style: (c) => styleNextPillarButton(nextPillarButton, c.s), align: Align.Center }),
-                gap(NEXT_PILLAR_BUTTON_PAD),
-                el(scrollPadding),
+                ...footer(nextPillarButton, scrollPadding),
             ],
+
             { h: (c) => c.s }
         );
 

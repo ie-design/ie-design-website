@@ -1,6 +1,7 @@
-import { ieGreen } from "../constants";
+import { footer } from "../components";
+import { black, ieGreen, textMutedColor } from "../constants";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
-import { Align, anchored, Axis, el, flow, gap, imageWithFillWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
+import { Align, anchored, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
 import { appendParagraph, colorOnHoverSVGFill, interlaceWithBetween, link } from "../util";
@@ -8,7 +9,7 @@ import { appendParagraph, colorOnHoverSVGFill, interlaceWithBetween, link } from
 function addIcon(imageSrc: string, clickLink: string) {
     const icon = addScrollSvg(imageSrc);
     icon.style.cursor = "pointer";
-    colorOnHoverSVGFill(icon, "#B3B3B3", ieGreen);
+    colorOnHoverSVGFill(icon, textMutedColor, ieGreen);
     icon.onclick = () => window.open(clickLink);
     return icon;
 }
@@ -38,14 +39,14 @@ export function addConnectPage() {
     ];
     const scrollPadding = addScrollPadding();
 
-    const desktopTextStyle = (s: number) => ({ letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.025 * s });
+    const desktopTextStyle = (s: number) => ({ letterSpacing: 0, fontWeight: 300, color: black, fontSize: 0.025 * s });
     const desktopLayout = flow(
         Axis.X,
         [
             flow(
                 Axis.Y,
                 [
-                    el(connect, { style: (c) => setSizeX(connect, 0.55 * c.s) }), // -
+                    imageWithWidth(connect, 0.55), // -
                     gap(0.09),
                     ...interlaceWithBetween(
                         texts.map((t) =>
@@ -74,16 +75,16 @@ export function addConnectPage() {
                 ],
                 { h: (c) => c.s }
             ),
+            ...footer(document.createElement("div"), scrollPadding), // - silly way of saying don't
         ],
         { h: (c) => c.s }
     );
 
-    const mobileTextStyle = (s: number) => ({ letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.024 * s });
+    const mobileTextStyle = (s: number) => ({ letterSpacing: 0, fontWeight: 300, color: black, fontSize: 0.024 * s });
     const mobileLayout = flow(
         Axis.Y,
         [
-            gap(0.1),
-            el(connect, { style: (c) => setSizeX(connect, 0.8 * c.s), align: Align.Center }), // -
+            imageWithWidth(connect, 0.8), // -
             gap(0.09),
             imageWithFillWidth(letsMeet),
             gap(0.05),
@@ -108,8 +109,7 @@ export function addConnectPage() {
                 ],
                 { w: (c) => 0.9 * c.s, align: Align.Center }
             ),
-            gap(0.3),
-            el(scrollPadding),
+            ...footer(document.createElement("div"), scrollPadding), // - silly way of saying don't
         ],
         { w: (c) => c.s }
     );

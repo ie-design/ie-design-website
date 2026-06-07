@@ -1,4 +1,4 @@
-import { ieBlue, ieGreen } from "../constants";
+import { black, ieBlue, ieGreen, textMutedColor } from "../constants";
 import { isLandscape, styleMultiLineText } from "../layout";
 import { Align, Axis, el, flow, gap, imageWithParentWidth, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
@@ -83,7 +83,7 @@ export class Blog {
             desktopFlow(
                 el(elem, {
                     style: (c) => {
-                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 400, color: "#B3B3B3", fontSize: 0.025 * c.s, lineHeight: 0.02 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 400, color: textMutedColor, fontSize: 0.025 * c.s, lineHeight: 0.02 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -94,7 +94,7 @@ export class Blog {
             mobileFlow(
                 el(elem, {
                     style: (c) => {
-                        styleMultiLineText(elem, { letterSpacing: 0.005 * c.s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.06 * c.s, lineHeight: 0.08 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0.005 * c.s, fontWeight: 400, color: textMutedColor, fontSize: 0.06 * c.s, lineHeight: 0.08 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -110,7 +110,7 @@ export class Blog {
             desktopFlow(
                 el(elem, {
                     style: (c) => {
-                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 600, color: "#000000", fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 600, color: black, fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -121,7 +121,7 @@ export class Blog {
             mobileFlow(
                 el(elem, {
                     style: (c) => {
-                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 600, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.055 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 600, color: black, fontSize: 0.03 * c.s, lineHeight: 0.055 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -137,7 +137,7 @@ export class Blog {
             desktopFlow(
                 el(elem, {
                     style: (c) => {
-                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 300, color: black, fontSize: 0.011 * c.s, lineHeight: 0.02 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -148,7 +148,7 @@ export class Blog {
             mobileFlow(
                 el(elem, {
                     style: (c) => {
-                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 300, color: "#000000", fontSize: 0.03 * c.s, lineHeight: 0.055 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 300, color: black, fontSize: 0.03 * c.s, lineHeight: 0.055 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),

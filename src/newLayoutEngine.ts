@@ -1,5 +1,5 @@
-import { BoxElement, MultiLineTextStyle, px, setPosX, setPosY, setSizeX, setSizeY, sizeX, sizeY, styleMultiLineText } from "./layout";
-import { interlaceWithBetween, mapRange } from "./util";
+import { BoxElement, px, setPosX, setPosY, setSizeX, setSizeY, sizeX, sizeY } from "./layout";
+import { mapRange } from "./util";
 
 // A small two-pass layout engine over "virtual boxes".
 //
@@ -147,49 +147,10 @@ export function imageWithFillHeight(image: BoxElement): LayoutNode {
     return imageByHeight(image, (c) => c.parent.h, { align: Align.Center });
 }
 
-// Largest box of the given aspect (w / h) that fits within (maxWFrac × parent.w) by (maxHFrac × parent.h).
-// aspect may be a thunk, read at layout time (e.g. for media measured after decode).
 export function containAspect(aspect: number | (() => number), maxWFrac: number, maxHFrac: number): Opts {
     const ar = typeof aspect === "function" ? aspect : () => aspect;
     const width = (c: Ctx) => Math.min(maxWFrac * c.parent.w, maxHFrac * c.parent.h * ar());
     return { w: width, h: (c) => width(c) / ar() };
-}
-
-// Children for a text square: a major above its minors, gapped. Optional per-element
-// style callbacks let callers style each el inline; omit to style at the container instead.
-export function textSquareItems(
-    major: BoxElement, // -
-    majorStyle: (s: number) => MultiLineTextStyle,
-    majorToMinorGap: number,
-    minors: BoxElement[],
-    minorStyle: (s: number) => MultiLineTextStyle,
-    betweenMinorsGap: number,
-    width: (s: number) => number
-) {
-    return flow(
-        Axis.Y,
-        [
-            el(major, {
-                style: (c) => {
-                    styleMultiLineText(major, majorStyle(c.s));
-                    setSizeX(major, width(c.s));
-                },
-            }),
-            gap(majorToMinorGap),
-            ...interlaceWithBetween(
-                minors.map((minor) =>
-                    el(minor, {
-                        style: (c) => {
-                            styleMultiLineText(minor, minorStyle(c.s));
-                            setSizeX(minor, width(c.s));
-                        },
-                    })
-                ),
-                gap(betweenMinorsGap)
-            ),
-        ],
-        { align: Align.Center }
-    );
 }
 
 // --- 1. size ---------------------------------------------------------------
@@ -406,7 +367,7 @@ export function interpolateBoxes(box1: Box, box2: Box, t: number) {
 }
 
 // Direct px setters live in layout.ts; re-exported here for escape-hatch code that writes the DOM outside the tree.
-export { setSizeX, setSizeY, setPosX, setPosY } from "./layout";
+export { setPosX, setPosY, setSizeX, setSizeY } from "./layout";
 
 export const debugBoxWith = (withBox: (div: Element) => void) => (node: LayoutNode, color: string) => {
     const div = document.createElement("div");

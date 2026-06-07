@@ -1,7 +1,9 @@
-import { isLandscape, NEXT_PILLAR_BUTTON_PAD } from "../layout";
-import { Align, Axis, el, flow, gap, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, run, setSizeX, textSquareItems } from "../newLayoutEngine";
+import { footer, textSquareItems } from "../components";
+import { black, textMutedColor } from "../constants";
+import { isLandscape } from "../layout";
+import { Axis, flow, gap, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, run } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
-import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, styleNextPillarButton, styleNextPillarButtonMobile, TextSquare } from "../scroll";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, TextSquare } from "../scroll";
 import { interlaceWithBetween } from "../util";
 
 let homeFromIntro: SVGSVGElement | undefined;
@@ -21,10 +23,10 @@ function homeMaybeFromIntro() {
 const textSquareDesktop = (square: TextSquare) =>
     textSquareItems(
         square.major,
-        (s) => ({ letterSpacing: 0.0046 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.065 * s, lineHeight: 0.09 * s }),
+        (s) => ({ letterSpacing: 0.0046 * s, fontWeight: 400, color: textMutedColor, fontSize: 0.065 * s, lineHeight: 0.09 * s }),
         0.03,
         square.minors,
-        (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.03 * s, lineHeight: 0.05 * s }),
+        (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: black, fontSize: 0.03 * s, lineHeight: 0.05 * s }),
         0.03,
         (s) => 0.95 * s
     );
@@ -32,10 +34,10 @@ const textSquareDesktop = (square: TextSquare) =>
 const textSquareMobile = (square: TextSquare) =>
     textSquareItems(
         square.major,
-        (s) => ({ letterSpacing: 0.003 * s, fontWeight: 400, color: "#B3B3B3", fontSize: 0.06 * s, lineHeight: 0.08 * s }),
+        (s) => ({ letterSpacing: 0.003 * s, fontWeight: 400, color: textMutedColor, fontSize: 0.06 * s, lineHeight: 0.08 * s }),
         0.04,
         square.minors,
-        (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.028 * s, lineHeight: 0.05 * s }),
+        (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: black, fontSize: 0.028 * s, lineHeight: 0.05 * s }),
         0.04,
         (s) => 0.85 * s
     );
@@ -55,6 +57,7 @@ export function addViewPage() {
 
     const desktopLayout = flow(
         Axis.X,
+
         [
             imageWithHeight(home, 0.95), // -
             gap(0.2),
@@ -73,16 +76,15 @@ export function addViewPage() {
                 ],
                 gap(0.17)
             ),
-            gap(NEXT_PILLAR_BUTTON_PAD),
-            el(nextPillarButton, { style: (c) => styleNextPillarButton(nextPillarButton, c.s), align: Align.Center }),
-            gap(NEXT_PILLAR_BUTTON_PAD),
-            el(scrollPadding),
+            ...footer(nextPillarButton, scrollPadding),
         ],
+
         { h: (c) => c.s }
     );
 
     const mobileLayout = flow(
         Axis.Y,
+
         [
             ...interlaceWithBetween(
                 [
@@ -98,16 +100,7 @@ export function addViewPage() {
                 ],
                 gap(0.08)
             ),
-            gap(NEXT_PILLAR_BUTTON_PAD),
-            el(nextPillarButton, {
-                style: (c) => {
-                    styleNextPillarButtonMobile(nextPillarButton, c.s);
-                    setSizeX(nextPillarButton, 0.2 * c.s);
-                },
-                align: Align.Center,
-            }),
-            gap(NEXT_PILLAR_BUTTON_PAD),
-            el(scrollPadding),
+            ...footer(nextPillarButton, scrollPadding),
         ],
         { w: (c) => c.s }
     );

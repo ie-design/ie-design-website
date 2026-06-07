@@ -1,8 +1,9 @@
-import { fadeInAnimation, gray, ieGreen } from "../constants";
-import { isLandscape, lastLineMetrics, NEXT_PILLAR_BUTTON_PAD, sizeY, styleMultiLineText, styleSingleLineText } from "../layout";
+import { footer } from "../components";
+import { black, fadeInAnimation, gray, ieGreen } from "../constants";
+import { isLandscape, lastLineMetrics, sizeY, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setPosX, setPosY, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, registerUpdateLayout } from "../page";
-import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, styleNextPillarButton } from "../scroll";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer } from "../scroll";
 import { interlaceWithBetween, interleaveArrays } from "../util";
 
 interface Quote {
@@ -24,10 +25,10 @@ function addQuote(quoteText: string, authorText: string, titleText: string): Quo
 }
 
 function styleQuote({ quote, author, title, openQuote, closeQuote }: Quote, s: number) {
-    styleMultiLineText(quote, { letterSpacing: 0.0009 * s, fontWeight: 300, color: "#000000", fontSize: 0.032 * s, lineHeight: 0.065 * s });
+    styleMultiLineText(quote, { letterSpacing: 0.0009 * s, fontWeight: 300, color: black, fontSize: 0.032 * s, lineHeight: 0.065 * s });
 
-    styleSingleLineText(author, { letterSpacing: 0.001 * s, fontWeight: 300, color: "#000000", fontSize: 0.035 * s });
-    styleSingleLineText(title, { letterSpacing: 0.00075 * s, fontWeight: 300, color: "#000000", fontSize: 0.025 * s });
+    styleSingleLineText(author, { letterSpacing: 0.001 * s, fontWeight: 300, color: black, fontSize: 0.035 * s });
+    styleSingleLineText(title, { letterSpacing: 0.00075 * s, fontWeight: 300, color: black, fontSize: 0.025 * s });
 
     const quoteTextDetails = { letterSpacing: 0.001 * s, fontWeight: 300, color: ieGreen, fontSize: 0.15 * s };
     styleSingleLineText(openQuote, quoteTextDetails);
@@ -173,10 +174,7 @@ export function addEvolutionPage() {
                 ),
                 gap(0.3)
             ),
-            gap(NEXT_PILLAR_BUTTON_PAD),
-            el(nextPillarButton, { style: (c) => styleNextPillarButton(nextPillarButton, c.s), align: Align.Center }),
-            gap(NEXT_PILLAR_BUTTON_PAD),
-            el(scrollPadding),
+            ...footer(nextPillarButton, scrollPadding),
         ],
         { h: (c) => c.s }
     );
@@ -184,7 +182,6 @@ export function addEvolutionPage() {
     const mobileLayout = flow(
         Axis.Y,
         [
-            gap(0.2),
             withTimelineMobile(imageWithWidth(evolution, 0.8), 0.02),
             gap(0.1),
             imageWithWidth(logoFull, 0.45), // -
@@ -198,10 +195,7 @@ export function addEvolutionPage() {
                 ),
                 gap(0.3)
             ),
-            gap(NEXT_PILLAR_BUTTON_PAD),
-            el(nextPillarButton, { style: (c) => styleNextPillarButton(nextPillarButton, c.s), align: Align.Center }),
-            gap(NEXT_PILLAR_BUTTON_PAD),
-            el(scrollPadding),
+            ...footer(nextPillarButton, scrollPadding),
         ],
         { h: (c) => c.s }
     );

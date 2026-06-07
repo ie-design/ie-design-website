@@ -92,5 +92,3 @@ export function lastLineMetrics(textEl: HTMLElement) {
     const last = rects[rects.length - 1];
     return { width: last.width, top: last.top - first.top };
 }
-
-export const NEXT_PILLAR_BUTTON_PAD = 0.1; // ZZZZ we want this outa here

@@ -158,14 +158,6 @@ export function addNextPillarButton(pageName: keyof typeof pillars) {
     return nextPillarButton;
 }
 
-export function styleNextPillarButton(nextPillarButton: HTMLElement, s: number) {
-    styleSingleLineText(nextPillarButton, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.04 * s });
-}
-
-export function styleNextPillarButtonMobile(nextPillarButton: HTMLElement, s: number) {
-    styleSingleLineText(nextPillarButton, { letterSpacing: 0.001 * s, fontWeight: 400, color: ieBlue, fontSize: 0.04 * s });
-}
-
 export function getScrollHeight() {
     // return innerHeight * 0.7;
     return 1.02 * innerHeight - 0.000485 * innerHeight * innerHeight;

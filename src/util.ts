@@ -46,12 +46,21 @@ export function mapRange(n: number, start1: number, stop1: number, start2: numbe
     return ((n - start1) / (stop1 - start1)) * (stop2 - start2) + start2;
 }
 
+const hoverControllers = new WeakMap<Element, AbortController>();
+
 const colorOnHoverGeneric =
     <T extends HTMLElement | SVGSVGElement>(field: string) =>
     (element: T, color: string, hoverColor: string) => {
         element.style.setProperty(field, color);
-        element.onmouseover = () => element.style.setProperty(field, hoverColor);
-        element.onmouseleave = () => element.style.setProperty(field, color);
+
+        hoverControllers.get(element)?.abort();
+        const ac = new AbortController();
+        hoverControllers.set(element, ac);
+
+        element.addEventListener("mouseenter", () => element.style.setProperty(field, hoverColor), { signal: ac.signal });
+        element.addEventListener("mouseleave", () => element.style.setProperty(field, color), { signal: ac.signal });
+
+        if (element.matches(":hover")) element.style.setProperty(field, hoverColor);
         element.style.transition = `${field} 0.2s ease-out`;
     };
 
@@ -97,6 +106,12 @@ export const makePolyline = (svg: SVGSVGElement, strokeWidth: number) => () => {
     svg.appendChild(line);
     return line;
 };
+
+export function setPolylines(make: () => SVGPolylineElement, ...segments: [number, number][][]) {
+    for (const pts of segments) {
+        setAttributes(make(), { points: pts.map(([x, y]) => `${x},${y}`).join(" ") });
+    }
+}
 
 export function interleaveArrays<A, B>(...arrays: (A | B)[][]): (A | B)[] {
     const result: (A | B)[] = [];

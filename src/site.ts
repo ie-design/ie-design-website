@@ -1,5 +1,5 @@
 import { blogs } from "./blogs/blogs";
-import { body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen } from "./constants";
+import { black, body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen, imageModalBg, menuButtonGray, menuOverlayBg, white } from "./constants";
 import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
 import { Modal } from "./modal";
 import { Axis, flow, imageWithHeight, imageWithWidth, run } from "./newLayoutEngine";
@@ -12,7 +12,7 @@ import { addWorkPage } from "./pages/work";
 import { addScrollSvg, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
-import { colorOnHover, colorOnHoverSVGStroke, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, makeLine, makePolyline, setAttributes, sleep } from "./util";
+import { colorOnHover, colorOnHoverSVGStroke, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, makeLine, makePolyline, setAttributes, setPolylines, sleep } from "./util";
 
 interface Page {
     addPage: () => void;
@@ -87,9 +87,9 @@ export class Site {
         if (!this.navItems) return;
         for (const navItem of this.navItems) {
             if (page.route.includes(navItem.innerText.toLowerCase())) {
-                navItem.style.color = "black";
+                colorOnHover(navItem, black, black);
             } else {
-                navItem.style.color = gray;
+                colorOnHover(navItem, gray, menuButtonGray);
             }
         }
     };
@@ -163,7 +163,7 @@ export class Site {
         this.headerBar = headerBar;
 
         headerBar.style.position = "absolute";
-        headerBar.style.background = "white";
+        headerBar.style.background = white;
         body.appendChild(headerBar);
 
         effect(() => {
@@ -178,7 +178,7 @@ export class Site {
         this.menuButton = menuButton;
 
         menuButton.style.animation = fadeInAnimation();
-        colorOnHoverSVGStroke(menuButton, "#bbbbbb", gray);
+        colorOnHoverSVGStroke(menuButton, menuButtonGray, gray);
 
         const menuLine = makeLine(menuButton, 4);
         const line1 = menuLine();
@@ -186,7 +186,7 @@ export class Site {
         const line3 = menuLine();
 
         const menuModal = new Modal(
-            "#000000f8",
+            menuOverlayBg,
             (time) => {
                 const s = time * sz;
                 setAttributes(line1, { x1: 0, y1: 0, x2: sz, y2: s });
@@ -204,7 +204,7 @@ export class Site {
                         menuPageNav.style.fontFamily = "Spartan";
                         menuPageNav.style.fontWeight = "500";
                         menuPageNav.style.cursor = "pointer";
-                        colorOnHover(menuPageNav, gray, "white");
+                        colorOnHover(menuPageNav, gray, white);
 
                         menuPageNav.onclick = () => {
                             menuModal.beginClose();
@@ -226,10 +226,10 @@ export class Site {
                     menuButton.style.zIndex = "1";
                 },
                 onTriggerOpen: () => {
-                    colorOnHoverSVGStroke(menuButton, gray, "white");
+                    colorOnHoverSVGStroke(menuButton, gray, white);
                 },
                 onTriggerClose: () => {
-                    colorOnHoverSVGStroke(menuButton, "#bbbbbb", gray);
+                    colorOnHoverSVGStroke(menuButton, menuButtonGray, gray);
                 },
                 onEndClose: () => {
                     menuButton.style.zIndex = "0";
@@ -455,15 +455,31 @@ export class Site {
 
         const fullscreenButton = createIconSVG(sz);
         const makeFullscreenPolyline = makePolyline(fullscreenButton, 12);
-        setAttributes(makeFullscreenPolyline(), {
-            points: [
+        const ab = sz / 3;
+        const ba = sz - ab;
+        setPolylines(
+            makeFullscreenPolyline,
+            [
+                [ab, 0],
                 [0, 0],
+                [0, ab],
+            ],
+            [
+                [0, ba],
                 [0, sz],
+                [ab, sz],
+            ],
+            [
+                [ba, sz],
                 [sz, sz],
+                [sz, ba],
+            ],
+            [
+                [sz, ab],
+                [sz, 0],
+                [ba, 0],
             ]
-                .map((p) => p.join(","))
-                .join(" "),
-        });
+        );
         colorOnHoverSVGStroke(fullscreenButton, gray, ieBlue);
 
         const bigImage = document.createElement("img");
@@ -472,7 +488,7 @@ export class Site {
         bigImage.style.filter = `drop-shadow(0px 0px 15px ${ieBlue})`;
 
         const imageModal = new Modal(
-            "#ffffffee",
+            imageModalBg,
             (time) => {
                 bigImage.style.opacity = time + "";
             },
