@@ -1,6 +1,6 @@
 import { footer } from "../components";
 import { black, fadeInAnimation, gray, ieGreen } from "../constants";
-import { isLandscape, lastLineMetrics, sizeY, styleMultiLineText, styleSingleLineText } from "../layout";
+import { BoxElement, isLandscape, lastLineMetrics, px, sizeY, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setPosX, setPosY, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer } from "../scroll";
@@ -94,7 +94,7 @@ function quoteGroupMobile(q: Quote) {
     );
 }
 
-function createTimelineLine() {
+function addTimelineLine() {
     const timelineLine = document.createElement("div");
     timelineLine.style.position = "absolute";
     timelineLine.style.animation = fadeInAnimation();
@@ -103,28 +103,26 @@ function createTimelineLine() {
     return timelineLine;
 }
 
-function withTimelineDesktop(node: LayoutNode, offsetFactor: number) {
-    const line = createTimelineLine();
-    line.style.width = "1px";
+function withTimelineDesktop(node: LayoutNode, line: BoxElement, offsetFactor: number) {
     node.post = () => {
         const offset = offsetFactor * getScrollHeight();
         const bottom = node.box.y + node.box.h;
+        line.style.width = px(1);
+        line.style.height = px(sizeY(scrollContainer) - bottom - offset);
         setPosX(line, node.box.x + node.box.w / 2);
         setPosY(line, bottom + offset);
-        line.style.height = sizeY(scrollContainer) - bottom - offset + "px";
     };
     return node;
 }
 
-function withTimelineMobile(node: LayoutNode, offsetFactor: number) {
-    const line = createTimelineLine();
-    line.style.height = "1px";
+function withTimelineMobile(node: LayoutNode, line: BoxElement, offsetFactor: number) {
     node.post = () => {
         const offset = offsetFactor * getScrollWidth();
         const left = node.box.x;
+        line.style.height = px(1);
+        line.style.width = px(left - offset);
         setPosX(line, 0);
         setPosY(line, node.box.y + node.box.h / 2);
-        line.style.width = left - offset + "px";
     };
     return node;
 }
@@ -146,13 +144,18 @@ export function addEvolutionPage() {
         addQuote("Beth is quite frankly one of the <strong>most talented designers</strong> that I have ever had the privilege to work with. She always has a special way of making everything she touches turn to gold!", "DAVID RUSH", "President, ENV"),
     ];
 
+    const evolutionTimeline = addTimelineLine();
+    const historyTimeline = addTimelineLine();
+    const quotesWithTimelines = quotes.map((quote) => ({ quote, timeline: addTimelineLine() }));
+    const promosWithTimelines = promos.map((promo) => ({ promo, timeline: addTimelineLine() }));
+
     const nextPillarButton = addNextPillarButton("inspiration");
     const scrollPadding = addScrollPadding();
 
     const desktopLayout = flow(
         Axis.X,
         [
-            withTimelineDesktop(imageWithHeight(evolution, 0.75), 0.06),
+            withTimelineDesktop(imageWithHeight(evolution, 0.75), evolutionTimeline, 0.06),
             gap(0.2),
             withTimelineDesktop(
                 flow(
@@ -164,13 +167,14 @@ export function addEvolutionPage() {
                     ],
                     { align: Align.Center }
                 ),
+                historyTimeline,
                 0.06
             ),
             gap(0.3),
             ...interlaceWithBetween(
                 interleaveArrays(
-                    quotes.map((q) => withTimelineDesktop(quoteGroupDesktop(q), 0.09)),
-                    promos.map((promo) => withTimelineDesktop(imageWithFillHeight(promo), -0.001))
+                    quotesWithTimelines.map((q) => withTimelineDesktop(quoteGroupDesktop(q.quote), q.timeline, 0.09)),
+                    promosWithTimelines.map((p) => withTimelineDesktop(imageWithFillHeight(p.promo), p.timeline, -0.001))
                 ),
                 gap(0.3)
             ),
@@ -182,16 +186,16 @@ export function addEvolutionPage() {
     const mobileLayout = flow(
         Axis.Y,
         [
-            withTimelineMobile(imageWithWidth(evolution, 0.8), 0.02),
+            withTimelineMobile(imageWithWidth(evolution, 0.8), evolutionTimeline, 0),
             gap(0.1),
             imageWithWidth(logoFull, 0.45), // -
             gap(0.1),
-            imageWithWidth(evolutionHistory, 0.8),
+            withTimelineMobile(imageWithWidth(evolutionHistory, 0.8), historyTimeline, 1),
             gap(0.3),
             ...interlaceWithBetween(
                 interleaveArrays(
-                    quotes.map((q) => withTimelineMobile(quoteGroupMobile(q), 0.09)),
-                    promos.map((promo) => withTimelineMobile(imageWithWidth(promo, 1), -0.001))
+                    quotesWithTimelines.map((q) => withTimelineMobile(quoteGroupDesktop(q.quote), q.timeline, 0.05)),
+                    promosWithTimelines.map((p) => withTimelineMobile(imageWithWidth(p.promo, 1), p.timeline, -0.001))
                 ),
                 gap(0.3)
             ),

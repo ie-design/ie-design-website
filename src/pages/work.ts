@@ -1,6 +1,6 @@
 import { footer, textSquareItems } from "../components";
 import { body, white, workTextColor } from "../constants";
-import { isLandscape, posX, posY } from "../layout";
+import { isLandscape } from "../layout";
 import { applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, virtual } from "../newLayoutEngine";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollTextSquare, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, TextSquare } from "../scroll";
@@ -198,7 +198,7 @@ export function addWorkPage() {
 
         const scrollToWork = (workItem: WorkItem) => {
             const major = workItem.textSquare.major;
-            const q = isLandscape() ? { left: posX(major) } : { top: posY(major) - getHeaderBarHeight() };
+            const q = isLandscape() ? { left: major.offsetLeft } : { top: major.offsetTop - getHeaderBarHeight() };
             scrollContainer.scroll({ ...q, behavior: "smooth" });
         };
 
@@ -211,10 +211,10 @@ export function addWorkPage() {
             const closest = findWithMin(workItemsWithTabs, (w) => {
                 if (isLandscape()) {
                     const center = scrollContainer.scrollLeft + scrollContainer.clientWidth / 2;
-                    return Math.abs(posX(w.workItem.textSquare.major) - center);
+                    return Math.abs(w.workItem.textSquare.major.offsetLeft - center);
                 } else {
                     const center = scrollContainer.scrollTop - scrollContainer.clientHeight / 2;
-                    return Math.abs(posY(w.workItem.textSquare.major) - center);
+                    return Math.abs(w.workItem.textSquare.major.offsetTop - center);
                 }
             });
             if (closest.tabAnimation.isCurrentViewed) return;
@@ -254,8 +254,8 @@ export function addWorkPage() {
 
         const mobileLayout = flow(
             Axis.Y,
-
             [
+                gap(0.1),
                 ...interlaceWithBetween(
                     workItems.map((item) =>
                         flow(Axis.Y, [
@@ -289,9 +289,8 @@ export function addWorkPage() {
             } else {
                 run(mobileLayout, getScrollWidth());
             }
+            scrollToWork(workItems[initialIndex]);
         });
-
-        scrollToWork(workItems[initialIndex]);
     }
 
     registerUpdateLayout(() => {

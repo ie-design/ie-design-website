@@ -15,16 +15,6 @@ export function px(pixels: number) {
     return pixels + "px";
 }
 
-function unpx(value: string) {
-    return Number(value.slice(0, -2));
-}
-export function posX(element: BoxElement) {
-    return element instanceof HTMLElement ? element.offsetLeft : unpx(element.style.left);
-}
-
-export function posY(element: BoxElement) {
-    return element instanceof HTMLElement ? element.offsetTop : unpx(element.style.top);
-}
 
 export function sizeX(element: BoxElement) {
     return element instanceof HTMLElement ? element.offsetWidth : element.clientWidth;
@@ -87,8 +77,10 @@ export function styleSingleLineText(scrollText: BoxElement, s: TextStyle) {
 export function lastLineMetrics(textEl: HTMLElement) {
     const range = document.createRange();
     range.selectNodeContents(textEl);
-    const rects = range.getClientRects();
+    const rects = Array.from(range.getClientRects());
     const first = rects[0];
     const last = rects[rects.length - 1];
-    return { width: last.width, top: last.top - first.top };
+    const lastLineRects = rects.filter((r) => Math.abs(r.top - last.top) < 2);
+    const rightEdge = Math.max(...lastLineRects.map((r) => r.right));
+    return { width: rightEdge - first.left, top: last.top - first.top };
 }
