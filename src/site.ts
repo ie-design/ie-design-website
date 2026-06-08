@@ -1,5 +1,5 @@
 import { blogs } from "./blogs/blogs";
-import { black, body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen, imageModalBg, menuButtonGray, menuOverlayBg, white } from "./constants";
+import { black, body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen, imageModalBg, menuButtonGray, menuOverlayBg, textMutedColor, white } from "./constants";
 import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
 import { Modal } from "./modal";
 import { Axis, flow, imageWithHeight, imageWithWidth, run } from "./newLayoutEngine";
@@ -54,6 +54,8 @@ const pages: Page[] = [
     ...blogPages,
 ];
 
+export const leftEdgeItemAlignment = () => innerHeight * 0.1;
+
 export class Site {
     navItems?: HTMLElement[];
     headerBar?: HTMLElement;
@@ -64,9 +66,6 @@ export class Site {
     sideItemsShown = true;
     sideItemsShownSig = new Signal();
 
-    leftAlign = () => innerHeight * 0.1;
-    headerIconSizeDesktop = () => getHeaderBarHeight() * 0.4;
-    headerIconSizeMobile = () => getHeaderBarHeight() * 0.5;
 
     pushRoute = (route: string) => {
         history.pushState({}, "", import.meta.env.BASE_URL.slice(0, -1) + route);
@@ -137,7 +136,7 @@ export class Site {
                 for (const navItem of navItems) {
                     navItem.style.visibility = "visible";
                     navItem.style.fontSize = px(s * 0.025);
-                    navItem.style.left = px(this.sideItemsShown ? this.leftAlign() : -300);
+                    navItem.style.left = px(this.sideItemsShown ? leftEdgeItemAlignment() : -300);
 
                     const navItemSpan = navItem.children[0] as HTMLElement;
                     navItemSpan.style.transition = "transform 0.3s ease-out";
@@ -153,7 +152,7 @@ export class Site {
     setSideItemsShown = (shown: boolean) => {
         this.sideItemsShown = shown;
         this.sideItemsShownSig.update();
-        // const alignment = shown ? this.leftAlign() : -300;
+        // const alignment = shown ? leftEdgeItemAlignment() : -300;
         // for (const navItem of this.navItems) navItem.style.left = px(alignment);
         // if (this.copyright) this.copyright.style.left = px(alignment);
     };
@@ -250,13 +249,13 @@ export class Site {
 
         effect(() => {
             if (isLandscape()) {
-                const size = this.headerIconSizeDesktop();
+                const size = getHeaderBarHeight() * 0.3;
                 menuButton.style.width = px(size);
                 menuButton.style.height = px(size);
-                menuButton.style.left = px(innerWidth - size - this.leftAlign());
+                menuButton.style.left = px(innerWidth - size - leftEdgeItemAlignment());
                 menuButton.style.top = px((getHeaderBarHeight() - size) / 2);
             } else {
-                const size = this.headerIconSizeMobile();
+                const size = getHeaderBarHeight() * 0.4;
                 const gapToEdge = (getHeaderBarHeight() - size) / 2;
                 menuButton.style.width = px(size);
                 menuButton.style.height = px(size);
@@ -299,13 +298,13 @@ export class Site {
 
         effect(() => {
             if (isLandscape()) {
-                const size = this.headerIconSizeDesktop();
+                const size = getHeaderBarHeight() * 0.45;
                 logo.style.width = px(size);
                 logo.style.height = px(size);
-                logo.style.left = px(this.leftAlign());
+                logo.style.left = px(leftEdgeItemAlignment());
                 logo.style.top = px((getHeaderBarHeight() - size) / 2);
             } else {
-                const size = this.headerIconSizeMobile();
+                const size = getHeaderBarHeight() * 0.5;
                 const gapToEdge = (getHeaderBarHeight() - size) / 2;
                 logo.style.width = px(size);
                 logo.style.height = px(size);
@@ -326,7 +325,7 @@ export class Site {
 
         effect(() => {
             if (isLandscape()) {
-                copyright.style.left = px(this.sideItemsShown ? this.leftAlign() : -300);
+                copyright.style.left = px(this.sideItemsShown ? leftEdgeItemAlignment() : -300);
                 copyright.style.top = px(innerHeight * 0.9);
                 styleSingleLineText(copyright, { letterSpacing: 0.3, fontWeight: 500, color: gray, fontSize: 0.012 * innerHeight });
                 copyright.style.visibility = "visible";
@@ -485,7 +484,7 @@ export class Site {
         const bigImage = document.createElement("img");
         this.bigImage = bigImage;
         bigImage.style.position = "absolute";
-        bigImage.style.filter = `drop-shadow(0px 0px 15px ${ieBlue})`;
+        bigImage.style.filter = `drop-shadow(0px 0px 15px ${textMutedColor})`;
 
         const imageModal = new Modal(
             imageModalBg,

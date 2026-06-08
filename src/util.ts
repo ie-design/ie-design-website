@@ -139,3 +139,10 @@ export function appendParagraph(p: HTMLParagraphElement, ...nodes: (string | Nod
     p.append(...nodes);
     return p;
 }
+
+export function bold(text: string) {
+    const span = document.createElement("span");
+    span.innerText = text;
+    span.style.fontWeight = "700";
+    return span;
+}

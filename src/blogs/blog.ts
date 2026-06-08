@@ -11,7 +11,7 @@ const DEFAULT_DESKTOP_SPACING = 0.018;
 const DEFAULT_MOBILE_SPACING = 0.045;
 const thumbnail = "thumbnail.jpg";
 
-const desktopFlow = (...children: LayoutNode[]) => flow(Axis.Y, children, { w: (c) => c.s * 0.8, align: Align.Center });
+const desktopFlow = (...children: LayoutNode[]) => flow(Axis.Y, children, { w: (c) => c.s * 0.7, align: Align.Center });
 const mobileFlow = (...children: LayoutNode[]) => flow(Axis.Y, children, { w: (c) => c.s * 0.85, align: Align.Center });
 
 export class Blog {

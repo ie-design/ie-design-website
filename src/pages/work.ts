@@ -1,5 +1,5 @@
-import { footer, textSquareItems } from "../components";
-import { body, white, workTextColor } from "../constants";
+import { footer, TEXT_SQUARE_GAP_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
+import { black, body, white } from "../constants";
 import { isLandscape } from "../layout";
 import { applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, virtual } from "../newLayoutEngine";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout } from "../page";
@@ -42,7 +42,7 @@ const workContents: WorkContent[] = [
     },
     {
         name: "loa",
-        description: ["This professional make-up artist team came to us to brand their patented “waterslide” eye pencil. Color names like “Giving Back Black,” reflect the company's commitment to providing makeovers for women facing health challenges. The playful packaging elevates a staple product to gift worthy and generates attention in a saturated market by flying above its display case. The motif holds special meaning for the founder who shared with us that the butterfly is a sign that her beloved mother is still with her.", "Industry: Beauty & Cosmetics"],
+        description: ["This professional make-up artist team came to us to brand their patented “waterslide” eye pencil. Color names like “Giving Back Black” reflect the company's commitment to providing makeovers for women facing health challenges. The playful packaging elevates a staple product to gift worthy and generates attention in a saturated market by flying above its display case. The motif holds special meaning for the founder who shared with us that the butterfly is a sign that her beloved mother is still with her.", "Industry: Beauty & Cosmetics"],
     },
     {
         name: "wet",
@@ -124,8 +124,8 @@ export function addWorkPage() {
     });
     allFloating.push(tuckedTabShelfNode);
 
-    const fromLeft = () => (isLandscape() ? innerHeight * 0.34 : innerWidth * 0.08);
-    const fromRight = () => (isLandscape() ? innerHeight * 0.2 : innerWidth * 0.08);
+    const fromLeft = () => (isLandscape() ? innerHeight * 0.4 : innerWidth * 0.08);
+    const fromRight = () => (isLandscape() ? innerHeight * 0.4 : innerWidth * 0.08);
     const tabsOuterBounds = center([tabsTightContainer, ...allFloating], {
         w: () => innerWidth - fromRight() - fromLeft(),
         h: () => A_HEIGHT * innerHeight,
@@ -224,28 +224,30 @@ export function addWorkPage() {
 
         // layout
 
+        // textSquareItems(
+        //     square.major,
+        //     (s) => ({ letterSpacing: 0.0046 * s, fontWeight: 400, color: textMutedColor, fontSize: 0.055 * s, lineHeight: 0.086 * s }),
+        //     0.03,
+        //     square.minors,
+        //     (s) => ({ letterSpacing: 0.0003 * s, fontWeight: 300, color: black, fontSize: 0.025 * s, lineHeight: 0.045 * s }),
+        //     0.03,
+        //     (s) => 0.79 * s
+        // );
+
         const desktopLayout = flow(
             Axis.X,
             [
                 ...interlaceWithBetween(
                     workItems.map((item) =>
                         flow(Axis.X, [
-                            textSquareItems(
-                                item.textSquare.major,
-                                (s) => ({ letterSpacing: 0.004 * s, fontWeight: 400, color: workTextColor, fontSize: 0.065 * s, lineHeight: 0.05 * s }),
-                                0.05,
-                                item.textSquare.minors,
-                                (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: workTextColor, fontSize: 0.03 * s, lineHeight: 0.05 * s }),
-                                0.02,
-                                (s) => 1 * s
-                            ), // -
-                            gap(0.2),
+                            textSquareLayoutDesktop(item.textSquare, black), // -
+                            gap(0.17),
                             imageWithHeight(item.image1, 1),
                             gap(0.15),
                             imageWithHeight(item.image2, 1),
                         ])
                     ),
-                    gap(0.2)
+                    gap(TEXT_SQUARE_GAP_DESKTOP)
                 ),
                 ...footer(nextPillarButton, scrollPadding),
             ],
@@ -259,15 +261,7 @@ export function addWorkPage() {
                 ...interlaceWithBetween(
                     workItems.map((item) =>
                         flow(Axis.Y, [
-                            textSquareItems(
-                                item.textSquare.major,
-                                (s) => ({ letterSpacing: 0.004 * s, fontWeight: 400, color: workTextColor, fontSize: 0.065 * s, lineHeight: 0.05 * s }),
-                                0.06,
-                                item.textSquare.minors,
-                                (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: workTextColor, fontSize: 0.03 * s, lineHeight: 0.05 * s }),
-                                0.02,
-                                (s) => 0.85 * s
-                            ), // -
+                            textSquareLayoutMobile(item.textSquare, black), // -
                             gap(0.15),
                             imageWithWidth(item.image1, 1),
                             gap(0.06),

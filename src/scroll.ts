@@ -135,9 +135,9 @@ export function addScrollVideo(src: string, poster?: string): HTMLVideoElement {
     return scrollVideo;
 }
 
-export function addScrollText(text: string) {
+export function addScrollText(...nodes: (Node | string)[]) {
     const scrollText = document.createElement("p");
-    scrollText.innerHTML = text;
+    scrollText.append(...nodes);
     scrollText.style.animation = fadeInAnimation();
     appendChildForPage(scrollContainer, scrollText);
     return scrollText;
@@ -145,12 +145,12 @@ export function addScrollText(text: string) {
 
 export function addScrollTextSquare(majorText: string, ...minorTexts: string[]): TextSquare {
     const major = addScrollText(majorText);
-    const minors = minorTexts.map(addScrollText);
+    const minors = minorTexts.map((s) => addScrollText(s));
     return { major, minors };
 }
 
 export function addNextPillarButton(pageName: keyof typeof pillars) {
-    const nextPillarButton = addScrollText(pageName.toUpperCase() + " →");
+    const nextPillarButton = addScrollText(pageName.toUpperCase() + " >");
     nextPillarButton.style.cursor = "pointer";
     nextPillarButton.style.whiteSpace = "nowrap";
     nextPillarButton.onclick = () => site.openPage(pillars[pageName]);

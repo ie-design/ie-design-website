@@ -58,6 +58,7 @@ export interface LayoutNode {
 
     // escape hatches
     place?: (self: Box, s: number) => void; // relative override, runs after the skeleton is positioned
+    applySize?: boolean; // sync also writes width/height; opt-in so natural-sized elements aren't affected
     post?: (self: Box) => void; // after DOM sync (e.g. getClientRects fixups)
 }
 
@@ -305,6 +306,10 @@ function sync(node: LayoutNode) {
     if (node.el) {
         node.el.style.left = px(node.box.x);
         node.el.style.top = px(node.box.y);
+        if (node.applySize) {
+            node.el.style.width = px(node.box.w);
+            node.el.style.height = px(node.box.h);
+        }
     }
     node.children?.forEach(sync);
 }
