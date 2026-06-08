@@ -189,7 +189,7 @@ export function addWorkPage() {
             image2: addScrollImage(`work/${spaceToFile(workContent.name)}/2.jpg`),
         }));
 
-        const nextPillarButton = addNextPillarButton("evolution");
+        const nextPillarButton = addNextPillarButton("inspiration");
         const scrollPadding = addScrollPadding();
 
         // action

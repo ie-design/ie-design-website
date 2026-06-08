@@ -87,7 +87,7 @@ export function addInspirationPage() {
 
     const tiles = blogs.toReversed().map(addInspirationTile);
 
-    const nextPillarButton = addNextPillarButton("connect");
+    const nextPillarButton = addNextPillarButton("evolution");
     const scrollPadding = addScrollPadding();
 
     const desktopLayout = flow(

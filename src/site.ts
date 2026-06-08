@@ -23,8 +23,8 @@ interface Page {
 export const pillars = {
     view: addViewPage,
     work: addWorkPage,
-    evolution: addEvolutionPage,
     inspiration: addInspirationPage,
+    evolution: addEvolutionPage,
     connect: addConnectPage,
 };
 

@@ -132,7 +132,7 @@ export function addEvolutionPage() {
     const promosWithTimelines = promos.map((promo) => ({ promo, timeline: addTimelineLine() }));
     const runningTimeline = addTimelineLine();
 
-    const nextPillarButton = addNextPillarButton("inspiration");
+    const nextPillarButton = addNextPillarButton("connect");
     const scrollPadding = addScrollPadding();
 
     const desktopTimelines: LayoutNode[] = [];
