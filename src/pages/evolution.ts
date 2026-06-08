@@ -1,5 +1,5 @@
 import { footer, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP } from "../components";
-import { black, fadeInAnimation, gray, ieGreen } from "../constants";
+import { fadeInAnimation, theme } from "../constants";
 import { isLandscape, lastLineMetrics, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, registerUpdateLayout } from "../page";
@@ -27,15 +27,15 @@ function addQuote(quoteNodes: (Node | string)[], authorText: string, titleText: 
 
 const TIMELINE_THICKNESS = 0.5;
 const runningTimelineBaseDesktop = () => getScrollHeight() * 1.1;
-const runningTimelineBaseMobile = () => site.logo!.offsetLeft; // ZZZZ dont love this cross cutting read
+const runningTimelineBaseMobile = () => site.logo!.getBoundingClientRect().x; // ZZZZ dont love this cross cutting read
 
 function styleQuote({ quote, author, title, openQuote, closeQuote }: Quote, s: number) {
-    styleMultiLineText(quote, { letterSpacing: 0 * s, fontWeight: 300, color: black, fontSize: 0.03 * s, lineHeight: 0.065 * s });
+    styleMultiLineText(quote, { letterSpacing: 0 * s, fontWeight: 300, color: theme.bodyText, fontSize: 0.03 * s, lineHeight: 0.065 * s });
 
-    styleSingleLineText(author, { letterSpacing: 0.001 * s, fontWeight: 300, color: black, fontSize: 0.035 * s });
-    styleSingleLineText(title, { letterSpacing: 0.00075 * s, fontWeight: 300, color: black, fontSize: 0.025 * s });
+    styleSingleLineText(author, { letterSpacing: 0.001 * s, fontWeight: 300, color: theme.bodyText, fontSize: 0.035 * s });
+    styleSingleLineText(title, { letterSpacing: 0.00075 * s, fontWeight: 300, color: theme.bodyText, fontSize: 0.025 * s });
 
-    const quoteTextDetails = { letterSpacing: 0.001 * s, fontWeight: 300, color: ieGreen, fontSize: 0.15 * s };
+    const quoteTextDetails = { letterSpacing: 0.001 * s, fontWeight: 300, color: theme.ieGreen, fontSize: 0.15 * s };
     styleSingleLineText(openQuote, quoteTextDetails);
     styleSingleLineText(closeQuote, quoteTextDetails);
 }
@@ -103,7 +103,7 @@ function addTimelineLine() {
     const timelineLine = document.createElement("div");
     timelineLine.style.position = "absolute";
     timelineLine.style.animation = fadeInAnimation();
-    timelineLine.style.backgroundColor = gray;
+    timelineLine.style.backgroundColor = theme.neutralFront;
     timelineLine.style.zIndex = "-1";
     appendChildForPage(scrollContainer, timelineLine);
     return timelineLine;

@@ -1,5 +1,5 @@
 import { footer, TEXT_SQUARE_GAP_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
-import { black, body, white } from "../constants";
+import { body, theme } from "../constants";
 import { isLandscape } from "../layout";
 import { applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, virtual } from "../newLayoutEngine";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout } from "../page";
@@ -72,7 +72,7 @@ export function addWorkPage() {
 
     const tuckedTabShelf = document.createElement("div");
     tuckedTabShelf.style.position = "absolute";
-    tuckedTabShelf.style.background = white;
+    tuckedTabShelf.style.background = theme.background;
     appendChildForPage(body, tuckedTabShelf);
 
     // layout
@@ -229,7 +229,7 @@ export function addWorkPage() {
         //     (s) => ({ letterSpacing: 0.0046 * s, fontWeight: 400, color: textMutedColor, fontSize: 0.055 * s, lineHeight: 0.086 * s }),
         //     0.03,
         //     square.minors,
-        //     (s) => ({ letterSpacing: 0.0003 * s, fontWeight: 300, color: black, fontSize: 0.025 * s, lineHeight: 0.045 * s }),
+        //     (s) => ({ letterSpacing: 0.0003 * s, fontWeight: 300, color: theme.black, fontSize: 0.025 * s, lineHeight: 0.045 * s }),
         //     0.03,
         //     (s) => 0.79 * s
         // );
@@ -240,7 +240,7 @@ export function addWorkPage() {
                 ...interlaceWithBetween(
                     workItems.map((item) =>
                         flow(Axis.X, [
-                            textSquareLayoutDesktop(item.textSquare, black), // -
+                            textSquareLayoutDesktop(item.textSquare, theme.bodyText), // -
                             gap(0.17),
                             imageWithHeight(item.image1, 1),
                             gap(0.15),
@@ -261,7 +261,7 @@ export function addWorkPage() {
                 ...interlaceWithBetween(
                     workItems.map((item) =>
                         flow(Axis.Y, [
-                            textSquareLayoutMobile(item.textSquare, black), // -
+                            textSquareLayoutMobile(item.textSquare, theme.bodyText), // -
                             gap(0.15),
                             imageWithWidth(item.image1, 1),
                             gap(0.06),

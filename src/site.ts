@@ -1,5 +1,5 @@
 import { blogs } from "./blogs/blogs";
-import { black, body, bodySig, fadeInAnimation, gray, ieBlue, ieGreen, imageModalBg, menuButtonGray, menuOverlayBg, textMutedColor, white } from "./constants";
+import { body, bodySig, fadeInAnimation, theme } from "./constants";
 import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
 import { Modal } from "./modal";
 import { Axis, flow, imageWithHeight, imageWithWidth, run } from "./newLayoutEngine";
@@ -12,7 +12,7 @@ import { addWorkPage } from "./pages/work";
 import { addScrollSvg, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
-import { colorOnHover, colorOnHoverSVGStroke, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, makeLine, makePolyline, setAttributes, setPolylines, sleep } from "./util";
+import { colorOnHover, colorOnHoverSVGStroke, createElementSVG, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, loadSVGInto, makeLine, makePolyline, setAttributes, setPolylines, sleep } from "./util";
 
 interface Page {
     addPage: () => void;
@@ -60,12 +60,11 @@ export class Site {
     navItems?: HTMLElement[];
     headerBar?: HTMLElement;
     menuButton?: SVGSVGElement;
-    logo?: HTMLImageElement;
+    logo?: SVGSVGElement;
     copyright?: HTMLSpanElement;
 
     sideItemsShown = true;
     sideItemsShownSig = new Signal();
-
 
     pushRoute = (route: string) => {
         history.pushState({}, "", import.meta.env.BASE_URL.slice(0, -1) + route);
@@ -86,9 +85,9 @@ export class Site {
         if (!this.navItems) return;
         for (const navItem of this.navItems) {
             if (page.route.includes(navItem.innerText.toLowerCase())) {
-                colorOnHover(navItem, black, black);
+                colorOnHover(navItem, theme.bodyText, theme.bodyText);
             } else {
-                colorOnHover(navItem, gray, menuButtonGray);
+                colorOnHover(navItem, theme.neutral, theme.neutralFront);
             }
         }
     };
@@ -162,7 +161,7 @@ export class Site {
         this.headerBar = headerBar;
 
         headerBar.style.position = "absolute";
-        headerBar.style.background = white;
+        headerBar.style.background = theme.background;
         body.appendChild(headerBar);
 
         effect(() => {
@@ -172,12 +171,12 @@ export class Site {
     };
 
     addMenuButton = () => {
-        const sz = 60;
+        const sz = 70;
         const menuButton = createIconSVG(sz);
         this.menuButton = menuButton;
 
         menuButton.style.animation = fadeInAnimation();
-        colorOnHoverSVGStroke(menuButton, menuButtonGray, gray);
+        colorOnHoverSVGStroke(menuButton, theme.neutral, theme.neutralFront);
 
         const menuLine = makeLine(menuButton, 4);
         const line1 = menuLine();
@@ -185,7 +184,7 @@ export class Site {
         const line3 = menuLine();
 
         const menuModal = new Modal(
-            menuOverlayBg,
+            theme.menuModalOverlay,
             (time) => {
                 const s = time * sz;
                 setAttributes(line1, { x1: 0, y1: 0, x2: sz, y2: s });
@@ -203,7 +202,7 @@ export class Site {
                         menuPageNav.style.fontFamily = "Spartan";
                         menuPageNav.style.fontWeight = "500";
                         menuPageNav.style.cursor = "pointer";
-                        colorOnHover(menuPageNav, gray, white);
+                        colorOnHover(menuPageNav, theme.neutralFront, theme.background);
 
                         menuPageNav.onclick = () => {
                             menuModal.beginClose();
@@ -225,10 +224,10 @@ export class Site {
                     menuButton.style.zIndex = "1";
                 },
                 onTriggerOpen: () => {
-                    colorOnHoverSVGStroke(menuButton, gray, white);
+                    colorOnHoverSVGStroke(menuButton, theme.neutralFront, theme.background);
                 },
                 onTriggerClose: () => {
-                    colorOnHoverSVGStroke(menuButton, menuButtonGray, gray);
+                    colorOnHoverSVGStroke(menuButton, theme.neutralFront, theme.neutralFront);
                 },
                 onEndClose: () => {
                     menuButton.style.zIndex = "0";
@@ -266,13 +265,13 @@ export class Site {
     };
 
     addLogo = () => {
-        const logo = document.createElement("img");
+        const logo = createElementSVG("svg");
         this.logo = logo;
 
         logo.style.animation = fadeInAnimation();
         logo.style.position = "absolute";
         logo.style.cursor = "pointer";
-        logo.src = "logo.svg";
+        loadSVGInto(logo, "logo.svg");
         body.appendChild(logo);
 
         logo.onclick = async () => {
@@ -280,16 +279,17 @@ export class Site {
 
             const pulse = document.createElement("div");
             pulse.style.position = "absolute";
-            pulse.style.background = ieGreen;
+            pulse.style.background = theme.ieGreen;
             pulse.style.pointerEvents = "none";
             body.appendChild(pulse);
 
             await animateWithSpring(40, (time) => {
                 const out = 30;
-                pulse.style.left = px(logo.offsetLeft - time * out);
-                pulse.style.top = px(logo.offsetTop - time * out);
-                pulse.style.width = px(logo.offsetWidth + time * 2 * out);
-                pulse.style.height = px(logo.offsetHeight + time * 2 * out);
+                const l = logo.getBoundingClientRect();
+                pulse.style.left = px(l.left - time * out);
+                pulse.style.top = px(l.top - time * out);
+                pulse.style.width = px(l.width + time * 2 * out);
+                pulse.style.height = px(l.height + time * 2 * out);
                 pulse.style.opacity = 1 - time + "";
             });
 
@@ -327,7 +327,7 @@ export class Site {
             if (isLandscape()) {
                 copyright.style.left = px(this.sideItemsShown ? leftEdgeItemAlignment() : -300);
                 copyright.style.top = px(innerHeight * 0.9);
-                styleSingleLineText(copyright, { letterSpacing: 0.3, fontWeight: 500, color: gray, fontSize: 0.012 * innerHeight });
+                styleSingleLineText(copyright, { letterSpacing: 0.3, fontWeight: 500, color: theme.neutralFront, fontSize: 0.012 * innerHeight });
                 copyright.style.visibility = "visible";
             } else {
                 // ZZZZ need to do something here
@@ -450,7 +450,7 @@ export class Site {
         const makeExitLine = makeLine(exitButton, 12);
         setAttributes(makeExitLine(), { x1: 0, y1: 0, x2: sz, y2: sz });
         setAttributes(makeExitLine(), { x1: 0, y1: sz, x2: sz, y2: 0 });
-        colorOnHoverSVGStroke(exitButton, gray, ieBlue);
+        colorOnHoverSVGStroke(exitButton, theme.neutralFront, theme.ieBlue);
 
         const fullscreenButton = createIconSVG(sz);
         const makeFullscreenPolyline = makePolyline(fullscreenButton, 12);
@@ -479,15 +479,15 @@ export class Site {
                 [ba, 0],
             ]
         );
-        colorOnHoverSVGStroke(fullscreenButton, gray, ieBlue);
+        colorOnHoverSVGStroke(fullscreenButton, theme.neutralFront, theme.ieBlue);
 
         const bigImage = document.createElement("img");
         this.bigImage = bigImage;
         bigImage.style.position = "absolute";
-        bigImage.style.filter = `drop-shadow(0px 0px 15px ${textMutedColor})`;
+        bigImage.style.filter = `drop-shadow(0px 0px 15px ${theme.neutralFront})`;
 
         const imageModal = new Modal(
-            imageModalBg,
+            theme.imageModalOverlay,
             (time) => {
                 bigImage.style.opacity = time + "";
             },

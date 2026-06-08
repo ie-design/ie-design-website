@@ -1,4 +1,4 @@
-import { ieBlue, ieGreen } from "./constants";
+import { theme } from "./constants";
 
 export const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
 
@@ -80,6 +80,13 @@ export async function fetchSVG(fetchString: string) {
     return new DOMParser().parseFromString(svgContent, "image/svg+xml").documentElement as unknown as SVGSVGElement;
 }
 
+export async function loadSVGInto(svg: SVGSVGElement, src: string) {
+    const fetched = await fetchSVG(src);
+    for (const attr of fetched.attributes) svg.setAttribute(attr.name, attr.value);
+    while (fetched.firstChild) svg.appendChild(fetched.firstChild);
+    svg.style.position = "absolute";
+}
+
 export function getElementByIdSVG(svg: SVGSVGElement, id: string) {
     return svg.getElementById(id) as SVGElement;
 }
@@ -130,7 +137,7 @@ export function link(text: string, href: string) {
     a.href = href;
     a.target = "_blank";
     a.innerText = text;
-    colorOnHover(a, ieBlue, ieGreen);
+    colorOnHover(a, theme.ieBlue, theme.ieGreen);
     a.style.textDecoration = "none";
     return a;
 }
@@ -146,3 +153,5 @@ export function bold(text: string) {
     span.style.fontWeight = "700";
     return span;
 }
+
+export const camelToKebab = (str: string) => str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`).replace(/^_/, "");

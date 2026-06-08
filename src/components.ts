@@ -1,4 +1,4 @@
-import { black, ieBlue, textMutedColor } from "./constants";
+import { theme } from "./constants";
 import { BoxElement, MultiLineTextStyle, setSizeX, styleMultiLineText, styleSingleLineText } from "./layout";
 import { Align, Axis, el, flow, gap, LayoutNode } from "./newLayoutEngine";
 import { TextSquare } from "./scroll";
@@ -47,7 +47,7 @@ export function textSquareLayoutDesktop(textSquare: TextSquare, majorTextColor: 
         textSquare, // -
         (s) => ({ letterSpacing: 0.0046 * s, fontWeight: 400, color: majorTextColor, fontSize: 0.055 * s, lineHeight: 0.086 * s }),
         0.03,
-        (s) => ({ letterSpacing: 0.0003 * s, fontWeight: 300, color: black, fontSize: 0.025 * s, lineHeight: 0.045 * s }),
+        (s) => ({ letterSpacing: 0.0003 * s, fontWeight: 300, color: theme.bodyText, fontSize: 0.025 * s, lineHeight: 0.045 * s }),
         0.03,
         (s) => TEXT_SQUARE_WIDTH_DESKTOP * s
     );
@@ -58,7 +58,7 @@ export function textSquareLayoutMobile(textSquare: TextSquare, majorTextColor: s
         textSquare,
         (s) => ({ letterSpacing: 0.003 * s, fontWeight: 400, color: majorTextColor, fontSize: 0.06 * s, lineHeight: 0.08 * s }),
         0.04,
-        (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: black, fontSize: 0.028 * s, lineHeight: 0.05 * s }),
+        (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: theme.bodyText, fontSize: 0.028 * s, lineHeight: 0.05 * s }),
         0.04,
         (s) => 0.85 * s
     );
@@ -69,7 +69,7 @@ export function footer(nextPillarButton: BoxElement, scrollPadding: BoxElement) 
     return [
         gap(NEXT_PILLAR_BUTTON_PAD),
         el(nextPillarButton, {
-            style: (c) => styleSingleLineText(nextPillarButton, { letterSpacing: 0.001 * c.s, fontWeight: 400, color: ieBlue, fontSize: 0.025 * c.s }),
+            style: (c) => styleSingleLineText(nextPillarButton, { letterSpacing: 0.001 * c.s, fontWeight: 400, color: theme.ieBlue, fontSize: 0.025 * c.s }),
             align: Align.Center,
         }),
         gap(NEXT_PILLAR_BUTTON_PAD),

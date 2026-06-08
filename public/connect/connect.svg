@@ -1,14 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 346.04 173.19">
-    <defs>
-        <style>.color-1{fill:#e6e6e6;}.color-2{fill:#b3b4b4;}</style>
-    </defs>
-    <g id="we" class="color-1">
+    <g id="we" fill="var(--neutral-back)">
         <path
             d="M19.84,47,6,0h6.44L23.35,39.3,36,0h4.42L53.1,39.3,64,0h6.44L56.58,47H50.11L38.23,11.29,26.34,47Z"></path>
         <path
             d="M80.78,47V0H105.2V5.1H86.56V20.92h18V26h-18V41.92H105.2V47Z"></path>
     </g>
-    <g id="are" class="color-1">
+    <g id="are" fill="var(--neutral-back)">
         <path
             d="M128.49,47,147.1,0h5.38l18.61,47h-6.24l-5.21-13.7h-19.7L134.7,47Zm13.42-18.81h15.76L149.78,7.72Z"></path>
         <path
@@ -16,23 +13,23 @@
         <path
             d="M222.65,47V0h24.42V5.1H228.44V20.92h17.95V26H228.44V41.92h18.63V47Z"></path>
     </g>
-    <g id="all" class="color-2">
+    <g id="all" fill="var(--neutral-front)">
         <path
             d="M94,109.92l18.61-47H118l18.61,47H130.4l-5.22-13.71H105.49l-5.24,13.71Zm13.43-18.81h15.76l-7.9-20.49Z"></path>
         <path d="M146.84,109.92v-47h5.79v41.93h18.89v5.1Z"></path>
         <path d="M181.93,109.92v-47h5.78v41.93h18.9v5.1Z"></path>
     </g>
-    <g id="in" class="color-2">
+    <g id="in" fill="var(--neutral-front)">
         <path d="M232.43,109.92v-47h5.78v47Z"></path>
         <path
             d="M253.38,109.92v-47h5.78l23.77,37.25V62.89h5.79v47h-5.79L259.16,72.7v37.22Z"></path>
     </g>
-    <g id="if" class="color-1">
+    <g id="if" fill="var(--neutral-back)">
         <path d="M0,172.28v-47H5.79v47Z"></path>
         <path
             d="M21,172.28v-47H45.51v5.11H24.88l1.85-1.51v19.89l-1.85-2.57H44.23v5.08H24.88l1.85-2.57v23.6Z"></path>
     </g>
-    <g id="you" class="color-1">
+    <g id="you" fill="var(--neutral-back)">
         <path
             d="M83.53,172.28V151.73L67.09,125.25h7l12.34,20.44,12.37-20.44h7L89.32,151.73v20.55Z"></path>
         <path
@@ -40,7 +37,7 @@
         <path
             d="M185.79,173.19q-8.32,0-12.54-4.44T169,155.49V125.25h5.79V154q0,6.87,2.69,10.16t8.28,3.29q5.58,0,8.28-3.29T196.76,154V125.25h5.82v30.24q0,8.81-4.22,13.26T185.79,173.19Z"></path>
     </g>
-    <g id="are-2" class="color-1">
+    <g id="are-2" fill="var(--neutral-back)">
         <path
             d="M227.46,172.28l18.61-47h5.38l18.61,47h-6.24l-5.21-13.71h-19.7l-5.24,13.71Zm13.42-18.81h15.76L248.75,133Z"></path>
         <path

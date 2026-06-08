@@ -1,8 +1,8 @@
-import { body, fadeInAnimation, ieBlue, ieGreen } from "./constants";
+import { body, fadeInAnimation, theme } from "./constants";
 import { isLandscape, px, styleSingleLineText } from "./layout";
 import { appendChildForPage, awaitLayout } from "./page";
 import { pillars, site } from "./site";
-import { colorOnHover, createElementSVG, fetchSVG } from "./util";
+import { colorOnHover, createElementSVG, loadSVGInto } from "./util";
 
 export interface TextSquare {
     major: HTMLElement;
@@ -12,7 +12,7 @@ export interface TextSquare {
 export const scrollContainer = document.createElement("div");
 scrollContainer.style.position = "absolute";
 body.appendChild(scrollContainer);
-(scrollContainer.style as any).scrollbarColor = `${ieGreen} ${ieBlue}55`;
+(scrollContainer.style as any).scrollbarColor = `${theme.ieGreen} ${theme.ieBlue}55`;
 
 scrollContainer.onwheel = (e) => e.preventDefault();
 window.onwheel = (e) => {
@@ -100,23 +100,7 @@ export function addScrollSvg(src: string) {
     scrollSvg.style.position = "absolute";
     scrollSvg.style.animation = fadeInAnimation();
 
-    async function fetchContent() {
-        const fetched = await fetchSVG(src);
-        for (const attr of fetched.attributes) scrollSvg.setAttribute(attr.name, attr.value);
-        while (fetched.firstChild) scrollSvg.appendChild(fetched.firstChild);
-
-        // const letters = scrollSvg.getElementsByTagName("path");
-        // for (const letter of letters) {
-        //     letter.style.transition = "fill 0.4s ease-out";
-        //     letter.onmouseenter = () => {
-        //         const hoverColor = Math.random() > 0.5 ? "hover-blue" : "hover-green";
-        //         letter.classList.add(hoverColor);
-        //         letter.onmouseleave = () => letter.classList.remove(hoverColor);
-        //     };
-        // }
-    }
-    const fetchContentPromise = fetchContent();
-    awaitLayout(fetchContentPromise);
+    awaitLayout(loadSVGInto(scrollSvg, src));
 
     appendChildForPage(scrollContainer, scrollSvg);
     return scrollSvg;
@@ -154,7 +138,7 @@ export function addNextPillarButton(pageName: keyof typeof pillars) {
     nextPillarButton.style.cursor = "pointer";
     nextPillarButton.style.whiteSpace = "nowrap";
     nextPillarButton.onclick = () => site.openPage(pillars[pageName]);
-    colorOnHover(nextPillarButton, ieBlue, ieGreen);
+    colorOnHover(nextPillarButton, theme.ieBlue, theme.ieGreen);
     return nextPillarButton;
 }
 

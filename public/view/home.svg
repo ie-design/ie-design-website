@@ -1,13 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 507.62 302.73">
-    <defs>
-        <style>.color-1{fill:#e6e6e6;}.color-2{fill:#b3b4b4;}</style>
-    </defs>
-    <g id="ie" class="color-2">
+    <g id="ie" fill="var(--neutral-front)">
         <path d="M109.66,301.6V243h7.21V301.6Z"></path>
         <path
             d="M136,301.6V243h30.42v6.36H143.25v19.7h22.36v6.32H143.25v19.84h23.21v6.36Z"></path>
     </g>
-    <g id="rest" class="color-1">
+    <g id="rest" fill="var(--neutral-back)">
         <g id="how">
             <path d="M5.64,59.64V1.06h7.21V27.12h29V1.06H49V59.64H41.82V33.44h-29v26.2Z"></path>
             <path

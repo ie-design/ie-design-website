@@ -1,7 +1,7 @@
 import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 import { footer } from "../components";
-import { black, ieBlue, ieGreen } from "../constants";
+import { theme } from "../constants";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, LayoutNode, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
@@ -23,7 +23,7 @@ function addInspirationTile(blog: Blog) {
     const readMore = addScrollText("Read more");
 
     readMore.style.cursor = "pointer";
-    colorOnHover(readMore, ieBlue, ieGreen);
+    colorOnHover(readMore, theme.ieBlue, theme.ieGreen);
     function goToBlog() {
         site.openPage(blog.add);
     }
@@ -39,16 +39,16 @@ function tileDesktop({ image, title, description, readMore }: InspirationTile): 
         [
             imageWithFillWidth(image), // -
             gap(0.03),
-            el(title, { style: (c) => styleSingleLineText(title, { letterSpacing: 0, fontWeight: 400, color: black, fontSize: 0.036 * c.s }) }),
+            el(title, { style: (c) => styleSingleLineText(title, { letterSpacing: 0, fontWeight: 400, color: theme.bodyText, fontSize: 0.036 * c.s }) }),
             gap(0.01),
             el(description, {
                 style: (c) => {
-                    styleMultiLineText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: black, fontSize: 0.027 * c.s, lineHeight: 0.05 * c.s });
+                    styleMultiLineText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: theme.bodyText, fontSize: 0.027 * c.s, lineHeight: 0.05 * c.s });
                     setSizeX(description, c.parent.w);
                 },
             }),
             gap(0.01),
-            el(readMore, { style: (c) => styleSingleLineText(readMore, { letterSpacing: 0, fontWeight: 400, color: ieBlue, fontSize: 0.03 * c.s }) }),
+            el(readMore, { style: (c) => styleSingleLineText(readMore, { letterSpacing: 0, fontWeight: 400, color: theme.ieBlue, fontSize: 0.03 * c.s }) }),
         ],
         { w: (c) => 0.8 * c.s, place: (self, s) => (self.y = 0.15 * s) }
     );
@@ -63,16 +63,16 @@ function tileMobile({ image, title, description, readMore }: InspirationTile): L
             flow(
                 Axis.Y,
                 [
-                    el(title, { style: (c) => styleSingleLineText(title, { letterSpacing: 0, fontWeight: 400, color: black, fontSize: 0.04 * c.s }) }),
+                    el(title, { style: (c) => styleSingleLineText(title, { letterSpacing: 0, fontWeight: 400, color: theme.bodyText, fontSize: 0.04 * c.s }) }),
                     gap(0.02),
                     el(description, {
                         style: (c) => {
-                            styleMultiLineText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: black, fontSize: 0.03 * c.s, lineHeight: 0.05 * c.s });
+                            styleMultiLineText(description, { letterSpacing: 0.0005 * c.s, fontWeight: 300, color: theme.bodyText, fontSize: 0.03 * c.s, lineHeight: 0.05 * c.s });
                             setSizeX(description, c.parent.w);
                         },
                     }),
                     gap(0.02),
-                    el(readMore, { style: (c) => styleSingleLineText(readMore, { letterSpacing: 0, fontWeight: 400, color: ieBlue, fontSize: 0.032 * c.s }) }),
+                    el(readMore, { style: (c) => styleSingleLineText(readMore, { letterSpacing: 0, fontWeight: 400, color: theme.ieBlue, fontSize: 0.032 * c.s }) }),
                 ],
                 { w: (c) => c.s * 0.85, align: Align.Center }
             ),

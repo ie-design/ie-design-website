@@ -1,5 +1,5 @@
 import { footer } from "../components";
-import { black, ieGreen, textMutedColor } from "../constants";
+import { theme } from "../constants";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, anchored, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
@@ -9,7 +9,7 @@ import { appendParagraph, colorOnHoverSVGFill, interlaceWithBetween, link } from
 function addIcon(imageSrc: string, clickLink: string) {
     const icon = addScrollSvg(imageSrc);
     icon.style.cursor = "pointer";
-    colorOnHoverSVGFill(icon, textMutedColor, ieGreen);
+    colorOnHoverSVGFill(icon, theme.neutralFront, theme.ieGreen);
     icon.onclick = () => window.open(clickLink);
     return icon;
 }
@@ -39,7 +39,7 @@ export function addConnectPage() {
     ];
     const scrollPadding = addScrollPadding();
 
-    const desktopTextStyle = (s: number) => ({ letterSpacing: 0, fontWeight: 300, color: black, fontSize: 0.025 * s });
+    const desktopTextStyle = (s: number) => ({ letterSpacing: 0, fontWeight: 300, color: theme.bodyText, fontSize: 0.025 * s });
     const desktopLayout = flow(
         Axis.X,
         [
@@ -80,7 +80,7 @@ export function addConnectPage() {
         { h: (c) => c.s }
     );
 
-    const mobileTextStyle = (s: number) => ({ letterSpacing: 0, fontWeight: 300, color: black, fontSize: 0.024 * s });
+    const mobileTextStyle = (s: number) => ({ letterSpacing: 0, fontWeight: 300, color: theme.bodyText, fontSize: 0.024 * s });
     const mobileLayout = flow(
         Axis.Y,
         [

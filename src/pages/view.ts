@@ -1,5 +1,5 @@
 import { footer, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
-import { textMutedColor } from "../constants";
+import { theme } from "../constants";
 import { isLandscape } from "../layout";
 import { Axis, flow, gap, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, run } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
@@ -44,7 +44,7 @@ export function addViewPage() {
             ...interlaceWithBetween(
                 imageTextSquares.flatMap((i) => [
                     imageWithFillHeight(i.image), // -
-                    textSquareLayoutDesktop(i.textSquare, textMutedColor),
+                    textSquareLayoutDesktop(i.textSquare, theme.neutralFront),
                 ]),
                 gap(TEXT_SQUARE_GAP_DESKTOP)
             ),
@@ -66,7 +66,7 @@ export function addViewPage() {
             ...interlaceWithBetween(
                 imageTextSquares.flatMap((i) => [
                     imageWithFillWidth(i.image), // -
-                    textSquareLayoutMobile(i.textSquare, textMutedColor),
+                    textSquareLayoutMobile(i.textSquare, theme.neutralFront),
                 ]),
                 gap(0.08)
             ),
