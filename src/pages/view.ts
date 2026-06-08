@@ -1,9 +1,9 @@
 import { footer, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
-import { theme } from "../constants";
 import { isLandscape } from "../layout";
 import { Axis, flow, gap, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, run } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
+import { theme } from "../theme";
 import { interlaceWithBetween } from "../util";
 
 let homeFromIntro: SVGSVGElement | undefined;

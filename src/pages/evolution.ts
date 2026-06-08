@@ -1,10 +1,11 @@
 import { footer, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP } from "../components";
-import { fadeInAnimation, theme } from "../constants";
+import { fadeInAnimation } from "../constants";
 import { isLandscape, lastLineMetrics, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer } from "../scroll";
 import { site } from "../site";
+import { theme } from "../theme";
 import { bold, interlaceWithBetween, interleaveArrays } from "../util";
 
 interface Quote {

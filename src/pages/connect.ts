@@ -1,9 +1,9 @@
 import { footer } from "../components";
-import { theme } from "../constants";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, anchored, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
+import { theme } from "../theme";
 import { appendParagraph, colorOnHoverSVGFill, interlaceWithBetween, link } from "../util";
 
 function addIcon(imageSrc: string, clickLink: string) {

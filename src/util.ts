@@ -1,4 +1,4 @@
-import { theme } from "./constants";
+import { theme } from "./theme";
 
 export const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
 

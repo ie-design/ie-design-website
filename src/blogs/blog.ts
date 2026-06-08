@@ -1,9 +1,9 @@
-import { theme } from "../constants";
 import { isLandscape, styleMultiLineText } from "../layout";
 import { Align, Axis, el, flow, gap, imageWithParentWidth, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollText, addScrollVideo, resizeScrollContainerFull } from "../scroll";
 import { site } from "../site";
+import { theme } from "../theme";
 import { colorOnHover } from "../util";
 
 const IMAGE_PAIR_SPACING = 0.02;

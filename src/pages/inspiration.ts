@@ -1,12 +1,12 @@
 import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 import { footer } from "../components";
-import { theme } from "../constants";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, LayoutNode, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
 import { site } from "../site";
+import { theme } from "../theme";
 import { colorOnHover, interlaceWithBetween } from "../util";
 
 interface InspirationTile {

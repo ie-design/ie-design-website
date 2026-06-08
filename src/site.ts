@@ -1,5 +1,5 @@
 import { blogs } from "./blogs/blogs";
-import { body, bodySig, fadeInAnimation, theme } from "./constants";
+import { body, bodySig, fadeInAnimation } from "./constants";
 import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
 import { Modal } from "./modal";
 import { Axis, flow, imageWithHeight, imageWithWidth, run } from "./newLayoutEngine";
@@ -12,6 +12,7 @@ import { addWorkPage } from "./pages/work";
 import { addScrollSvg, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
+import { theme } from "./theme";
 import { colorOnHover, colorOnHoverSVGStroke, createElementSVG, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, loadSVGInto, makeLine, makePolyline, setAttributes, setPolylines, sleep } from "./util";
 
 interface Page {
