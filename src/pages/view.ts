@@ -3,7 +3,7 @@ import { isLandscape } from "../layout";
 import { Align, Axis, flow, gap, imageByWidth, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, run } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
-import { leftEdgeItemAlignment, logoLeft, site } from "../site";
+import { logoLeft } from "../site";
 import { theme } from "../theme";
 import { interlaceWithBetween } from "../util";
 
@@ -25,7 +25,7 @@ function homeMaybeFromIntro() {
     return h;
 }
 
-function homeWidthMobile() {
+export function homeWidthMobile() {
     return innerWidth - logoLeft() * 2;
 }
 
@@ -68,7 +68,7 @@ export function addViewPage() {
         Axis.Y,
         [
             mobileTopGap(),
-            imageByWidth(homeMobile, (c) => homeWidthMobile(), { align: Align.Center }),
+            imageByWidth(homeMobile, () => homeWidthMobile(), { align: Align.Center }),
             gap(0.1),
             imageWithFillWidth(horizon),
             gap(0.1),

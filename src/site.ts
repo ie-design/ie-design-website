@@ -1,12 +1,13 @@
 import { blogs } from "./blogs/blogs";
+import { mobileTopGap } from "./components";
 import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
-import { Modal, MODAL_ZINDEX } from "./modal";
-import { Axis, flow, imageWithHeight, imageWithWidth, run } from "./newLayoutEngine";
+import { MODAL_ZINDEX, Modal } from "./modal";
+import { Align, Axis, flow, imageByWidth, imageWithHeight, run } from "./newLayoutEngine";
 import { bodySig, cleanLastPage, fadeInAnimation, registerUpdateLayout, shouldElementOutlastPage } from "./page";
 import { addConnectPage } from "./pages/connect";
 import { addEvolutionPage } from "./pages/evolution";
 import { addInspirationPage } from "./pages/inspiration";
-import { addNewHomeScrollSvgs, addViewPage, setHomeFromIntro } from "./pages/view";
+import { addNewHomeScrollSvgs, addViewPage, homeWidthMobile, setHomeFromIntro } from "./pages/view";
 import { addWorkPage } from "./pages/work";
 import { getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
@@ -419,7 +420,7 @@ export class Site {
         const [homeDesktop, homeMobile] = home;
 
         const desktopLayout = flow(Axis.X, [imageWithHeight(homeDesktop, 0.95)], { h: (c) => c.s });
-        const mobileLayout = flow(Axis.Y, [imageWithWidth(homeMobile, 0.95)], { w: (c) => c.s });
+        const mobileLayout = flow(Axis.Y, [mobileTopGap(), imageByWidth(homeMobile, () => homeWidthMobile(), { align: Align.Center })], { w: (c) => c.s });
 
         registerUpdateLayout(() => {
             const landscape = isLandscape();
