@@ -1,4 +1,4 @@
-import { footer, link } from "../components";
+import { CONTENT_WIDTH_MOBILE, footer, link, mobileTopGap } from "../components";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, anchored, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
@@ -84,6 +84,7 @@ export function addConnectPage() {
     const mobileLayout = flow(
         Axis.Y,
         [
+            mobileTopGap(),
             imageWithWidth(connect, 0.8), // -
             gap(0.09),
             imageWithFillWidth(letsMeet),
@@ -107,7 +108,7 @@ export function addConnectPage() {
                     gap(0.04),
                     flow(Axis.X, interlaceWithBetween(icons.map(iconSquare), gap(0.03))),
                 ],
-                { w: (c) => 0.9 * c.s, align: Align.Center }
+                { w: (c) => CONTENT_WIDTH_MOBILE * c.s, align: Align.Center }
             ),
             ...footer(document.createElement("div"), scrollPadding), // - silly way of saying don't
         ],

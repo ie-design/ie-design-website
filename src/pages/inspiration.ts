@@ -1,6 +1,6 @@
 import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
-import { footer } from "../components";
+import { CONTENT_WIDTH_MOBILE, footer, mobileTopGap } from "../components";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, LayoutNode, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
@@ -31,8 +31,8 @@ function addInspirationTile(blog: Blog) {
     image.onclick = goToBlog;
 
     image.style.transition = "opacity 0.5s ease";
-    image.onmouseenter = () => (image.style.opacity = "0.6");
-    image.onmouseleave = () => (image.style.opacity = "");
+    image.addEventListener("pointerenter", () => (image.style.opacity = "0.6"));
+    image.addEventListener("pointerleave", () => (image.style.opacity = ""));
 
     return { image, title, description, readMore };
 }
@@ -78,7 +78,7 @@ function tileMobile({ image, title, description, readMore }: InspirationTile): L
                     gap(0.02),
                     el(readMore, { style: (c) => styleSingleLineText(readMore, { letterSpacing: 0, fontWeight: 400, color: theme.ieBlue, fontSize: 0.032 * c.s }) }),
                 ],
-                { w: (c) => c.s * 0.85, align: Align.Center }
+                { w: (c) => c.s * CONTENT_WIDTH_MOBILE, align: Align.Center }
             ),
         ],
         { w: (c) => c.s }
@@ -116,6 +116,7 @@ export function addInspirationPage() {
     const mobileLayout = flow(
         Axis.Y,
         [
+            mobileTopGap(),
             imageWithWidth(inspiration, 0.9), // -
             gap(0.05),
             imageWithWidth(andOtherThings, 0.9),

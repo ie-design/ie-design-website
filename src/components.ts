@@ -64,6 +64,8 @@ export function textSquareLayoutDesktop(textSquare: TextSquare, majorTextColor: 
     );
 }
 
+export const CONTENT_WIDTH_MOBILE = 0.85;
+
 export function textSquareLayoutMobile(textSquare: TextSquare, majorTextColor: string) {
     return textSquareLayout(
         textSquare,
@@ -71,8 +73,12 @@ export function textSquareLayoutMobile(textSquare: TextSquare, majorTextColor: s
         0.04,
         (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: theme.bodyText, fontSize: 0.028 * s, lineHeight: 0.05 * s }),
         0.04,
-        (s) => 0.85 * s
+        (s) => CONTENT_WIDTH_MOBILE * s
     );
+}
+
+export function mobileTopGap() {
+    return gap(0.1);
 }
 
 const NEXT_PILLAR_BUTTON_PAD = 0.1;

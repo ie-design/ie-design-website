@@ -1,4 +1,4 @@
-import { footer, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
+import { footer, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
 import { isLandscape } from "../layout";
 import { Axis, flow, gap, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, run } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
@@ -57,6 +57,7 @@ export function addViewPage() {
     const mobileLayout = flow(
         Axis.Y,
         [
+            mobileTopGap(),
             imageWithWidth(home, 0.95), // -
             gap(0.1),
             imageWithFillWidth(horizon),

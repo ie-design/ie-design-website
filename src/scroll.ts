@@ -1,9 +1,9 @@
-import { body, fadeInAnimation } from "./constants";
+import { body, bodySig, fadeInAnimation } from "./constants";
 import { isLandscape, px } from "./layout";
 import { appendChildForPage, awaitLayout } from "./page";
 import { pillars, site } from "./site";
 import { theme } from "./theme";
-import { colorOnHover, createElementSVG, loadSVGInto, onEvent } from "./util";
+import { colorOnHover, createElementSVG, loadSVGInto } from "./util";
 
 export interface TextSquare {
     major: HTMLElement;
@@ -114,9 +114,14 @@ export function addScrollVideo(src: string, poster?: string): HTMLVideoElement {
     scrollVideo.controls = true;
     scrollVideo.playsInline = true;
     scrollVideo.preload = "auto";
-    if (poster) scrollVideo.poster = poster;
+    if (poster) {
+        scrollVideo.poster = poster;
+        const posterImg = new Image();
+        posterImg.src = poster;
+        awaitLayout(posterImg.decode().catch(() => {}));
+    }
+    scrollVideo.addEventListener("loadedmetadata", () => bodySig.update(), { once: true });
     scrollVideo.style.animation = fadeInAnimation();
-    awaitLayout(onEvent(scrollVideo, "loadedmetadata"));
     appendChildForPage(scrollContainer, scrollVideo);
     return scrollVideo;
 }

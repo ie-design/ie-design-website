@@ -1,4 +1,4 @@
-import { footer, TEXT_SQUARE_GAP_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
+import { footer, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
 import { body } from "../constants";
 import { isLandscape } from "../layout";
 import { applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, virtual } from "../newLayoutEngine";
@@ -147,8 +147,8 @@ export function addWorkPage() {
             this.spring.setStiffnessCritical(150);
             effect(() => applyBox(this.img, { ...tabReadyNormal[this.i].box, y: this.spring.position }), [this.sig]);
 
-            this.img.onmouseenter = () => this.setHovered(true);
-            this.img.onmouseleave = () => this.setHovered(false);
+            this.img.addEventListener("pointerenter", () => this.setHovered(true));
+            this.img.addEventListener("pointerleave", () => this.setHovered(false));
             this.img.onclick = () => enterWorkView(this.i);
         }
 
@@ -256,7 +256,7 @@ export function addWorkPage() {
         const mobileLayout = flow(
             Axis.Y,
             [
-                gap(0.1),
+                mobileTopGap(),
                 ...interlaceWithBetween(
                     workItems.map((item) =>
                         flow(Axis.Y, [

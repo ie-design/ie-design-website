@@ -1,5 +1,5 @@
 export const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
-export const onEvent = (target: EventTarget, event: string) =>
+export const onEvent = <K extends keyof HTMLElementEventMap>(target: EventTarget, event: K) =>
     new Promise<void>((resolve) => target.addEventListener(event, () => resolve(), { once: true }));
 
 export function spaceToFile(s: string) {
@@ -57,8 +57,8 @@ const colorOnHoverGeneric =
         const ac = new AbortController();
         hoverControllers.set(element, ac);
 
-        element.addEventListener("mouseenter", () => element.style.setProperty(field, hoverColor), { signal: ac.signal });
-        element.addEventListener("mouseleave", () => element.style.setProperty(field, color), { signal: ac.signal });
+        element.addEventListener("pointerenter", () => element.style.setProperty(field, hoverColor), { signal: ac.signal });
+        element.addEventListener("pointerleave", () => element.style.setProperty(field, color), { signal: ac.signal });
 
         if (element.matches(":hover")) element.style.setProperty(field, hoverColor);
         element.style.transition = `${field} 0.2s ease-out`;

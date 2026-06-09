@@ -86,6 +86,7 @@ export class Site {
         if (!this.navItems) return;
         for (const navItem of this.navItems) colorOnHover(navItem, theme.neutral, theme.bodyText);
         const currentNavItem = this.navItems[pillarPages.findIndex((p) => p.addPage === addPage)];
+        if (!currentNavItem) return;
         colorOnHover(currentNavItem, theme.bodyText, theme.bodyText);
     };
 
@@ -136,8 +137,8 @@ export class Site {
 
                     const navItemSpan = navItem.children[0] as HTMLElement;
                     navItemSpan.style.transition = "transform 0.3s ease-out";
-                    navItem.onmouseenter = () => (navItemSpan.style.transform = `translate(${0.02 * s}px, 0px)`);
-                    navItem.onmouseleave = () => (navItemSpan.style.transform = "");
+                    navItem.addEventListener("pointerenter", () => (navItemSpan.style.transform = `translate(${0.02 * s}px, 0px)`));
+                    navItem.addEventListener("pointerleave", () => (navItemSpan.style.transform = ""));
                 }
             } else {
                 for (const navItem of navItems) navItem.style.visibility = "hidden";

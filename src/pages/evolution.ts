@@ -1,4 +1,4 @@
-import { footer, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP } from "../components";
+import { footer, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP } from "../components";
 import { fadeInAnimation } from "../constants";
 import { isLandscape, lastLineMetrics, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
@@ -243,7 +243,8 @@ export function addEvolutionPage() {
     const mobileLayout = flow(
         Axis.Y,
         [
-            withTimelineMobile(imageWithWidth(evolution, 0.8), evolutionTimeline, 1, (node) => node.box.y),
+            mobileTopGap(),
+            withTimelineMobile(imageWithWidth(evolution, 0.8), evolutionTimeline, 1.8, (node) => node.box.y *0.3),
             gap(0.1),
             imageWithWidth(logoFull, 0.45), // -
             gap(0.1),
