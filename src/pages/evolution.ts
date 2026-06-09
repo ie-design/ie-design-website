@@ -1,8 +1,7 @@
 import { footer, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP } from "../components";
-import { fadeInAnimation } from "../constants";
 import { isLandscape, lastLineMetrics, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
-import { appendChildForPage, registerUpdateLayout } from "../page";
+import { appendChildForPage, fadeInAnimation, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer } from "../scroll";
 import { site } from "../site";
 import { theme } from "../theme";
@@ -244,7 +243,7 @@ export function addEvolutionPage() {
         Axis.Y,
         [
             mobileTopGap(),
-            withTimelineMobile(imageWithWidth(evolution, 0.8), evolutionTimeline, 1.8, (node) => node.box.y *0.3),
+            withTimelineMobile(imageWithWidth(evolution, 0.8), evolutionTimeline, 1.8, (node) => node.box.y * 0.3),
             gap(0.1),
             imageWithWidth(logoFull, 0.45), // -
             gap(0.1),

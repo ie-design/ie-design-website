@@ -1,6 +1,5 @@
-import { body, bodySig, fadeInAnimation } from "./constants";
 import { isLandscape, px } from "./layout";
-import { appendChildForPage, awaitLayout } from "./page";
+import { appendChildForPage, awaitLayout, bodySig, fadeInAnimation } from "./page";
 import { pillars, site } from "./site";
 import { theme } from "./theme";
 import { colorOnHover, createElementSVG, loadSVGInto } from "./util";
@@ -12,7 +11,7 @@ export interface TextSquare {
 
 export const scrollContainer = document.createElement("div");
 scrollContainer.style.position = "absolute";
-body.appendChild(scrollContainer);
+document.body.appendChild(scrollContainer);
 (scrollContainer.style as any).scrollbarColor = `${theme.ieGreen} ${theme.ieBlue}55`;
 
 scrollContainer.onwheel = (e) => e.preventDefault();

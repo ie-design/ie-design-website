@@ -1,5 +1,15 @@
-import { bodySig } from "./constants";
-import { effect } from "./signal";
+import { isLandscape } from "./layout";
+import { effect, Signal } from "./signal";
+
+export const bodySig = new Signal();
+
+const updateBodySig = () => bodySig.update();
+const windowContext = window.visualViewport ? window.visualViewport : window;
+windowContext.addEventListener("resize", updateBodySig);
+window.addEventListener("orientationchange", () => requestAnimationFrame(updateBodySig));
+
+export const fadeInAnimation = () => `fadeIn${isLandscape() ? "X" : "Y"} ease 0.6s`;
+
 
 const pageCleanups = new Set<() => void>();
 const awaitBeforeLayouts = new Set<Promise<void>>();

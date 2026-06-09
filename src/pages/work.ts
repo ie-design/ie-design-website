@@ -1,5 +1,4 @@
 import { footer, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
-import { body } from "../constants";
 import { isLandscape } from "../layout";
 import { applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, virtual } from "../newLayoutEngine";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout } from "../page";
@@ -61,7 +60,7 @@ export function addWorkPage() {
     const tuckedTabShelf = document.createElement("div");
     tuckedTabShelf.style.position = "absolute";
     tuckedTabShelf.style.background = theme.background;
-    appendChildForPage(body, tuckedTabShelf);
+    appendChildForPage(document.body, tuckedTabShelf);
 
     const tabImages = workContents.map((workContent) => {
         const tabImage = document.createElement("img");
@@ -70,7 +69,7 @@ export function addWorkPage() {
         tabImage.src = `work/${spaceToFile(workContent.name)}/tab.png`;
 
         awaitLayout(tabImage.decode());
-        appendChildForPage(body, tabImage);
+        appendChildForPage(document.body, tabImage);
 
         return tabImage;
     });
@@ -171,7 +170,7 @@ export function addWorkPage() {
 
         relayout = () => {
             this.spring.target = this.targetY();
-            this.chase()
+            this.chase();
         };
     }
 

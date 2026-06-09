@@ -1,5 +1,5 @@
-import { body, bodySig } from "./constants";
 import { px } from "./layout";
+import { bodySig } from "./page";
 import { effect, Signal } from "./signal";
 import { animateSpring, Spring } from "./spring";
 
@@ -42,7 +42,7 @@ export class Modal {
             backdrop.style.position = "fixed";
             backdrop.style.backgroundColor = color;
             backdrop.style.zIndex = MODAL_ZINDEX + "";
-            body.appendChild(backdrop);
+            document.body.appendChild(backdrop);
 
             keyframes.onBeginOpen(backdrop);
 
@@ -73,7 +73,7 @@ export class Modal {
             endCloseModal = () => {
                 bodySig.unsubscribe(layoutModal);
                 this.springSig.unsubscribe(animate);
-                body.removeChild(backdrop);
+                document.body.removeChild(backdrop);
                 document.removeEventListener("keydown", escapeKeyListener);
                 keyframes.onEndClose(backdrop);
             };

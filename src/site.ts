@@ -1,9 +1,8 @@
 import { blogs } from "./blogs/blogs";
-import { body, bodySig, fadeInAnimation } from "./constants";
 import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
 import { Modal, MODAL_ZINDEX } from "./modal";
 import { Axis, flow, imageWithHeight, imageWithWidth, run } from "./newLayoutEngine";
-import { cleanLastPage, registerUpdateLayout, shouldElementOutlastPage } from "./page";
+import { bodySig, cleanLastPage, fadeInAnimation, registerUpdateLayout, shouldElementOutlastPage } from "./page";
 import { addConnectPage } from "./pages/connect";
 import { addEvolutionPage } from "./pages/evolution";
 import { addInspirationPage } from "./pages/inspiration";
@@ -123,7 +122,7 @@ export class Site {
             };
 
             navItem.appendChild(navItemSpan);
-            body.appendChild(navItem);
+            document.body.appendChild(navItem);
 
             navItems.push(navItem);
         }
@@ -163,7 +162,7 @@ export class Site {
 
         headerBar.style.position = "absolute";
         headerBar.style.background = theme.background;
-        body.appendChild(headerBar);
+        document.body.appendChild(headerBar);
 
         effect(() => {
             headerBar.style.width = px(innerWidth);
@@ -245,7 +244,7 @@ export class Site {
             }
         };
 
-        body.appendChild(menuButton);
+        document.body.appendChild(menuButton);
 
         effect(() => {
             if (isLandscape()) {
@@ -273,7 +272,7 @@ export class Site {
         logo.style.position = "absolute";
         logo.style.cursor = "pointer";
         loadSVGInto(logo, "logo.svg");
-        body.appendChild(logo);
+        document.body.appendChild(logo);
 
         logo.onclick = async () => {
             this.openPage(pillars.view);
@@ -282,7 +281,7 @@ export class Site {
             pulse.style.position = "absolute";
             pulse.style.background = theme.ieGreen;
             pulse.style.pointerEvents = "none";
-            body.appendChild(pulse);
+            document.body.appendChild(pulse);
 
             await animateWithSpring(40, (time) => {
                 const out = 30;
@@ -294,7 +293,7 @@ export class Site {
                 pulse.style.opacity = 1 - time + "";
             });
 
-            body.removeChild(pulse);
+            document.body.removeChild(pulse);
         };
 
         effect(() => {
@@ -321,7 +320,7 @@ export class Site {
         copyright.innerText = "©2026 i.e. design, inc.";
         copyright.style.whiteSpace = "nowrap";
         copyright.style.transition = "left 0.4s ease";
-        body.appendChild(copyright);
+        document.body.appendChild(copyright);
         this.copyright = copyright;
 
         effect(() => {
@@ -354,7 +353,7 @@ export class Site {
         const svg = await fetchSVG("logo-full.svg");
         svg.style.position = "absolute";
         svg.style.opacity = "0";
-        body.appendChild(svg);
+        document.body.appendChild(svg);
 
         svg.style.height = px(innerHeight * 0.4);
 
@@ -406,7 +405,7 @@ export class Site {
         animateSpring(svgSpring, svgSpringSig);
 
         await sleep(500);
-        body.removeChild(svg);
+        document.body.removeChild(svg);
     };
 
     animateHomeIE = async () => {
