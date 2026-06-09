@@ -3,7 +3,7 @@ import { isLandscape, px } from "./layout";
 import { appendChildForPage, awaitLayout } from "./page";
 import { pillars, site } from "./site";
 import { theme } from "./theme";
-import { colorOnHover, createElementSVG, loadSVGInto } from "./util";
+import { colorOnHover, createElementSVG, loadSVGInto, onEvent } from "./util";
 
 export interface TextSquare {
     major: HTMLElement;
@@ -116,6 +116,7 @@ export function addScrollVideo(src: string, poster?: string): HTMLVideoElement {
     scrollVideo.preload = "auto";
     if (poster) scrollVideo.poster = poster;
     scrollVideo.style.animation = fadeInAnimation();
+    awaitLayout(onEvent(scrollVideo, "loadedmetadata"));
     appendChildForPage(scrollContainer, scrollVideo);
     return scrollVideo;
 }

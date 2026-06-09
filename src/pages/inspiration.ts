@@ -30,6 +30,10 @@ function addInspirationTile(blog: Blog) {
     readMore.onclick = goToBlog;
     image.onclick = goToBlog;
 
+    image.style.transition = "opacity 0.5s ease";
+    image.onmouseenter = () => (image.style.opacity = "0.6");
+    image.onmouseleave = () => (image.style.opacity = "");
+
     return { image, title, description, readMore };
 }
 

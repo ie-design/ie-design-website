@@ -1,5 +1,3 @@
-import { body } from "./constants";
-import { isLandscape } from "./layout";
 import { camelToKebab } from "./util";
 
 const light = {
@@ -21,8 +19,8 @@ const light = {
 const dark = {
     ieBlue: "#609cce",
     ieGreen: "#bfe021",
-    // ieBlue: "#370061",
-    // ieGreen: "#9300ce",
+    // ieBlue: "#0e00a7",
+    // ieGreen: "#00da54",
     ieText: "#231f20",
 
     background: "#1a1a1a",
@@ -52,7 +50,7 @@ export function applyTheme() {
 
 applyTheme();
 
-body.style.backgroundColor = theme.background;
+document.body.style.backgroundColor = theme.background;
 window.addEventListener("keydown", (event) => {
     if (event.key.toLowerCase() === "t") {
         selectedTheme = selectedTheme === light ? dark : light;

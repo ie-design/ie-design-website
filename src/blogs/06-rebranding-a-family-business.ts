@@ -1,4 +1,4 @@
-import { link } from "../util";
+import { link } from "../components";
 import { Blog } from "./blog";
 
 export const rebrandingAFamilyBusinessBlog = new Blog(

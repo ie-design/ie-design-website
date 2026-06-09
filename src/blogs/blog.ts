@@ -49,12 +49,12 @@ export class Blog {
         const rightImage = addScrollImage(this.path(rightSrc));
         this.desktopNodes.push(
             desktopFlow(
-                flow(Axis.X, [imageWithWidth(leftImage, (1 - IMAGE_PAIR_SPACING) / 2), gap(IMAGE_PAIR_SPACING), imageWithWidth(rightImage, (1 - IMAGE_PAIR_SPACING) / 2)], { w: (c) => c.parent.w }) // -
+                flow(Axis.X, [imageWithParentWidth(leftImage, (1 - IMAGE_PAIR_SPACING) / 2), gap(IMAGE_PAIR_SPACING), imageWithParentWidth(rightImage, (1 - IMAGE_PAIR_SPACING) / 2)], { w: (c) => c.parent.w }) // -
             )
         );
         this.mobileNodes.push(
             mobileFlow(
-                flow(Axis.X, [imageWithWidth(leftImage, (1 - IMAGE_PAIR_SPACING) / 2), gap(IMAGE_PAIR_SPACING), imageWithWidth(rightImage, (1 - IMAGE_PAIR_SPACING) / 2)], { w: (c) => c.parent.w }) // -
+                flow(Axis.X, [imageWithParentWidth(leftImage, (1 - IMAGE_PAIR_SPACING) / 2), gap(IMAGE_PAIR_SPACING), imageWithParentWidth(rightImage, (1 - IMAGE_PAIR_SPACING) / 2)], { w: (c) => c.parent.w }) // -
             )
         );
         return [leftImage, rightImage];

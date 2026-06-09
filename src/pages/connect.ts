@@ -1,10 +1,10 @@
-import { footer } from "../components";
+import { footer, link } from "../components";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, anchored, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
 import { theme } from "../theme";
-import { appendParagraph, colorOnHoverSVGFill, interlaceWithBetween, link } from "../util";
+import { appendParagraph, colorOnHoverSVGFill, interlaceWithBetween } from "../util";
 
 function addIcon(imageSrc: string, clickLink: string) {
     const icon = addScrollSvg(imageSrc);

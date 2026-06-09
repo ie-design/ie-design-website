@@ -1,6 +1,6 @@
-import { theme } from "./theme";
-
 export const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
+export const onEvent = (target: EventTarget, event: string) =>
+    new Promise<void>((resolve) => target.addEventListener(event, () => resolve(), { once: true }));
 
 export function spaceToFile(s: string) {
     return s.replace(" ", "-");
@@ -129,17 +129,6 @@ export function interleaveArrays<A, B>(...arrays: (A | B)[][]): (A | B)[] {
         }
     }
     return result;
-}
-
-export function link(text: string, href: string) {
-    const a = document.createElement("a");
-    a.style.cursor = "pointer";
-    a.href = href;
-    a.target = "_blank";
-    a.innerText = text;
-    colorOnHover(a, theme.ieBlue, theme.ieGreen);
-    a.style.textDecoration = "none";
-    return a;
 }
 
 export function appendParagraph(p: HTMLParagraphElement, ...nodes: (string | Node)[]) {

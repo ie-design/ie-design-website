@@ -1,8 +1,19 @@
-import { theme } from "./constants";
 import { BoxElement, MultiLineTextStyle, setSizeX, styleMultiLineText, styleSingleLineText } from "./layout";
-import { Align, Axis, el, flow, gap, LayoutNode } from "./newLayoutEngine";
+import { Align, Axis, el, flow, gap } from "./newLayoutEngine";
 import { TextSquare } from "./scroll";
-import { interlaceWithBetween } from "./util";
+import { theme } from "./theme";
+import { colorOnHover, interlaceWithBetween } from "./util";
+
+export function link(text: string, href: string) {
+    const a = document.createElement("a");
+    a.style.cursor = "pointer";
+    a.href = href;
+    a.target = "_blank";
+    a.innerText = text;
+    colorOnHover(a, theme.ieBlue, theme.ieGreen);
+    a.style.textDecoration = "none";
+    return a;
+}
 
 export function textSquareLayout(
     textSquare: TextSquare, // -

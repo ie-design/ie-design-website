@@ -58,11 +58,15 @@ const workContents: WorkContent[] = [
 export function addWorkPage() {
     // elements
 
+    const tuckedTabShelf = document.createElement("div");
+    tuckedTabShelf.style.position = "absolute";
+    tuckedTabShelf.style.background = theme.background;
+    appendChildForPage(body, tuckedTabShelf);
+
     const tabImages = workContents.map((workContent) => {
         const tabImage = document.createElement("img");
         tabImage.style.position = "absolute";
         tabImage.style.cursor = "pointer";
-        tabImage.style.zIndex = "1";
         tabImage.src = `work/${spaceToFile(workContent.name)}/tab.png`;
 
         awaitLayout(tabImage.decode());
@@ -70,11 +74,6 @@ export function addWorkPage() {
 
         return tabImage;
     });
-
-    const tuckedTabShelf = document.createElement("div");
-    tuckedTabShelf.style.position = "absolute";
-    tuckedTabShelf.style.background = theme.background;
-    appendChildForPage(body, tuckedTabShelf);
 
     // layout
 
@@ -139,7 +138,7 @@ export function addWorkPage() {
     let mode: Mode = "ready";
 
     class TabAnimation {
-        private spring = new Spring(0);
+        private spring = new Spring(innerHeight);
         private sig = new Signal();
         private hovered = false;
         isCurrentViewed = false;
@@ -172,8 +171,7 @@ export function addWorkPage() {
 
         relayout = () => {
             this.spring.target = this.targetY();
-            if (!this.spring.isAnimating) this.spring.position = this.spring.target;
-            this.sig.update();
+            this.chase()
         };
     }
 
