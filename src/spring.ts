@@ -51,7 +51,7 @@ export function animateSpring(spring: Spring, signal: Signal) {
     }
 
     function tickSpring(millis: number) {
-        const step = millis - lastMillis;
+        const step = Math.min(millis - lastMillis, 1000 / 30); // cap to survive background tab / jank
         lastMillis = millis;
 
         spring.tick(step / 1000);

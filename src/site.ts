@@ -32,7 +32,7 @@ export const pillars = {
 const routeOf = (pathSegments: string[]) => "/" + pathSegments.join("/");
 
 const introPage = {
-    addPage: () => addViewPage(),
+    addPage: addViewPage,
     route: "/",
     sideItemsShown: true,
 };
@@ -82,15 +82,11 @@ export class Site {
 
         this.setSideItemsShown(page.sideItemsShown);
 
-        // ZZZZ this is done poorly
+        // ZZZZ this is still done poorly
         if (!this.navItems) return;
-        for (const navItem of this.navItems) {
-            if (page.route.includes(navItem.innerText.toLowerCase())) {
-                colorOnHover(navItem, theme.bodyText, theme.bodyText);
-            } else {
-                colorOnHover(navItem, theme.neutral, theme.neutralFront);
-            }
-        }
+        for (const navItem of this.navItems) colorOnHover(navItem, theme.neutral, theme.bodyText);
+        const currentNavItem = this.navItems[pillarPages.findIndex((p) => p.addPage === addPage)];
+        colorOnHover(currentNavItem, theme.bodyText, theme.bodyText);
     };
 
     openPage = (addPage: () => void) => {

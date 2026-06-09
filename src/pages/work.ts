@@ -11,7 +11,7 @@ import { findWithMin, interlaceWithBetween, interlaceWithFactory, spaceToFile } 
 
 const A_HEIGHT = 1;
 const B_MAX_WIDTH = 1;
-const B_MAX_HEIGHT = 0.9;
+const B_MAX_HEIGHT = 0.6;
 
 interface WorkContent {
     name: string;
