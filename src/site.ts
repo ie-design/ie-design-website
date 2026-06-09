@@ -12,7 +12,7 @@ import { addWorkPage } from "./pages/work";
 import { getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
-import { theme } from "./theme";
+import { setupLogoThemeToggle, theme } from "./theme";
 import { colorOnHover, colorOnHoverSVGStroke, createElementSVG, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, loadSVGInto, makeLine, makePolyline, setAttributes, setPolylines, sleep } from "./util";
 
 interface Page {
@@ -274,6 +274,7 @@ export class Site {
         logo.style.cursor = "pointer";
         loadSVGInto(logo, "logo.svg");
         document.body.appendChild(logo);
+        setupLogoThemeToggle(logo);
 
         logo.onclick = async () => {
             this.openPage(pillars.view);
