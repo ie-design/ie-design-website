@@ -1,27 +1,37 @@
 import { footer, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
 import { isLandscape } from "../layout";
-import { Axis, flow, gap, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, run } from "../newLayoutEngine";
+import { Align, Axis, flow, gap, imageByWidth, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, run } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
+import { leftEdgeItemAlignment, logoLeft, site } from "../site";
 import { theme } from "../theme";
 import { interlaceWithBetween } from "../util";
 
-let homeFromIntro: SVGSVGElement | undefined;
-export function setHomeFromIntro(home: SVGSVGElement) {
+let homeFromIntro: [SVGSVGElement, SVGSVGElement] | undefined;
+export function setHomeFromIntro(home: [SVGSVGElement, SVGSVGElement]) {
     homeFromIntro = home;
 }
 
+export function addNewHomeScrollSvgs(): [SVGSVGElement, SVGSVGElement] {
+    return [addScrollSvg("view/home-desktop.svg"), addScrollSvg("view/home-mobile.svg")];
+}
+
 function homeMaybeFromIntro() {
-    const h = homeFromIntro ?? addScrollSvg("view/home.svg");
+    const h = homeFromIntro ?? addNewHomeScrollSvgs();
     if (homeFromIntro) {
-        shouldElementOutlastPage.delete(homeFromIntro);
+        homeFromIntro.forEach((el) => shouldElementOutlastPage.delete(el));
         homeFromIntro = undefined;
     }
     return h;
 }
 
+function homeWidthMobile() {
+    return innerWidth - logoLeft() * 2;
+}
+
 export function addViewPage() {
-    const home = homeMaybeFromIntro();
+    const [homeDesktop, homeMobile] = homeMaybeFromIntro();
+
     const horizon = addScrollImage("view/horizon.jpg");
     const freshLook = addScrollSvg("view/fresh-look.svg");
     const imageTextSquares = [
@@ -35,7 +45,7 @@ export function addViewPage() {
     const desktopLayout = flow(
         Axis.X,
         [
-            imageWithHeight(home, 0.95), // -
+            imageWithHeight(homeDesktop, 0.95), // -
             gap(0.2),
             imageWithFillHeight(horizon),
             gap(TEXT_SQUARE_GAP_DESKTOP),
@@ -58,7 +68,7 @@ export function addViewPage() {
         Axis.Y,
         [
             mobileTopGap(),
-            imageWithWidth(home, 0.95), // -
+            imageByWidth(homeMobile, (c) => homeWidthMobile(), { align: Align.Center }),
             gap(0.1),
             imageWithFillWidth(horizon),
             gap(0.1),
@@ -77,7 +87,11 @@ export function addViewPage() {
     );
 
     registerUpdateLayout(() => {
-        if (isLandscape()) {
+        const landscape = isLandscape();
+        homeDesktop.style.display = landscape ? "" : "none";
+        homeMobile.style.display = landscape ? "none" : "";
+
+        if (landscape) {
             resizeScrollContainerLandscape();
             run(desktopLayout, getScrollHeight());
         } else {

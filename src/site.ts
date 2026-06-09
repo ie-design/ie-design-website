@@ -1,15 +1,15 @@
 import { blogs } from "./blogs/blogs";
 import { body, bodySig, fadeInAnimation } from "./constants";
 import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
-import { Modal } from "./modal";
+import { Modal, MODAL_ZINDEX } from "./modal";
 import { Axis, flow, imageWithHeight, imageWithWidth, run } from "./newLayoutEngine";
 import { cleanLastPage, registerUpdateLayout, shouldElementOutlastPage } from "./page";
 import { addConnectPage } from "./pages/connect";
 import { addEvolutionPage } from "./pages/evolution";
 import { addInspirationPage } from "./pages/inspiration";
-import { addViewPage, setHomeFromIntro } from "./pages/view";
+import { addNewHomeScrollSvgs, addViewPage, setHomeFromIntro } from "./pages/view";
 import { addWorkPage } from "./pages/work";
-import { addScrollSvg, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
+import { getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
 import { Spring, animateSpring, animateWithSpring } from "./spring";
 import { theme } from "./theme";
@@ -32,8 +32,8 @@ export const pillars = {
 const routeOf = (pathSegments: string[]) => "/" + pathSegments.join("/");
 
 const introPage = {
-    addPage: addViewPage,
-    route: "/",
+    addPage: () => addViewPage(),
+    route: routeOf([]),
     sideItemsShown: true,
 };
 
@@ -56,6 +56,9 @@ const pages: Page[] = [
 ];
 
 export const leftEdgeItemAlignment = () => innerHeight * 0.1;
+
+export const logoSize = () => getHeaderBarHeight() * 0.5;
+export const logoLeft = () => (getHeaderBarHeight() - logoSize()) / 2;
 
 export class Site {
     navItems?: HTMLElement[];
@@ -219,7 +222,7 @@ export class Site {
                         centerWithGapY(menuPageNavs, innerHeight * 0.08, innerHeight / 2);
                     };
 
-                    menuButton.style.zIndex = "1";
+                    menuButton.style.zIndex = MODAL_ZINDEX + 1 + "";
                 },
                 onTriggerOpen: () => {
                     colorOnHoverSVGStroke(menuButton, theme.neutralFront, theme.background);
@@ -302,8 +305,8 @@ export class Site {
                 logo.style.left = px(leftEdgeItemAlignment());
                 logo.style.top = px((getHeaderBarHeight() - size) / 2);
             } else {
-                const size = getHeaderBarHeight() * 0.5;
-                const gapToEdge = (getHeaderBarHeight() - size) / 2;
+                const size = logoSize();
+                const gapToEdge = logoLeft();
                 logo.style.width = px(size);
                 logo.style.height = px(size);
                 logo.style.left = px(gapToEdge);
@@ -407,17 +410,24 @@ export class Site {
     };
 
     animateHomeIE = async () => {
-        const home = addScrollSvg("view/home.svg");
-        shouldElementOutlastPage.add(home);
-
+        const home = addNewHomeScrollSvgs();
+        for (const el of home) {
+            shouldElementOutlastPage.add(el);
+            el.style.animation = "";
+        }
         setHomeFromIntro(home);
-        home.style.animation = "";
 
-        const desktopLayout = flow(Axis.X, [imageWithHeight(home, 0.95)], { h: (c) => c.s });
-        const mobileLayout = flow(Axis.Y, [imageWithWidth(home, 0.95)], { w: (c) => c.s });
+        const [homeDesktop, homeMobile] = home;
+
+        const desktopLayout = flow(Axis.X, [imageWithHeight(homeDesktop, 0.95)], { h: (c) => c.s });
+        const mobileLayout = flow(Axis.Y, [imageWithWidth(homeMobile, 0.95)], { w: (c) => c.s });
 
         registerUpdateLayout(() => {
-            if (isLandscape()) {
+            const landscape = isLandscape();
+            homeDesktop.style.display = landscape ? "" : "none";
+            homeMobile.style.display = landscape ? "none" : "";
+
+            if (landscape) {
                 resizeScrollContainerLandscape();
                 run(desktopLayout, getScrollHeight());
             } else {
@@ -426,15 +436,19 @@ export class Site {
             }
         });
 
-        while (home.childElementCount === 0) await new Promise(requestAnimationFrame);
+        for (const el of home) while (el.childElementCount === 0) await new Promise(requestAnimationFrame);
         // ZZZZ this line is hacky
 
-        const rest = getElementByIdSVG(home, "rest");
-        rest.style.opacity = "0";
-        const ie = getElementByIdSVG(home, "ie");
-        ie.style.opacity = "0";
-        await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
-        await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
+        await Promise.all(
+            home.map(async (el) => {
+                const rest = getElementByIdSVG(el, "rest");
+                rest.style.opacity = "0";
+                const ie = getElementByIdSVG(el, "ie");
+                ie.style.opacity = "0";
+                await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
+                await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
+            })
+        );
     };
 
     bigImage?: HTMLImageElement;
@@ -541,9 +555,11 @@ export class Site {
 
     setup = async () => {
         const page = this.resolveRoute();
+        let addPage = page.addPage;
         if (page === introPage) {
             await this.animateIntro();
             await this.animateHomeIE();
+            addPage = addViewPage;
         }
         this.addNavItems();
 
@@ -558,7 +574,7 @@ export class Site {
         this.addLogo();
         this.addCopyright();
 
-        this.loadPage(page.addPage);
+        this.openPage(addPage);
     };
 }
 

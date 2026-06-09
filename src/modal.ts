@@ -3,6 +3,8 @@ import { px } from "./layout";
 import { effect, Signal } from "./signal";
 import { animateSpring, Spring } from "./spring";
 
+export const MODAL_ZINDEX = 1;
+
 export class Modal {
     wasLastOpened = false;
     spring: Spring;
@@ -39,6 +41,7 @@ export class Modal {
             const backdrop = document.createElement("div");
             backdrop.style.position = "fixed";
             backdrop.style.backgroundColor = color;
+            backdrop.style.zIndex = MODAL_ZINDEX + "";
             body.appendChild(backdrop);
 
             keyframes.onBeginOpen(backdrop);
