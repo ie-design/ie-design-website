@@ -42,6 +42,7 @@ export class Modal {
             backdrop.style.position = "fixed";
             backdrop.style.backgroundColor = color;
             backdrop.style.zIndex = MODAL_ZINDEX + "";
+            backdrop.style.willChange = "opacity";
             document.body.appendChild(backdrop);
 
             keyframes.onBeginOpen(backdrop);

@@ -1,9 +1,9 @@
-import { footer, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP } from "../components";
+import { footer, LANDING_SVG_SCALE, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP } from "../components";
 import { isLandscape, lastLineMetrics, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, fadeInAnimation, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer } from "../scroll";
-import { site } from "../site";
+import { leftEdgeItemAlignment, site } from "../site";
 import { theme } from "../theme";
 import { bold, interlaceWithBetween, interleaveArrays } from "../util";
 
@@ -27,7 +27,7 @@ function addQuote(quoteNodes: (Node | string)[], authorText: string, titleText: 
 
 const TIMELINE_THICKNESS = 0.5;
 const runningTimelineBaseDesktop = () => getScrollHeight() * 1.1;
-const runningTimelineBaseMobile = () => site.logo!.getBoundingClientRect().x; // ZZZZ dont love this cross cutting read
+const runningTimelineBaseMobile = () => leftEdgeItemAlignment();
 
 function styleQuote({ quote, author, title, openQuote, closeQuote }: Quote, s: number) {
     styleMultiLineText(quote, { letterSpacing: 0 * s, fontWeight: 300, color: theme.bodyText, fontSize: 0.03 * s, lineHeight: 0.065 * s });
@@ -209,7 +209,7 @@ export function addEvolutionPage() {
     const desktopLayout = flow(
         Axis.X,
         [
-            withTimelineDesktop(imageWithHeight(evolution, 0.75), evolutionTimeline, 0.7),
+            withTimelineDesktop(imageWithHeight(evolution, LANDING_SVG_SCALE), evolutionTimeline, 0.7),
             gap(TEXT_SQUARE_GAP_DESKTOP),
             withTimelineDesktop(
                 flow(

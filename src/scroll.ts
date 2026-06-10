@@ -16,11 +16,8 @@ document.body.appendChild(scrollContainer);
 
 scrollContainer.onwheel = (e) => e.preventDefault();
 window.onwheel = (e) => {
-    if (scrollContainer.style.overflowY === "scroll") {
-        scrollContainer.scrollBy({ top: e.deltaY, left: e.deltaX });
-    } else {
-        scrollContainer.scrollBy({ left: e.deltaX + e.deltaY });
-    }
+    if (scrollContainer.style.overflowY === "scroll") scrollContainer.scrollBy({ top: e.deltaY, left: e.deltaX });
+    else scrollContainer.scrollBy({ left: e.deltaX + e.deltaY });
 };
 
 export function resizeScrollContainerLandscape() {

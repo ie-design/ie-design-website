@@ -1,8 +1,11 @@
 import { BoxElement, MultiLineTextStyle, setSizeX, styleMultiLineText, styleSingleLineText } from "./layout";
 import { Align, Axis, el, flow, gap } from "./newLayoutEngine";
 import { TextSquare } from "./scroll";
+import { contentWidthMobile } from "./site";
 import { theme } from "./theme";
 import { colorOnHover, interlaceWithBetween } from "./util";
+
+export const LANDING_SVG_SCALE = 0.75;
 
 export function link(text: string, href: string) {
     const a = document.createElement("a");
@@ -64,8 +67,6 @@ export function textSquareLayoutDesktop(textSquare: TextSquare, majorTextColor: 
     );
 }
 
-export const CONTENT_WIDTH_MOBILE = 0.85;
-
 export function textSquareLayoutMobile(textSquare: TextSquare, majorTextColor: string) {
     return textSquareLayout(
         textSquare,
@@ -73,7 +74,7 @@ export function textSquareLayoutMobile(textSquare: TextSquare, majorTextColor: s
         0.04,
         (s) => ({ letterSpacing: 0.001 * s, fontWeight: 300, color: theme.bodyText, fontSize: 0.028 * s, lineHeight: 0.05 * s }),
         0.04,
-        (s) => CONTENT_WIDTH_MOBILE * s
+        (s) => contentWidthMobile()
     );
 }
 

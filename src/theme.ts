@@ -19,8 +19,8 @@ const light = {
 const dark = {
     ieBlue: "#609cce",
     ieGreen: "#bfe021",
-    // ieBlue: "#0e00a7",
-    // ieGreen: "#00da54",
+    // ieBlue: "#ff58ec",
+    // ieGreen: "#ffa200",
     ieText: "#231f20",
 
     background: "#1a1a1a",

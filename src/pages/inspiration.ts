@@ -1,11 +1,11 @@
 import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
-import { CONTENT_WIDTH_MOBILE, footer, mobileTopGap } from "../components";
+import { footer, LANDING_SVG_SCALE, mobileTopGap } from "../components";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, LayoutNode, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
-import { site } from "../site";
+import { contentWidthMobile, site } from "../site";
 import { theme } from "../theme";
 import { colorOnHover, interlaceWithBetween } from "../util";
 
@@ -42,7 +42,7 @@ function tileDesktop({ image, title, description, readMore }: InspirationTile): 
         Axis.Y,
         [
             imageWithFillWidth(image), // -
-            gap(0.03),
+            gap(0.05),
             el(title, { style: (c) => styleSingleLineText(title, { letterSpacing: 0, fontWeight: 400, color: theme.bodyText, fontSize: 0.036 * c.s }) }),
             gap(0.01),
             el(description, {
@@ -78,7 +78,7 @@ function tileMobile({ image, title, description, readMore }: InspirationTile): L
                     gap(0.02),
                     el(readMore, { style: (c) => styleSingleLineText(readMore, { letterSpacing: 0, fontWeight: 400, color: theme.ieBlue, fontSize: 0.032 * c.s }) }),
                 ],
-                { w: (c) => c.s * CONTENT_WIDTH_MOBILE, align: Align.Center }
+                { w: () => contentWidthMobile(), align: Align.Center }
             ),
         ],
         { w: (c) => c.s }
@@ -100,7 +100,7 @@ export function addInspirationPage() {
             flow(
                 Axis.Y,
                 [
-                    el(inspiration, { style: (c) => setSizeY(inspiration, 0.75 * c.s) }), // -
+                    el(inspiration, { style: (c) => setSizeY(inspiration, LANDING_SVG_SCALE * c.s) }), // -
                     gap(0.06),
                     el(andOtherThings, { style: (c) => setSizeY(andOtherThings, 0.06 * c.s) }),
                 ],

@@ -1,9 +1,9 @@
-import { footer, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
+import { footer, LANDING_SVG_SCALE, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
 import { isLandscape } from "../layout";
 import { Align, Axis, flow, gap, imageByWidth, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, run } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextSquare, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
-import { logoLeft } from "../site";
+import { contentWidthMobile } from "../site";
 import { theme } from "../theme";
 import { interlaceWithBetween } from "../util";
 
@@ -25,10 +25,6 @@ function homeMaybeFromIntro() {
     return h;
 }
 
-export function homeWidthMobile() {
-    return innerWidth - logoLeft() * 2;
-}
-
 export function addViewPage() {
     const [homeDesktop, homeMobile] = homeMaybeFromIntro();
 
@@ -45,8 +41,8 @@ export function addViewPage() {
     const desktopLayout = flow(
         Axis.X,
         [
-            imageWithHeight(homeDesktop, 0.95), // -
-            gap(0.2),
+            imageWithHeight(homeDesktop, LANDING_SVG_SCALE), // -
+            gap(TEXT_SQUARE_GAP_DESKTOP),
             imageWithFillHeight(horizon),
             gap(TEXT_SQUARE_GAP_DESKTOP),
             imageWithWidth(freshLook, TEXT_SQUARE_WIDTH_DESKTOP),
@@ -68,7 +64,7 @@ export function addViewPage() {
         Axis.Y,
         [
             mobileTopGap(),
-            imageByWidth(homeMobile, () => homeWidthMobile(), { align: Align.Center }),
+            imageByWidth(homeMobile, () => contentWidthMobile(), { align: Align.Center }),
             gap(0.1),
             imageWithFillWidth(horizon),
             gap(0.1),

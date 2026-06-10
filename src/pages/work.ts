@@ -123,7 +123,7 @@ export function addWorkPage() {
     });
     allFloating.push(tuckedTabShelfNode);
 
-    const fromLeft = () => (isLandscape() ? innerHeight * 0.4 : innerWidth * 0.08);
+    const fromLeft = () => (isLandscape() ? innerHeight * 0.5 : innerWidth * 0.08);
     const fromRight = () => (isLandscape() ? innerHeight * 0.4 : innerWidth * 0.08);
     const tabsOuterBounds = center([tabsTightContainer, ...allFloating], {
         w: () => innerWidth - fromRight() - fromLeft(),

@@ -1,8 +1,9 @@
-import { CONTENT_WIDTH_MOBILE, footer, link, mobileTopGap } from "../components";
+import { footer, link, mobileTopGap } from "../components";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, anchored, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
+import { contentWidthMobile } from "../site";
 import { theme } from "../theme";
 import { appendParagraph, colorOnHoverSVGFill, interlaceWithBetween } from "../util";
 
@@ -108,7 +109,7 @@ export function addConnectPage() {
                     gap(0.04),
                     flow(Axis.X, interlaceWithBetween(icons.map(iconSquare), gap(0.03))),
                 ],
-                { w: (c) => CONTENT_WIDTH_MOBILE * c.s, align: Align.Center }
+                { w: () => contentWidthMobile(), align: Align.Center }
             ),
             ...footer(document.createElement("div"), scrollPadding), // - silly way of saying don't
         ],

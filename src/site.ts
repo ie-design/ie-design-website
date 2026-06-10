@@ -7,7 +7,7 @@ import { bodySig, cleanLastPage, fadeInAnimation, registerUpdateLayout, shouldEl
 import { addConnectPage } from "./pages/connect";
 import { addEvolutionPage } from "./pages/evolution";
 import { addInspirationPage } from "./pages/inspiration";
-import { addNewHomeScrollSvgs, addViewPage, homeWidthMobile, setHomeFromIntro } from "./pages/view";
+import { addNewHomeScrollSvgs, addViewPage, setHomeFromIntro } from "./pages/view";
 import { addWorkPage } from "./pages/work";
 import { getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
@@ -55,10 +55,8 @@ const pages: Page[] = [
     ...blogPages,
 ];
 
-export const leftEdgeItemAlignment = () => innerHeight * 0.1;
-
-export const logoSize = () => getHeaderBarHeight() * 0.5;
-export const logoLeft = () => (getHeaderBarHeight() - logoSize()) / 2;
+export const leftEdgeItemAlignment = () => (isLandscape() ? innerHeight * 0.1 : innerWidth * 0.05);
+export const contentWidthMobile = () => innerWidth - leftEdgeItemAlignment() * 2;
 
 export class Site {
     navItems?: HTMLElement[];
@@ -306,12 +304,11 @@ export class Site {
                 logo.style.left = px(leftEdgeItemAlignment());
                 logo.style.top = px((getHeaderBarHeight() - size) / 2);
             } else {
-                const size = logoSize();
-                const gapToEdge = logoLeft();
+                const size = getHeaderBarHeight() * 0.5;
                 logo.style.width = px(size);
                 logo.style.height = px(size);
-                logo.style.left = px(gapToEdge);
-                logo.style.top = px(gapToEdge);
+                logo.style.left = px(leftEdgeItemAlignment());
+                logo.style.top = px((getHeaderBarHeight() - size) / 2);
             }
         }, [bodySig]);
     };
@@ -421,7 +418,7 @@ export class Site {
         const [homeDesktop, homeMobile] = home;
 
         const desktopLayout = flow(Axis.X, [imageWithHeight(homeDesktop, 0.95)], { h: (c) => c.s });
-        const mobileLayout = flow(Axis.Y, [mobileTopGap(), imageByWidth(homeMobile, () => homeWidthMobile(), { align: Align.Center })], { w: (c) => c.s });
+        const mobileLayout = flow(Axis.Y, [mobileTopGap(), imageByWidth(homeMobile, () => contentWidthMobile(), { align: Align.Center })], { w: (c) => c.s });
 
         registerUpdateLayout(() => {
             const landscape = isLandscape();
