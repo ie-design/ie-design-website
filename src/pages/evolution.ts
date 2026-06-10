@@ -1,4 +1,4 @@
-import { footer, LANDING_SVG_SCALE, startGapDesktop, startGapMobile, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP } from "../components";
+import { footer, LANDING_SVG_SCALE, startGapDesktop, startGapMobile, VISUAL_ASPECT_DESKTOP } from "../components";
 import { isLandscape, lastLineMetrics, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, fadeInAnimation, registerUpdateLayout } from "../page";
@@ -29,6 +29,9 @@ const TIMELINE_THICKNESS = 0.5;
 const runningTimelineBaseDesktop = () => getScrollHeight() * 1.1;
 const runningTimelineBaseMobile = () => leftEdgeItemAlignment();
 
+const QUOTE_WIDTH_DESKTOP = 0.81;
+const QUOTE_GAP_DESKTOP = (VISUAL_ASPECT_DESKTOP - QUOTE_WIDTH_DESKTOP) / 2;
+
 function styleQuote({ quote, author, title, openQuote, closeQuote }: Quote, s: number) {
     styleMultiLineText(quote, { letterSpacing: 0 * s, fontWeight: 300, color: theme.bodyText, fontSize: 0.03 * s, lineHeight: 0.065 * s });
 
@@ -51,7 +54,7 @@ function placeCloseMark(self: Box, quote: Box, quoteEl: HTMLElement) {
     self.y = quote.y + top;
 }
 
-function quoteGroupDesktop(q: Quote) {
+const quoteGroup = (scaleSizeX: number) => (q: Quote) => {
     const quoteN = el(q.quote);
     return flow(
         Axis.Y,
@@ -68,36 +71,15 @@ function quoteGroupDesktop(q: Quote) {
         {
             style: (c) => {
                 styleQuote(q, c.s);
-                setSizeX(q.quote, TEXT_SQUARE_WIDTH_DESKTOP * c.s);
+                setSizeX(q.quote, scaleSizeX * c.s);
             },
             align: Align.Center,
         }
     );
-}
+};
 
-function quoteGroupMobile(q: Quote) {
-    const quoteN = el(q.quote);
-    return flow(
-        Axis.Y,
-        [
-            quoteN, // -
-            gap(0.04),
-            el(q.author, { align: Align.End }),
-            gap(0.01),
-            el(q.title, { align: Align.End }),
-
-            el(q.openQuote, { float: true, place: (self) => placeOpenMark(self, quoteN.box) }),
-            el(q.closeQuote, { float: true, place: (self) => placeCloseMark(self, quoteN.box, q.quote) }),
-        ],
-        {
-            style: (c) => {
-                styleQuote(q, c.s);
-                setSizeX(q.quote, 0.7 * c.s);
-            },
-            align: Align.Center,
-        }
-    );
-}
+const quoteGroupDesktop = quoteGroup(QUOTE_WIDTH_DESKTOP);
+const quoteGroupMobile = quoteGroup(0.7);
 
 function addTimelineLine() {
     const timelineLine = document.createElement("div");
@@ -211,7 +193,7 @@ export function addEvolutionPage() {
         [
             startGapDesktop(),
             withTimelineDesktop(imageWithHeight(evolution, LANDING_SVG_SCALE), evolutionTimeline, 0.7),
-            gap(TEXT_SQUARE_GAP_DESKTOP),
+            gap(QUOTE_GAP_DESKTOP),
             withTimelineDesktop(
                 flow(
                     Axis.Y,
@@ -225,13 +207,13 @@ export function addEvolutionPage() {
                 historyTimeline,
                 0.7
             ),
-            gap(TEXT_SQUARE_GAP_DESKTOP),
+            gap(QUOTE_GAP_DESKTOP),
             ...interlaceWithBetween(
                 interleaveArrays(
                     quotesWithTimelines.map((q) => withTimelineDesktop(quoteGroupDesktop(q.quote), q.timeline, 0.9)),
                     promosWithTimelines.map((p) => withTimelineDesktop(imageWithFillHeight(p.promo), p.timeline, 1))
                 ),
-                gap(TEXT_SQUARE_GAP_DESKTOP)
+                gap(QUOTE_GAP_DESKTOP)
             ),
             ...footer(nextPillarButton, scrollPadding),
             ...desktopTimelines,

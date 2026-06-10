@@ -52,9 +52,10 @@ export function textSquareLayout(
     );
 }
 
-const TEXT_SQUARE_ASPECT_DESKTOP = 1.13;
+export const VISUAL_ASPECT_DESKTOP = 1.13;
+
 export const TEXT_SQUARE_WIDTH_DESKTOP = 0.79;
-export const TEXT_SQUARE_GAP_DESKTOP = (TEXT_SQUARE_ASPECT_DESKTOP - TEXT_SQUARE_WIDTH_DESKTOP) / 2;
+export const TEXT_SQUARE_GAP_DESKTOP = (VISUAL_ASPECT_DESKTOP - TEXT_SQUARE_WIDTH_DESKTOP) / 2;
 
 export function textSquareLayoutDesktop(textSquare: TextSquare, majorTextColor: string) {
     return textSquareLayout(
