@@ -1,5 +1,5 @@
 import { blogs } from "./blogs/blogs";
-import { mobileTopGap } from "./components";
+import { startGapDesktop, startGapMobile } from "./components";
 import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
 import { MODAL_ZINDEX, Modal } from "./modal";
 import { Align, Axis, flow, imageByWidth, imageWithHeight, run } from "./newLayoutEngine";
@@ -55,7 +55,7 @@ const pages: Page[] = [
     ...blogPages,
 ];
 
-export const leftEdgeItemAlignment = () => (isLandscape() ? innerHeight * 0.1 : innerWidth * 0.05);
+export const leftEdgeItemAlignment = () => (isLandscape() ? innerHeight * 0.1 : innerWidth * 0.07);
 export const contentWidthMobile = () => innerWidth - leftEdgeItemAlignment() * 2;
 
 export class Site {
@@ -325,8 +325,8 @@ export class Site {
         effect(() => {
             if (isLandscape()) {
                 copyright.style.left = px(this.sideItemsShown ? leftEdgeItemAlignment() : -300);
-                copyright.style.top = px(innerHeight * 0.9);
-                styleSingleLineText(copyright, { letterSpacing: 0.3, fontWeight: 500, color: theme.neutralFront, fontSize: 0.012 * innerHeight });
+                copyright.style.top = px(innerHeight * 0.95);
+                styleSingleLineText(copyright, { letterSpacing: 0.3, fontWeight: 500, color: theme.neutral, fontSize: 0.012 * innerHeight });
                 copyright.style.visibility = "visible";
             } else {
                 // ZZZZ need to do something here
@@ -417,8 +417,8 @@ export class Site {
 
         const [homeDesktop, homeMobile] = home;
 
-        const desktopLayout = flow(Axis.X, [imageWithHeight(homeDesktop, 0.95)], { h: (c) => c.s });
-        const mobileLayout = flow(Axis.Y, [mobileTopGap(), imageByWidth(homeMobile, () => contentWidthMobile(), { align: Align.Center })], { w: (c) => c.s });
+        const desktopLayout = flow(Axis.X, [startGapDesktop(), imageWithHeight(homeDesktop, 0.95)], { h: (c) => c.s });
+        const mobileLayout = flow(Axis.Y, [startGapMobile(), imageByWidth(homeMobile, () => contentWidthMobile(), { align: Align.Center })], { w: (c) => c.s });
 
         registerUpdateLayout(() => {
             const landscape = isLandscape();

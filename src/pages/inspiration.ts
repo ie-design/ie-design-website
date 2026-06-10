@@ -1,6 +1,6 @@
 import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
-import { footer, LANDING_SVG_SCALE, mobileTopGap } from "../components";
+import { footer, LANDING_SVG_SCALE, startGapDesktop, startGapMobile } from "../components";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, LayoutNode, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
@@ -97,6 +97,7 @@ export function addInspirationPage() {
     const desktopLayout = flow(
         Axis.X,
         [
+            startGapDesktop(),
             flow(
                 Axis.Y,
                 [
@@ -116,7 +117,7 @@ export function addInspirationPage() {
     const mobileLayout = flow(
         Axis.Y,
         [
-            mobileTopGap(),
+            startGapMobile(),
             imageWithWidth(inspiration, 0.9), // -
             gap(0.05),
             imageWithWidth(andOtherThings, 0.9),

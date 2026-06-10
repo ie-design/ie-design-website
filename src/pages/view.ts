@@ -1,4 +1,4 @@
-import { footer, LANDING_SVG_SCALE, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
+import { footer, LANDING_SVG_SCALE, startGapDesktop, startGapMobile, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
 import { isLandscape } from "../layout";
 import { Align, Axis, flow, gap, imageByWidth, imageWithFillHeight, imageWithFillWidth, imageWithHeight, imageWithWidth, run } from "../newLayoutEngine";
 import { registerUpdateLayout, shouldElementOutlastPage } from "../page";
@@ -41,6 +41,7 @@ export function addViewPage() {
     const desktopLayout = flow(
         Axis.X,
         [
+            startGapDesktop(),
             imageWithHeight(homeDesktop, LANDING_SVG_SCALE), // -
             gap(TEXT_SQUARE_GAP_DESKTOP),
             imageWithFillHeight(horizon),
@@ -63,12 +64,12 @@ export function addViewPage() {
     const mobileLayout = flow(
         Axis.Y,
         [
-            mobileTopGap(),
+            startGapMobile(),
             imageByWidth(homeMobile, () => contentWidthMobile(), { align: Align.Center }),
             gap(0.1),
             imageWithFillWidth(horizon),
             gap(0.1),
-            imageWithWidth(freshLook, 0.85),
+            imageByWidth(freshLook, () => contentWidthMobile(), { align: Align.Center }),
             gap(0.1),
             ...interlaceWithBetween(
                 imageTextSquares.flatMap((i) => [

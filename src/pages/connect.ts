@@ -1,4 +1,4 @@
-import { footer, link, mobileTopGap } from "../components";
+import { footer, link, startGapDesktop, startGapMobile } from "../components";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, anchored, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
@@ -44,6 +44,7 @@ export function addConnectPage() {
     const desktopLayout = flow(
         Axis.X,
         [
+            startGapDesktop(),
             flow(
                 Axis.Y,
                 [
@@ -85,7 +86,7 @@ export function addConnectPage() {
     const mobileLayout = flow(
         Axis.Y,
         [
-            mobileTopGap(),
+            startGapMobile(),
             imageWithWidth(connect, 0.8), // -
             gap(0.09),
             imageWithFillWidth(letsMeet),

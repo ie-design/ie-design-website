@@ -78,7 +78,11 @@ export function textSquareLayoutMobile(textSquare: TextSquare, majorTextColor: s
     );
 }
 
-export function mobileTopGap() {
+export function startGapDesktop() {
+    return gap(0.2);
+}
+
+export function startGapMobile() {
     return gap(0.1);
 }
 

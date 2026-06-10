@@ -1,4 +1,4 @@
-import { footer, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
+import { footer, startGapDesktop, startGapMobile, TEXT_SQUARE_GAP_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
 import { isLandscape } from "../layout";
 import { applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, virtual } from "../newLayoutEngine";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout } from "../page";
@@ -235,6 +235,7 @@ export function addWorkPage() {
         const desktopLayout = flow(
             Axis.X,
             [
+                startGapDesktop(),
                 ...interlaceWithBetween(
                     workItems.map((item) =>
                         flow(Axis.X, [
@@ -255,7 +256,7 @@ export function addWorkPage() {
         const mobileLayout = flow(
             Axis.Y,
             [
-                mobileTopGap(),
+                startGapMobile(),
                 ...interlaceWithBetween(
                     workItems.map((item) =>
                         flow(Axis.Y, [

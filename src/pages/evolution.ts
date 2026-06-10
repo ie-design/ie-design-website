@@ -1,4 +1,4 @@
-import { footer, LANDING_SVG_SCALE, mobileTopGap, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP } from "../components";
+import { footer, LANDING_SVG_SCALE, startGapDesktop, startGapMobile, TEXT_SQUARE_GAP_DESKTOP, TEXT_SQUARE_WIDTH_DESKTOP } from "../components";
 import { isLandscape, lastLineMetrics, styleMultiLineText, styleSingleLineText } from "../layout";
 import { Align, Axis, Box, el, flow, gap, imageWithFillHeight, imageWithHeight, imageWithWidth, LayoutNode, run, setSizeX } from "../newLayoutEngine";
 import { appendChildForPage, fadeInAnimation, registerUpdateLayout } from "../page";
@@ -209,6 +209,7 @@ export function addEvolutionPage() {
     const desktopLayout = flow(
         Axis.X,
         [
+            startGapDesktop(),
             withTimelineDesktop(imageWithHeight(evolution, LANDING_SVG_SCALE), evolutionTimeline, 0.7),
             gap(TEXT_SQUARE_GAP_DESKTOP),
             withTimelineDesktop(
@@ -242,7 +243,7 @@ export function addEvolutionPage() {
     const mobileLayout = flow(
         Axis.Y,
         [
-            mobileTopGap(),
+            startGapMobile(),
             withTimelineMobile(imageWithWidth(evolution, 0.8), evolutionTimeline, 1.8, (node) => node.box.y * 0.3),
             gap(0.1),
             imageWithWidth(logoFull, 0.45), // -
