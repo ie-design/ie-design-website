@@ -46,7 +46,7 @@ export const growingTheDreamBlog = new Blog(
         b.addSpace();
         b.addImage("business-cards.jpg");
         b.addSpace();
-        b.addImage("quote.jpg", 0.5);
+        b.addQuote("quote.jpg");
         b.addSpace();
         b.addParagraph("Bethlyn Krakauer is i.e. design’s Founder and Creative Director.");
     }

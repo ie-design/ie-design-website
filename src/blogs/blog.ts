@@ -37,10 +37,10 @@ export class Blog {
         this.mobileNodes.push(gap(IMAGE_PAIR_SPACING));
     };
 
-    addImage = (src: string, scale = 1) => {
+    addImage = (src: string, scale?: { desktop: number; mobile: number }) => {
         const img = addScrollImage(this.path(src));
-        this.desktopNodes.push(desktopFlow(imageWithParentWidth(img, scale)));
-        this.mobileNodes.push(imageWithParentWidth(img, scale));
+        this.desktopNodes.push(desktopFlow(imageWithParentWidth(img, scale?.desktop ?? 1)));
+        this.mobileNodes.push(imageWithParentWidth(img, scale?.mobile ?? 1));
         return img;
     };
 
@@ -156,6 +156,10 @@ export class Blog {
             )
         );
         return elem;
+    };
+
+    addQuote = (src: string) => {
+        this.addImage(src, { desktop: 0.5, mobile: 0.7});
     };
 
     add = () => {
