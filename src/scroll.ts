@@ -9,10 +9,23 @@ export interface TextSquare {
     minors: HTMLElement[];
 }
 
+const APPROXIMATE_SCROLL_BAR_HEIGHT = 12;
+
+const ieBlueTranslucent = `color-mix(in srgb, ${theme.ieBlue} 30%, transparent)`;
+
+const scrollbarCSS = document.createElement("style");
+scrollbarCSS.textContent = `
+    ::-webkit-scrollbar { height: ${APPROXIMATE_SCROLL_BAR_HEIGHT}px; width: ${APPROXIMATE_SCROLL_BAR_HEIGHT}px; }
+    ::-webkit-scrollbar-thumb { background: ${theme.ieGreen}; }
+    ::-webkit-scrollbar-track { background: ${ieBlueTranslucent}; }
+`;
+document.head.appendChild(scrollbarCSS);
+
 export const scrollContainer = document.createElement("div");
 scrollContainer.style.position = "absolute";
+scrollContainer.style.scrollbarWidth = "thin";
+scrollContainer.style.scrollbarColor = `${theme.ieGreen} ${ieBlueTranslucent}`;
 document.body.appendChild(scrollContainer);
-(scrollContainer.style as any).scrollbarColor = `${theme.ieGreen} ${theme.ieBlue}55`;
 
 scrollContainer.onwheel = (e) => e.preventDefault();
 window.onwheel = (e) => {
@@ -26,7 +39,7 @@ export function resizeScrollContainerLandscape() {
     const scrollLeft = scrollHeight * 0.5;
 
     const underScrollContainer = (innerHeight - scrollHeight) / 2;
-    scrollContainer.style.height = px(scrollHeight + underScrollContainer); // place scroll bar at bottom of page
+    scrollContainer.style.height = px(scrollHeight + (underScrollContainer + APPROXIMATE_SCROLL_BAR_HEIGHT) / 2); // place scroll bar centered in gap below scroll area
     scrollContainer.style.width = px(innerWidth - scrollLeft);
     scrollContainer.style.top = px((innerHeight - scrollHeight) / 2);
     scrollContainer.style.left = px(scrollLeft);
