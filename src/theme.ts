@@ -1,3 +1,4 @@
+import { site } from "./site";
 import { camelToKebab } from "./util";
 
 const light = {
@@ -51,8 +52,6 @@ export function applyTheme() {
 applyTheme();
 
 document.body.style.backgroundColor = theme.background;
-// document.body.style.userSelect = "none";
-document.body.style.setProperty("-webkit-user-select", "none");
 function toggleTheme() {
     const style = document.createElement("style");
     style.textContent = "* { transition: color 0.4s ease, background-color 0.4s ease, background 0.4s ease, fill 0.1s ease, stroke 0.4s ease; }";
@@ -67,20 +66,27 @@ window.addEventListener("keydown", (event) => {
 });
 
 export function setupLogoThemeToggle(logo: SVGSVGElement) {
-    // logo.style.touchAction = "none";
-    // logo.style.setProperty("-webkit-touch-callout", "none");
-    // logo.addEventListener("contextmenu", (e) => e.preventDefault());
+    site.headerBar!.style.setProperty("-webkit-user-select", "none");
+    site.headerBar!.style.userSelect = "none";
 
     let timer: ReturnType<typeof setTimeout> | undefined;
     let swapped = false;
     logo.addEventListener("pointerdown", (e) => {
-        
         swapped = false;
-        timer = setTimeout(() => { swapped = true; toggleTheme(); }, 1000);
+        timer = setTimeout(() => {
+            swapped = true;
+            toggleTheme();
+        }, 1000);
     });
     const cancel = () => clearTimeout(timer);
     logo.addEventListener("pointerup", cancel);
     logo.addEventListener("pointercancel", cancel);
     logo.addEventListener("pointerleave", cancel);
-    logo.addEventListener("click", (e) => { if (swapped) e.stopImmediatePropagation(); }, { capture: true });
+    logo.addEventListener(
+        "click",
+        (e) => {
+            if (swapped) e.stopImmediatePropagation();
+        },
+        { capture: true }
+    );
 }
