@@ -105,10 +105,10 @@ export function addScrollImage(src: string): HTMLImageElement {
     return scrollImage;
 }
 
-export function addScrollSvg(src: string) {
+export function addScrollSvg(src: string, shouldAnimateIn: boolean = true) {
     const scrollSvg = createElementSVG("svg");
     scrollSvg.style.position = "absolute";
-    animateOnEnter(scrollSvg, scrollContainer, fadeInAnimation);
+    if (shouldAnimateIn) animateOnEnter(scrollSvg, scrollContainer, fadeInAnimation);
 
     awaitLayout(loadSVGInto(scrollSvg, src));
 

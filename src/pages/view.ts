@@ -12,12 +12,12 @@ export function setHomeFromIntro(home: [SVGSVGElement, SVGSVGElement]) {
     homeFromIntro = home;
 }
 
-export function addNewHomeScrollSvgs(): [SVGSVGElement, SVGSVGElement] {
-    return [addScrollSvg("view/home-desktop.svg"), addScrollSvg("view/home-mobile.svg")];
+export function addNewHomeScrollSvgs(shouldAnimateIn: boolean): [SVGSVGElement, SVGSVGElement] {
+    return [addScrollSvg("view/home-desktop.svg", shouldAnimateIn), addScrollSvg("view/home-mobile.svg", shouldAnimateIn)];
 }
 
 function homeMaybeFromIntro() {
-    const h = homeFromIntro ?? addNewHomeScrollSvgs();
+    const h = homeFromIntro ?? addNewHomeScrollSvgs(true);
     if (homeFromIntro) {
         homeFromIntro.forEach((el) => shouldElementOutlastPage.delete(el));
         homeFromIntro = undefined;

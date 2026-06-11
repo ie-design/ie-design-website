@@ -148,9 +148,11 @@ export function bold(text: string) {
 export const camelToKebab = (str: string) => str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`).replace(/^_/, "");
 
 export function animateOnEnter(element: BoxElement, root: BoxElement, getAnimation: () => string) {
+    element.style.opacity = "0";
     const observer = new IntersectionObserver(
         (entries) => {
             if (entries[0].isIntersecting) {
+                element.style.opacity = "";
                 element.style.animation = getAnimation();
                 observer.disconnect();
             }

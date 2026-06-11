@@ -1,8 +1,7 @@
 import { blogs } from "./blogs/blogs";
-import { startGapDesktop, startGapMobile } from "./components";
 import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
 import { MODAL_ZINDEX, Modal } from "./modal";
-import { Align, Axis, flow, imageByWidth, imageWithHeight, run } from "./newLayoutEngine";
+import { Axis, flow, run } from "./newLayoutEngine";
 import { bodySig, cleanLastPage, fadeInAnimation, registerUpdateLayout, shouldElementOutlastPage } from "./page";
 import { addConnectPage } from "./pages/connect";
 import { addEvolutionPage } from "./pages/evolution";
@@ -58,6 +57,8 @@ const pages: Page[] = [
 export const leftEdgeItemAlignment = () => (isLandscape() ? innerHeight * 0.1 : innerWidth * 0.07);
 export const contentWidthMobile = () => innerWidth - leftEdgeItemAlignment() * 2;
 
+let currentPage = introPage;
+
 export class Site {
     navItems?: HTMLElement[];
     headerBar?: HTMLElement;
@@ -89,6 +90,8 @@ export class Site {
         const currentNavItem = this.navItems[pillarPages.findIndex((p) => p.addPage === addPage)];
         if (!currentNavItem) return;
         colorOnHover(currentNavItem, theme.bodyText, theme.bodyText);
+
+        currentPage = page;
     };
 
     openPage = (addPage: () => void) => {
@@ -202,6 +205,7 @@ export class Site {
                         menuPageNav.style.fontWeight = "500";
                         menuPageNav.style.cursor = "pointer";
                         colorOnHover(menuPageNav, theme.menuModalText, theme.menuModalTextHovered);
+                        if (addPage === currentPage.addPage) colorOnHover(menuPageNav, theme.menuModalTextHovered, theme.menuModalTextHovered);
 
                         menuPageNav.onclick = () => {
                             menuModal.beginClose();
@@ -416,7 +420,7 @@ export class Site {
     };
 
     animateHomeIE = async () => {
-        const home = addNewHomeScrollSvgs();
+        const home = addNewHomeScrollSvgs(false);
         for (const el of home) {
             shouldElementOutlastPage.add(el);
             el.style.animation = "";
