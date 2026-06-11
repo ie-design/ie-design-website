@@ -29,6 +29,8 @@ document.body.appendChild(scrollContainer);
 
 scrollContainer.onwheel = (e) => e.preventDefault();
 window.onwheel = (e) => {
+    // if (scrollContainer.style.overflowY === "scroll") scrollContainer.scrollTop += e.deltaY;
+    // else scrollContainer.scrollLeft += e.deltaX + e.deltaY;
     if (scrollContainer.style.overflowY === "scroll") scrollContainer.scrollBy({ top: e.deltaY, left: e.deltaX });
     else scrollContainer.scrollBy({ left: e.deltaX + e.deltaY });
 };
@@ -94,6 +96,7 @@ export function addScrollPadding() {
 export function addScrollImage(src: string): HTMLImageElement {
     const scrollImage = document.createElement("img");
     scrollImage.style.position = "absolute";
+    // scrollImage.style.transform = "translateZ(0)"; // own compositor layer prevents Safari tile discard
     scrollImage.src = src;
     animateOnEnter(scrollImage, scrollContainer, fadeInAnimation);
     scrollImage.style.cursor = "pointer";
