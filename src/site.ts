@@ -7,7 +7,7 @@ import { bodySig, cleanLastPage, fadeInAnimation, registerUpdateLayout, shouldEl
 import { addConnectPage } from "./pages/connect";
 import { addEvolutionPage } from "./pages/evolution";
 import { addInspirationPage } from "./pages/inspiration";
-import { addNewHomeScrollSvgs, addViewPage, setHomeFromIntro } from "./pages/view";
+import { addNewHomeScrollSvgs, addViewPage, justHomeLayoutDesktop, justHomeLayoutMobile, setHomeFromIntro } from "./pages/view";
 import { addWorkPage } from "./pages/work";
 import { getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
@@ -417,8 +417,8 @@ export class Site {
 
         const [homeDesktop, homeMobile] = home;
 
-        const desktopLayout = flow(Axis.X, [startGapDesktop(), imageWithHeight(homeDesktop, 0.95)], { h: (c) => c.s });
-        const mobileLayout = flow(Axis.Y, [startGapMobile(), imageByWidth(homeMobile, () => contentWidthMobile(), { align: Align.Center })], { w: (c) => c.s });
+        const desktopLayout = flow(Axis.X, justHomeLayoutDesktop(homeDesktop), { h: (c) => c.s });
+        const mobileLayout = flow(Axis.Y, justHomeLayoutMobile(homeMobile), { w: (c) => c.s });
 
         registerUpdateLayout(() => {
             const landscape = isLandscape();
