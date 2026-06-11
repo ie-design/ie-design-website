@@ -1,6 +1,6 @@
-import { footer, link, startGapDesktop, startGapMobile } from "../components";
+import { footer, link, startGapMobile } from "../components";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
-import { Align, anchored, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
+import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
 import { contentWidthMobile } from "../site";
@@ -28,10 +28,14 @@ export function addConnectPage() {
     const connect = addScrollSvg("connect/connect.svg");
     const letsMeet = addScrollImage("connect/lets-meet.jpg");
     const who = addScrollText("Bethlyn Krakauer, Founder and Creative Director");
+
+    const emailLink = link("email", "mailto:beth@ie-design.com");
+    emailLink.style.fontWeight = 700 + "";
+
     const texts = [
         addScrollText("Our clients look to us for more than award-winning design. They value our role as trusted advisor, support, and confidant."), // -
         addScrollText("We look for synergy and compatibility in every relationship we build so the work experience doesn’t feel like work at all."),
-        appendParagraph(addScrollText(""), "If your gut is telling you we should connect, now is the perfect time to ", link("email", "mailto:beth@ie-design.com"), "."),
+        appendParagraph(addScrollText(""), "If your gut is telling you we should connect, now is the perfect time to ", emailLink, "."),
     ];
     const icons = [
         addIcon("connect/instagram-icon.svg", "https://www.instagram.com/iedesigninc"), // -
@@ -41,42 +45,39 @@ export function addConnectPage() {
     const scrollPadding = addScrollPadding();
 
     const desktopTextStyle = (s: number) => ({ letterSpacing: 0, fontWeight: 300, color: theme.bodyText, fontSize: 0.025 * s });
+    const textColumnDesktop = flow(Axis.Y, [
+        imageWithWidth(connect, 0.55), // -
+        gap(0.09),
+        ...interlaceWithBetween(
+            texts.map((t) =>
+                el(t, {
+                    style: (c) => {
+                        styleMultiLineText(t, { ...desktopTextStyle(c.s), lineHeight: 0.05 * c.s });
+                        setSizeX(t, 0.55 * c.s);
+                    },
+                })
+            ),
+            gap(0.03)
+        ),
+    ]);
+
+    const what = flow(Axis.Y, [
+        textColumnDesktop, // -
+        gap(0.04),
+        flow(Axis.X, interlaceWithBetween(icons.map(iconSquare), gap(0.03))),
+    ]);
+
     const desktopLayout = flow(
         Axis.X,
         [
-            startGapDesktop(),
-            flow(
-                Axis.Y,
-                [
-                    imageWithWidth(connect, 0.55), // -
-                    gap(0.09),
-                    ...interlaceWithBetween(
-                        texts.map((t) =>
-                            el(t, {
-                                style: (c) => {
-                                    styleMultiLineText(t, { ...desktopTextStyle(c.s), lineHeight: 0.05 * c.s });
-                                    setSizeX(t, 0.55 * c.s);
-                                },
-                                align: Align.Center,
-                            })
-                        ),
-                        gap(0.03)
-                    ),
-                    gap(0.04),
-                    flow(Axis.X, interlaceWithBetween(icons.map(iconSquare), gap(0.03))),
-                ],
-                { place: (self, s) => (self.y = 0.05 * s) }
-            ),
+            gap(0.05),
+            what,
             gap(0.15),
-            anchored(
-                Axis.Y,
-                [
-                    el(letsMeet, { style: (c) => setSizeY(letsMeet, 0.8 * c.s), anchor: true }), // -
-                    gap(0.04),
-                    el(who, { style: (c) => styleSingleLineText(who, desktopTextStyle(c.s)) }),
-                ],
-                { h: (c) => c.s }
-            ),
+            flow(Axis.Y, [
+                el(letsMeet, { style: () => setSizeY(letsMeet, textColumnDesktop.box.h) }), // -
+                gap(0.05),
+                el(who, { style: (c) => styleSingleLineText(who, desktopTextStyle(c.s)) }),
+            ]),
             ...footer(document.createElement("div"), scrollPadding), // - silly way of saying don't
         ],
         { h: (c) => c.s }
