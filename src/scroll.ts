@@ -2,7 +2,7 @@ import { isLandscape, px } from "./layout";
 import { appendChildForPage, awaitLayout, bodySig, fadeInAnimation } from "./page";
 import { pillars, site } from "./site";
 import { theme } from "./theme";
-import { colorOnHover, createElementSVG, loadSVGInto } from "./util";
+import { animateOnEnter, colorOnHover, createElementSVG, loadSVGInto } from "./util";
 
 export interface TextSquare {
     major: HTMLElement;
@@ -95,7 +95,7 @@ export function addScrollImage(src: string): HTMLImageElement {
     const scrollImage = document.createElement("img");
     scrollImage.style.position = "absolute";
     scrollImage.src = src;
-    scrollImage.style.animation = fadeInAnimation();
+    animateOnEnter(scrollImage, scrollContainer, fadeInAnimation);
     scrollImage.style.cursor = "pointer";
 
     scrollImage.onclick = () => site.openImage(src);
@@ -108,7 +108,7 @@ export function addScrollImage(src: string): HTMLImageElement {
 export function addScrollSvg(src: string) {
     const scrollSvg = createElementSVG("svg");
     scrollSvg.style.position = "absolute";
-    scrollSvg.style.animation = fadeInAnimation();
+    animateOnEnter(scrollSvg, scrollContainer, fadeInAnimation);
 
     awaitLayout(loadSVGInto(scrollSvg, src));
 

@@ -1,3 +1,5 @@
+import { BoxElement } from "./layout";
+
 export const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
 export const onEvent = <K extends keyof HTMLElementEventMap>(target: EventTarget, event: K) =>
     new Promise<void>((resolve) => target.addEventListener(event, () => resolve(), { once: true }));
@@ -144,3 +146,16 @@ export function bold(text: string) {
 }
 
 export const camelToKebab = (str: string) => str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`).replace(/^_/, "");
+
+export function animateOnEnter(element: BoxElement, root: BoxElement, getAnimation: () => string) {
+    const observer = new IntersectionObserver(
+        (entries) => {
+            if (entries[0].isIntersecting) {
+                element.style.animation = getAnimation();
+                observer.disconnect();
+            }
+        },
+        { root }
+    );
+    observer.observe(element);
+}
