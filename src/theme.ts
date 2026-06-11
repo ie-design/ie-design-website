@@ -1,19 +1,24 @@
 import { site } from "./site";
 import { camelToKebab } from "./util";
 
+const neutral = "#808080";
+const white = "#ffffff";
+
 const light = {
     ieBlue: "#609cce",
     ieGreen: "#bfe021",
     ieText: "#231f20",
 
-    background: "#ffffff",
+    background: white,
     bodyText: "#000000",
 
     neutralBack: "#e6e6e6",
     neutralFront: "#b3b3b3",
-    neutral: "#808080",
+    neutral: neutral,
 
     menuModalOverlay: "#000000f8",
+    menuModalText: neutral,
+    menuModalTextHovered: white,
     imageModalOverlay: "#ffffffee",
 };
 
@@ -32,6 +37,8 @@ const dark = {
     neutral: "#808080",
 
     menuModalOverlay: "#000000f8",
+    menuModalText: neutral,
+    menuModalTextHovered: white,
     imageModalOverlay: "#1a1a1aee",
 };
 

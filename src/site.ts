@@ -175,7 +175,7 @@ export class Site {
         this.menuButton = menuButton;
 
         menuButton.style.animation = fadeInAnimation();
-        colorOnHoverSVGStroke(menuButton, theme.neutral, theme.neutralFront);
+        colorOnHoverSVGStroke(menuButton, theme.neutral, theme.bodyText);
 
         const menuLine = makeLine(menuButton, 4);
         const line1 = menuLine();
@@ -201,7 +201,7 @@ export class Site {
                         menuPageNav.style.fontFamily = "Spartan";
                         menuPageNav.style.fontWeight = "500";
                         menuPageNav.style.cursor = "pointer";
-                        colorOnHover(menuPageNav, theme.neutralFront, theme.background);
+                        colorOnHover(menuPageNav, theme.menuModalText, theme.menuModalTextHovered);
 
                         menuPageNav.onclick = () => {
                             menuModal.beginClose();
@@ -213,20 +213,28 @@ export class Site {
                     }
 
                     menuModal.onLayout = () => {
-                        for (const menuPageNav of menuPageNavs) {
-                            menuPageNav.style.fontSize = px(innerHeight * 0.05);
-                            centerElementX(menuPageNav);
+                        if (isLandscape()) {
+                            for (const menuPageNav of menuPageNavs) {
+                                menuPageNav.style.fontSize = px(innerHeight * 0.05);
+                                centerElementX(menuPageNav);
+                            }
+                            centerWithGapY(menuPageNavs, innerHeight * 0.09, innerHeight / 2);
+                        } else {
+                            for (const menuPageNav of menuPageNavs) {
+                                menuPageNav.style.fontSize = px(innerHeight * 0.028);
+                                centerElementX(menuPageNav);
+                            }
+                            centerWithGapY(menuPageNavs, innerHeight * 0.06, innerHeight / 2);
                         }
-                        centerWithGapY(menuPageNavs, innerHeight * 0.08, innerHeight / 2);
                     };
 
                     menuButton.style.zIndex = MODAL_ZINDEX + 1 + "";
                 },
                 onTriggerOpen: () => {
-                    colorOnHoverSVGStroke(menuButton, theme.neutralFront, theme.background);
+                    colorOnHoverSVGStroke(menuButton, theme.menuModalText, theme.menuModalTextHovered);
                 },
                 onTriggerClose: () => {
-                    colorOnHoverSVGStroke(menuButton, theme.neutralFront, theme.neutralFront);
+                    colorOnHoverSVGStroke(menuButton, theme.neutral, theme.bodyText);
                 },
                 onEndClose: () => {
                     menuButton.style.zIndex = "0";
