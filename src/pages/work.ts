@@ -208,7 +208,7 @@ export function addWorkPage() {
         scrollContainer.addEventListener("scroll", () => {
             const closest = findWithMin(workItemsWithTabs, (w) => {
                 if (isLandscape()) {
-                    const center = scrollContainer.scrollLeft + scrollContainer.clientWidth / 2;
+                    const center = scrollContainer.scrollLeft - scrollContainer.clientWidth / 2;
                     return Math.abs(w.workItem.textSquare.major.offsetLeft - center);
                 } else {
                     const center = scrollContainer.scrollTop - scrollContainer.clientHeight / 2;
