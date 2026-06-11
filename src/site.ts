@@ -265,7 +265,7 @@ export class Site {
                 const gapToEdge = (getHeaderBarHeight() - size) / 2;
                 menuButton.style.width = px(size);
                 menuButton.style.height = px(size);
-                menuButton.style.left = px(innerWidth - size - gapToEdge);
+                menuButton.style.left = px(innerWidth - size - leftEdgeItemAlignment());
                 menuButton.style.top = px(gapToEdge);
             }
         }, [bodySig]);
