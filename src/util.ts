@@ -67,7 +67,7 @@ export function mapRange(n: number, start1: number, stop1: number, start2: numbe
 const hoverControllers = new WeakMap<Element, AbortController>();
 
 const colorOnHoverGeneric =
-    <T extends HTMLElement | SVGSVGElement>(field: string) =>
+    <T extends BoxElement>(field: string) =>
     (element: T, color: string, hoverColor: string) => {
         element.style.setProperty(field, color);
 
@@ -166,19 +166,42 @@ export interface SwipeDelta {
     deltaY: number;
 }
 
-export function onSwipeMobile(target: HTMLElement, callback: (point: SwipeDelta) => void) {
-    let lastTouch: SwipeDelta | undefined;
+export function onSwipe(target: HTMLElement, callback: (point: SwipeDelta) => void): () => void {
+    const scroller = document.createElement("div");
+    scroller.style.cssText = "position:fixed;inset:0;overflow:scroll;opacity:0;";
 
-    target.addEventListener("touchstart", (e) => {
-        lastTouch = { deltaX: e.touches[0].clientX, deltaY: e.touches[0].clientY };
+    const inner = document.createElement("div");
+    inner.style.cssText = "width:1000vw;height:1000vh;"; // re-centering on touchstart+scrollend keeps us away from edges
+    scroller.appendChild(inner);
+    target.appendChild(scroller);
+
+    const center = () => {
+        scroller.scrollLeft = scroller.scrollWidth / 2;
+        scroller.scrollTop = scroller.scrollHeight / 2;
+    };
+    center();
+
+    let lastLeft = scroller.scrollLeft;
+    let lastTop = scroller.scrollTop;
+
+    const recenter = () => {
+        center();
+        lastLeft = scroller.scrollLeft;
+        lastTop = scroller.scrollTop;
+    };
+
+    scroller.addEventListener("touchstart", recenter, { passive: true });
+    scroller.addEventListener("scrollend", recenter);
+
+    scroller.addEventListener("scroll", () => {
+        const dx = scroller.scrollLeft - lastLeft;
+        const dy = scroller.scrollTop - lastTop;
+        lastLeft = scroller.scrollLeft;
+        lastTop = scroller.scrollTop;
+        if (dx !== 0 || dy !== 0) callback({ deltaX: dx, deltaY: dy });
     });
-    target.addEventListener("touchmove", (e) => {
-        if (lastTouch === undefined) return;
-        callback({ deltaX: lastTouch.deltaX - e.touches[0].clientX, deltaY: lastTouch.deltaY - e.touches[0].clientY });
-    });
-    target.addEventListener("touchend", () => {
-        lastTouch = undefined;
-    });
+
+    return () => target.removeChild(scroller);
 }
 
 export const camelToKebab = (str: string) => str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`).replace(/^_/, "");

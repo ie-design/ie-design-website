@@ -12,7 +12,7 @@ import { addWorkPage } from "./pages/work";
 import { getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
 import { setupLogoThemeToggle, theme } from "./theme";
-import { SwipeDelta, colorOnHover, colorOnHoverSVGStroke, createElementSVG, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, loadSVGInto, makeLine, makePolyline, mapRange, onSwipeMobile, setAttributes, setPolylines, sleep } from "./util";
+import { SwipeDelta, colorOnHover, colorOnHoverSVGStroke, createElementSVG, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, loadSVGInto, makeLine, makePolyline, mapRange, onSwipe, setAttributes, setPolylines, sleep } from "./util";
 
 interface Page {
     addPage: () => void;
@@ -380,12 +380,9 @@ export class Site {
         svg.style.height = px(innerHeight * 0.4);
         document.body.appendChild(svg);
 
-        const stepAnimationWithScale = (scale: number) => (e: SwipeDelta) => {
-            introAnimationContext.step(Math.sqrt(e.deltaX * e.deltaX + e.deltaY * e.deltaY) * scale); // seconds
-        };
-
-        window.addEventListener("wheel", stepAnimationWithScale(0.001));
-        onSwipeMobile(window as unknown as HTMLElement, stepAnimationWithScale(0.0005));
+        const cleanOnSwipe = onSwipe(document.body, (e) => {
+            introAnimationContext.step(Math.sqrt(e.deltaX * e.deltaX + e.deltaY * e.deltaY) * 0.01);
+        });
 
         await sleep(1000, introAnimationContext);
 
@@ -417,9 +414,9 @@ export class Site {
         await animateForTime(1.2, q(1), cubicBezier(0.7, 0, 0.1, 1), introAnimationContext);
 
         document.body.removeChild(svg);
-    };
 
-    animateHomeIE = async () => {
+        // animateHomeIE
+
         const home = addNewHomeScrollSvgs(false);
         for (const el of home) {
             shouldElementOutlastPage.add(el);
@@ -459,6 +456,8 @@ export class Site {
                 await animateForTime(3, (time) => (rest.style.opacity = time + ""), cubicBezier(0, 0, 1, 1), introAnimationContext);
             })
         );
+
+        cleanOnSwipe();
     };
 
     bigImage?: HTMLImageElement;
@@ -568,7 +567,6 @@ export class Site {
         let addPage = page.addPage;
         if (page === introPage) {
             await this.animateIntro();
-            await this.animateHomeIE();
             addPage = addViewPage;
         }
         this.addNavItems();
