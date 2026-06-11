@@ -185,6 +185,8 @@ export class Site {
         const line2 = menuLine();
         const line3 = menuLine();
 
+        const menuPageNavs: { menuPageNav: HTMLElement; addPage: () => void }[] = [];
+
         const menuModal = new Modal(
             theme.menuModalOverlay,
             (time) => {
@@ -196,7 +198,6 @@ export class Site {
             },
             {
                 onBeginOpen: (backdrop) => {
-                    const menuPageNavs: HTMLElement[] = [];
                     for (const [pageName, addPage] of Object.entries(pillars)) {
                         const menuPageNav = document.createElement("span");
                         menuPageNav.style.position = "absolute";
@@ -204,8 +205,6 @@ export class Site {
                         menuPageNav.style.fontFamily = "Spartan";
                         menuPageNav.style.fontWeight = "500";
                         menuPageNav.style.cursor = "pointer";
-                        colorOnHover(menuPageNav, theme.menuModalText, theme.menuModalTextHovered);
-                        if (addPage === currentPage.addPage) colorOnHover(menuPageNav, theme.menuModalTextHovered, theme.menuModalTextHovered);
 
                         menuPageNav.onclick = () => {
                             menuModal.beginClose();
@@ -213,22 +212,30 @@ export class Site {
                         };
 
                         backdrop.appendChild(menuPageNav);
-                        menuPageNavs.push(menuPageNav);
+                        menuPageNavs.push({ menuPageNav, addPage });
                     }
 
                     menuModal.onLayout = () => {
                         if (isLandscape()) {
-                            for (const menuPageNav of menuPageNavs) {
+                            for (const { menuPageNav } of menuPageNavs) {
                                 menuPageNav.style.fontSize = px(innerHeight * 0.05);
                                 centerElementX(menuPageNav);
                             }
-                            centerWithGapY(menuPageNavs, innerHeight * 0.09, innerHeight / 2);
+                            centerWithGapY(
+                                menuPageNavs.map((m) => m.menuPageNav),
+                                innerHeight * 0.09,
+                                innerHeight / 2
+                            );
                         } else {
-                            for (const menuPageNav of menuPageNavs) {
+                            for (const { menuPageNav } of menuPageNavs) {
                                 menuPageNav.style.fontSize = px(innerHeight * 0.028);
                                 centerElementX(menuPageNav);
                             }
-                            centerWithGapY(menuPageNavs, innerHeight * 0.06, innerHeight / 2);
+                            centerWithGapY(
+                                menuPageNavs.map((m) => m.menuPageNav),
+                                innerHeight * 0.06,
+                                innerHeight / 2
+                            );
                         }
                     };
 
@@ -236,12 +243,17 @@ export class Site {
                 },
                 onTriggerOpen: () => {
                     colorOnHoverSVGStroke(menuButton, theme.menuModalText, theme.menuModalTextHovered);
+                    for (const { menuPageNav, addPage } of menuPageNavs) {
+                        colorOnHover(menuPageNav, theme.menuModalText, theme.menuModalTextHovered);
+                        if (addPage === currentPage.addPage) colorOnHover(menuPageNav, theme.menuModalTextHovered, theme.menuModalTextHovered);
+                    }
                 },
                 onTriggerClose: () => {
                     colorOnHoverSVGStroke(menuButton, theme.neutral, theme.bodyText);
                 },
                 onEndClose: () => {
                     menuButton.style.zIndex = "0";
+                    menuPageNavs.length = 0;
                 },
             }
         );

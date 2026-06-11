@@ -83,18 +83,18 @@ export class Modal {
     }
 
     beginOpen = () => {
-        this.keyframes.onTriggerOpen();
         this.spring.target = 1;
         animateSpring(this.spring, this.springSig);
         this.wasLastOpened = true;
+        this.keyframes.onTriggerOpen();
         Modal.isAnyModalOpen = true;
     };
 
     beginClose = () => {
-        this.keyframes.onTriggerClose();
         this.spring.target = 0;
         animateSpring(this.spring, this.springSig);
         this.wasLastOpened = false;
+        this.keyframes.onTriggerClose();
         Modal.isAnyModalOpen = false;
     };
 }
