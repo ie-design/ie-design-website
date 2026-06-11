@@ -70,6 +70,55 @@ export function animateSpring(spring: Spring, signal: Signal) {
     }
 }
 
+export function cubicBezier(x1: number, y1: number, x2: number, y2: number) {
+    return (t: number) => {
+        let lo = 0,
+            hi = 1,
+            s = t;
+        for (let i = 0; i < 12; i++) {
+            const x = 3 * s * (1 - s) * (1 - s) * x1 + 3 * s * s * (1 - s) * x2 + s * s * s;
+            if (Math.abs(x - t) < 1e-6) break;
+            if (x > t) hi = s;
+            else lo = s;
+            s = (lo + hi) / 2;
+        }
+        return 3 * s * (1 - s) * (1 - s) * y1 + 3 * s * s * (1 - s) * y2 + s * s * s;
+    };
+}
+
+export const easeOut = cubicBezier(0, 0, 0.2, 1);
+
+export class AnimationContext {
+    offset = 0;
+    private listeners: Set<() => void> = new Set();
+
+    step(seconds: number) {
+        this.offset += seconds;
+        this.listeners.forEach((fn) => fn());
+    }
+
+    onStep(fn: () => void) { this.listeners.add(fn); }
+    offStep(fn: () => void) { this.listeners.delete(fn); }
+}
+
+export async function animateForTime(duration: number, onProgress: (t: number) => void, ease: (t: number) => number = easeOut, ctx?: AnimationContext) {
+    return new Promise<void>((resolve) => {
+        let startTime: number | null = null;
+        const baseOffset = ctx?.offset ?? 0;
+
+        const frame = (now: number) => {
+            if (startTime === null) startTime = now;
+            const elapsed = (now - startTime) + ((ctx?.offset ?? 0) - baseOffset) * 1000;
+            const t = Math.min(elapsed / (duration * 1000), 1);
+            onProgress(ease(t));
+            if (t < 1) requestAnimationFrame(frame);
+            else resolve();
+        };
+
+        requestAnimationFrame(frame);
+    });
+}
+
 export async function animateWithSpring(stiffness: number, overTime: (time: number) => void) {
     return new Promise<void>((resolve) => {
         const spring = new Spring(0);

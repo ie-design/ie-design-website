@@ -1,8 +1,24 @@
+import { AnimationContext } from "./animation";
 import { BoxElement } from "./layout";
 
-export const sleep = (delay: number) => new Promise((resolve) => setTimeout(resolve, delay));
-export const onEvent = <K extends keyof HTMLElementEventMap>(target: EventTarget, event: K) =>
-    new Promise<void>((resolve) => target.addEventListener(event, () => resolve(), { once: true }));
+export function sleep(ms: number, ctx?: AnimationContext): Promise<void> {
+    return new Promise((resolve) => {
+        const start = performance.now();
+        const timer = setTimeout(resolve, ms);
+        if (ctx) {
+            const baseOffset = ctx.offset;
+            const check = () => {
+                if (performance.now() - start + (ctx.offset - baseOffset) * 1000 >= ms) {
+                    clearTimeout(timer);
+                    ctx.offStep(check);
+                    resolve();
+                }
+            };
+            ctx.onStep(check);
+        }
+    });
+}
+export const onEvent = <K extends keyof HTMLElementEventMap>(target: EventTarget, event: K) => new Promise<void>((resolve) => target.addEventListener(event, () => resolve(), { once: true }));
 
 export function spaceToFile(s: string) {
     return s.replace(" ", "-");
@@ -143,6 +159,26 @@ export function bold(text: string) {
     span.innerText = text;
     span.style.fontWeight = "700";
     return span;
+}
+
+export interface SwipeDelta {
+    deltaX: number;
+    deltaY: number;
+}
+
+export function onSwipeMobile(target: HTMLElement, callback: (point: SwipeDelta) => void) {
+    let lastTouch: SwipeDelta | undefined;
+
+    target.addEventListener("touchstart", (e) => {
+        lastTouch = { deltaX: e.touches[0].clientX, deltaY: e.touches[0].clientY };
+    });
+    target.addEventListener("touchmove", (e) => {
+        if (lastTouch === undefined) return;
+        callback({ deltaX: lastTouch.deltaX - e.touches[0].clientX, deltaY: lastTouch.deltaY - e.touches[0].clientY });
+    });
+    target.addEventListener("touchend", () => {
+        lastTouch = undefined;
+    });
 }
 
 export const camelToKebab = (str: string) => str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`).replace(/^_/, "");

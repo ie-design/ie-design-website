@@ -1,7 +1,7 @@
+import { animateSpring, Spring } from "./animation";
 import { px } from "./layout";
 import { bodySig } from "./page";
 import { effect, Signal } from "./signal";
-import { animateSpring, Spring } from "./spring";
 
 export const MODAL_ZINDEX = 1;
 

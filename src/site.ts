@@ -1,3 +1,4 @@
+import { AnimationContext, animateForTime, animateWithSpring, cubicBezier, easeOut } from "./animation";
 import { blogs } from "./blogs/blogs";
 import { BoxElement, isLandscape, px, sizeX, sizeY, styleSingleLineText } from "./layout";
 import { MODAL_ZINDEX, Modal } from "./modal";
@@ -10,9 +11,8 @@ import { addNewHomeScrollSvgs, addViewPage, justHomeLayoutDesktop, justHomeLayou
 import { addWorkPage } from "./pages/work";
 import { getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "./scroll";
 import { Signal, effect } from "./signal";
-import { Spring, animateSpring, animateWithSpring } from "./spring";
 import { setupLogoThemeToggle, theme } from "./theme";
-import { colorOnHover, colorOnHoverSVGStroke, createElementSVG, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, loadSVGInto, makeLine, makePolyline, setAttributes, setPolylines, sleep } from "./util";
+import { SwipeDelta, colorOnHover, colorOnHoverSVGStroke, createElementSVG, createIconSVG, fetchSVG, getElementByIdSVG, interlaceWithBetween, loadSVGInto, makeLine, makePolyline, mapRange, onSwipeMobile, setAttributes, setPolylines, sleep } from "./util";
 
 interface Page {
     addPage: () => void;
@@ -58,6 +58,8 @@ export const leftEdgeItemAlignment = () => (isLandscape() ? innerHeight * 0.1 : 
 export const contentWidthMobile = () => innerWidth - leftEdgeItemAlignment() * 2;
 
 let currentPage = introPage;
+
+const introAnimationContext = new AnimationContext();
 
 export class Site {
     navItems?: HTMLElement[];
@@ -372,62 +374,48 @@ export class Site {
     };
 
     animateIntro = async () => {
-        // ZZZZ clean this up
         const svg = await fetchSVG("logo-full.svg");
         svg.style.position = "absolute";
         svg.style.opacity = "0";
+        svg.style.height = px(innerHeight * 0.4);
         document.body.appendChild(svg);
 
-        svg.style.height = px(innerHeight * 0.4);
+        const stepAnimationWithScale = (scale: number) => (e: SwipeDelta) => {
+            introAnimationContext.step(Math.sqrt(e.deltaX * e.deltaX + e.deltaY * e.deltaY) * scale); // seconds
+        };
 
-        await sleep(1000);
+        window.addEventListener("wheel", stepAnimationWithScale(0.001));
+        onSwipeMobile(window as unknown as HTMLElement, stepAnimationWithScale(0.0005));
 
-        const svgSpring = new Spring(0);
-        svgSpring.setStiffnessCritical(80);
-        const svgSpringSig = new Signal();
+        await sleep(1000, introAnimationContext);
 
-        effect(() => {
-            svg.style.opacity = "" + svgSpring.position;
-            svg.style.height = px((1.3 - svgSpring.position) * innerHeight);
-            svg.style.top = px((innerHeight - svg.scrollHeight) / 2);
-            svg.style.left = px((innerWidth - svg.scrollWidth) / 2);
-        }, [svgSpringSig]);
+        const q = (s: number) => (t: number) => {
+            const tt = Math.abs(s - t);
+            svg.style.opacity = "" + tt;
+            const height = mapRange(tt, 0, 1, innerHeight * 1.5, innerHeight * 0.3);
+            svg.style.height = px(height);
+            svg.style.top = px((innerHeight - height) / 2);
+            svg.style.left = px((innerWidth - height) / 2);
+        };
 
-        svgSpring.target = 1;
-        animateSpring(svgSpring, svgSpringSig);
+        await animateForTime(1.5, q(0), cubicBezier(0.7, 0, 0.1, 1), introAnimationContext);
 
-        await sleep(1000);
-        const d = "design";
+        await sleep(400, introAnimationContext);
 
-        function opacityOut(element: SVGElement) {
-            const letterSpring = new Spring(1);
-            letterSpring.setStiffnessCritical(150);
-            const letterSpringSig = new Signal();
+        const design = "design";
+        const designLetterIds = design.split("").map((letter) => `${design}-${letter}`);
+        const toFadeOutIds = [...designLetterIds, "big-i", "dot-1", "big-e", "dot-2"];
+        const toFadeOuts = toFadeOutIds.map((id) => getElementByIdSVG(svg, id));
 
-            effect(() => {
-                element.style.opacity = "" + letterSpring.position;
-            }, [letterSpringSig]);
-
-            letterSpring.target = 0;
-            animateSpring(letterSpring, letterSpringSig);
+        for (const toFadeOut of toFadeOuts) {
+            animateForTime(0.6, (t) => (toFadeOut.style.opacity = 1 - t + ""), easeOut, introAnimationContext);
+            await sleep(150, introAnimationContext);
         }
-        for (let i = 0; i < d.length; i++) {
-            const designLetter = getElementByIdSVG(svg, "design-" + d[i]);
-            opacityOut(designLetter);
-            await sleep(120);
-        }
-        const l = ["big-i", "dot-1", "big-e", "dot-2"];
-        for (let i = 0; i < l.length; i++) {
-            const designLetter = getElementByIdSVG(svg, l[i]);
-            opacityOut(designLetter);
-            await sleep(120);
-        }
-        await sleep(1000);
 
-        svgSpring.target = 0;
-        animateSpring(svgSpring, svgSpringSig);
+        await sleep(200, introAnimationContext);
 
-        await sleep(500);
+        await animateForTime(1.2, q(1), cubicBezier(0.7, 0, 0.1, 1), introAnimationContext);
+
         document.body.removeChild(svg);
     };
 
@@ -467,8 +455,8 @@ export class Site {
                 rest.style.opacity = "0";
                 const ie = getElementByIdSVG(el, "ie");
                 ie.style.opacity = "0";
-                await animateWithSpring(8, (time) => (ie.style.opacity = time + ""));
-                await animateWithSpring(10, (time) => (rest.style.opacity = time + ""));
+                await animateForTime(3, (time) => (ie.style.opacity = time + ""), cubicBezier(0, 0, 1, 1), introAnimationContext);
+                await animateForTime(3, (time) => (rest.style.opacity = time + ""), cubicBezier(0, 0, 1, 1), introAnimationContext);
             })
         );
     };

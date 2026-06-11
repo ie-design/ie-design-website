@@ -1,10 +1,10 @@
+import { animateSpringToTarget, Spring } from "../animation";
 import { footer, startGapDesktop, startGapMobile, TEXT_SQUARE_GAP_DESKTOP, textSquareLayoutDesktop, textSquareLayoutMobile } from "../components";
 import { isLandscape } from "../layout";
 import { applyBox, Axis, center, containAspect, Ctx, el, flow, gap, imageWithHeight, imageWithWidth, LayoutNode, run, virtual } from "../newLayoutEngine";
 import { appendChildForPage, awaitLayout, flushPageContent, registerUpdateLayout } from "../page";
 import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollTextSquare, getHeaderBarHeight, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait, scrollContainer, TextSquare } from "../scroll";
 import { effect, Signal } from "../signal";
-import { animateSpringToTarget, Spring } from "../spring";
 import { theme } from "../theme";
 import { findWithMin, interlaceWithBetween, interlaceWithFactory, spaceToFile } from "../util";
 
