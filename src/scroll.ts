@@ -96,7 +96,6 @@ export function addScrollPadding() {
 export function addScrollImage(src: string): HTMLImageElement {
     const scrollImage = document.createElement("img");
     scrollImage.style.position = "absolute";
-    // scrollImage.style.transform = "translateZ(0)"; // own compositor layer prevents Safari tile discard
     scrollImage.src = src;
     animateOnEnter(scrollImage, scrollContainer, fadeInAnimation);
     scrollImage.style.cursor = "pointer";

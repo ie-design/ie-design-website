@@ -207,11 +207,11 @@ export function onSwipe(target: HTMLElement, callback: (point: SwipeDelta) => vo
 export const camelToKebab = (str: string) => str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`).replace(/^_/, "");
 
 export function animateOnEnter(element: BoxElement, root: BoxElement, getAnimation: () => string) {
-    element.style.opacity = "0";
+    element.style.visibility = "hidden";
     const observer = new IntersectionObserver(
         (entries) => {
             if (entries[0].isIntersecting) {
-                element.style.opacity = "";
+                element.style.visibility = "";
                 element.style.animation = getAnimation();
                 observer.disconnect();
             }
