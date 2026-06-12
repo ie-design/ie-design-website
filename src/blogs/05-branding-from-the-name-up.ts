@@ -6,9 +6,9 @@ export const brandingFromTheNameUpBlog = new Blog(
     "When a client had an idea for a brand spinoff, we took her concept to reality and launched the business in high style.",
     (b: Blog) => {
         b.addParagraph("By Bethlyn Krakauer");
-        b.addParagraph("").append(
+        b.addParagraph(
             "Fotostori is the brainchild of Ann Sullivan, CPO®, CPM®, the acclaimed home organization guru who’s been an i.e. design client for years. The curation of her own clients’ treasured images, audio recordings, and films was already part of her successful business. But the demand for her unique approach was so great, she decided to create a whole new company dedicated to this specialized archival work. Ann looked to us to name the new company, establish a distinctive brand, and create the ", // -
-            link("website", "https://fotostori.com"), // -
+            link("website", "https://fotostori.com"),
             "."
         );
         b.addSubhead("We had many ideas.");

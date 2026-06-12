@@ -33,12 +33,13 @@ export const buildingAStrongBrandBlog = new Blog(
         b.addSubhead("What should I expect?");
         b.addParagraph("Led by award-winning designer and founder of i.e. design, Bethlyn Krakauer, this session offers strategic perspective and candid insight from accomplished women in business who value excellence and growth. You will leave with sharper clarity and a more decisive path forward to elevate your brand and align it with your vision.");
         b.addSubhead("Will there be food?");
-        b.addParagraph("").append(
+        b.addParagraph(
             "Yes. Inspired bites and beverages will be provided by Chef Gayon, founder of ", // -
             link("Five Tastes", "https://www.thefivetastes.com/"),
             "."
         );
-        // MISSING "Click here to apply to attend."
+        b.addSpace();
+        b.addHead("Thanks to those who attended. Stay tuned for future events.");
         b.addSpace();
         b.addImage("studio.jpg");
         b.addSpace();

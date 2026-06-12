@@ -15,7 +15,7 @@ export const shareSomeDesignLoveBlog = new Blog(
         b.addSubhead("Permission to mess up.");
         b.addParagraph("Yes, these deluxe journals would look great on a coffee table or added to a rainbow bookshelf, but our purpose in giving these to our clients is to inspire them to be creative. “WORDS” has lined pages to allow for jotting down ideas, unloading some stress, or setting daily goals. Its sister, “IDEAS” is a sketchbook to hold visual notes and inspired scribbles that just might lead to something genius. Our hope is that whoever receives these journals lets them get beat up, doesn’t mind a coffee spill, and really uses them. Our lives are worth recording.");
         b.addSubhead("They sure look nice.");
-        b.addParagraph("").append(
+        b.addParagraph(
             "I know what you are thinking. “How can I get a set of these fantastic books?” You become a client! We give them as a thank you for completing a project with us. These books are part of our everyday process. We put pen to paper long before we touch a keyboard or a mouse. It’s fun to view the initial brainstorming and see the progression of ideas and even the nugget that became the final solution. To be the next page in our sketchbook, ", // -
             link("email", "mailto:beth@ie-design.com"),
             " us. See more of our branded client gifts ",

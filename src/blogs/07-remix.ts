@@ -11,6 +11,7 @@ export const remixBlog = new Blog(
         b.addParagraph("We decided to paint all of the objects matte white so they’d become more symbolic design elements than literal representations of the various media. Fortunately, I had a large collection of most of the items that we needed. Having digitized my family’s slides and 8mm films, I was able to use the original reels and film strips, along with the coveted carousel. The VHS and cassette tapes were also easy, since I had several of those as well. So it was a quick task to assemble them for the painting process.");
         b.addSpace();
         b.addImage("raw-media.jpg");
+        b.addImagePairSpace();
         b.addImage("wheels.jpg");
         b.addSpace();
         b.addSubhead("Lots of spray paint.");

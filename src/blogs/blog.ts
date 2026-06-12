@@ -83,7 +83,7 @@ export class Blog {
             desktopFlow(
                 el(elem, {
                     style: (c) => {
-                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 400, color: theme.neutralFront, fontSize: 0.025 * c.s, lineHeight: 0.02 * c.s });
+                        styleMultiLineText(elem, { letterSpacing: 0, fontWeight: 400, color: theme.neutralFront, fontSize: 0.025 * c.s, lineHeight: 0.03 * c.s });
                         setSizeX(elem, c.parent.w);
                     },
                 }),
@@ -131,8 +131,8 @@ export class Blog {
         return elem;
     };
 
-    addParagraph = (text: string) => {
-        const elem = addScrollText(text);
+    addParagraph = (...nodes: (Node |string)[]) => {
+        const elem = addScrollText(...nodes);
         this.desktopNodes.push(
             desktopFlow(
                 el(elem, {

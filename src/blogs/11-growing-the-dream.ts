@@ -18,7 +18,7 @@ export const growingTheDreamBlog = new Blog(
         b.addImage("branding.jpg");
         b.addSpace();
         b.addSubhead("The power of a perfect portrait.");
-        b.addParagraph("").append(
+        b.addParagraph(
             "Stephanie swore on a stack of chocolate that no one had ever taken a truly good photograph of her. Challenge accepted. By partnering with ", // -
             link("Melissa Glynn", "https://www.melissaglynn.com/"),
             " a photographer specializing in women’s portraiture, we transformed Stephanie’s perception of herself in front of the camera. Utilizing the soft, natural light of her home studio, the photographer created an environment where Stephanie felt completely at ease. It didn’t hurt that Stephanie immediately fell in love with the photographer’s Yorkie."
@@ -28,7 +28,7 @@ export const growingTheDreamBlog = new Blog(
         b.addImage("portraits.jpg");
         b.addSpace();
         b.addSubhead("A website design with a purpose.");
-        b.addParagraph("").append(
+        b.addParagraph(
             "The ", // -
             link("website", "https://www.thrivcollective.com/"),
             " design embodies Thrīv Collective’s core mission: to provide a supportive space for clients’ personal growth. The tagline introduces her process and potential benefits, while an animated graphic tells the visual story of transformation, as a bare branch progresses through stages of growth, from sprouting green leaves to emerging flowers. It communicates Thrīv Collective’s fundamental belief that every individual has the innate capacity to grow, heal, and ultimately blossom, given the right support and environment."

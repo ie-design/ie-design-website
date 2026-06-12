@@ -29,10 +29,10 @@ document.body.appendChild(scrollContainer);
 
 scrollContainer.onwheel = (e) => e.preventDefault();
 window.onwheel = (e) => {
-    // if (scrollContainer.style.overflowY === "scroll") scrollContainer.scrollTop += e.deltaY;
-    // else scrollContainer.scrollLeft += e.deltaX + e.deltaY;
-    if (scrollContainer.style.overflowY === "scroll") scrollContainer.scrollBy({ top: e.deltaY, left: e.deltaX });
-    else scrollContainer.scrollBy({ left: e.deltaX + e.deltaY });
+    if (scrollContainer.style.overflowY === "scroll") scrollContainer.scrollTop += e.deltaY;
+    else scrollContainer.scrollLeft += e.deltaX + e.deltaY;
+    // if (scrollContainer.style.overflowY === "scroll") scrollContainer.scrollBy({ top: e.deltaY, left: e.deltaX });
+    // else scrollContainer.scrollBy({ left: e.deltaX + e.deltaY });
 };
 
 export function resizeScrollContainerLandscape() {
@@ -135,6 +135,14 @@ export function addScrollVideo(src: string, poster?: string): HTMLVideoElement {
     scrollVideo.style.animation = fadeInAnimation();
     appendChildForPage(scrollContainer, scrollVideo);
     return scrollVideo;
+}
+
+export function addScrollTextAnimateIn(text: string, shouldAnimateIn: boolean = true) {
+    const scrollText = document.createElement("p");
+    scrollText.append(text);
+    if (shouldAnimateIn) animateOnEnter(scrollText, scrollContainer, fadeInAnimation);
+    appendChildForPage(scrollContainer, scrollText);
+    return scrollText;
 }
 
 export function addScrollText(...nodes: (Node | string)[]) {

@@ -2,9 +2,9 @@ import { Blog } from "../blogs/blog";
 import { blogs } from "../blogs/blogs";
 import { footer, LANDING_SVG_SCALE, startGapDesktop, startGapMobile } from "../components";
 import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout";
-import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, LayoutNode, run, setSizeX, setSizeY } from "../newLayoutEngine";
+import { Align, Axis, el, flow, gap, imageByWidth, imageWithFillWidth, imageWithWidth, LayoutNode, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
-import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
+import { addNextPillarButton, addScrollImage, addScrollPadding, addScrollSvg, addScrollTextAnimateIn, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
 import { contentWidthMobile, site } from "../site";
 import { theme } from "../theme";
 import { colorOnHover, interlaceWithBetween } from "../util";
@@ -18,9 +18,9 @@ interface InspirationTile {
 
 function addInspirationTile(blog: Blog) {
     const image = addScrollImage(blog.thumbnailPath());
-    const title = addScrollText(blog.title);
-    const description = addScrollText(blog.description);
-    const readMore = addScrollText("Read more");
+    const title = addScrollTextAnimateIn(blog.title);
+    const description = addScrollTextAnimateIn(blog.description);
+    const readMore = addScrollTextAnimateIn("Read more");
 
     readMore.style.cursor = "pointer";
     colorOnHover(readMore, theme.ieBlue, theme.ieGreen);
@@ -118,7 +118,7 @@ export function addInspirationPage() {
         Axis.Y,
         [
             startGapMobile(),
-            imageWithWidth(inspiration, 0.9), // -
+            imageByWidth(inspiration, () => contentWidthMobile(), { align: Align.Center }), // -
             gap(0.05),
             imageWithWidth(andOtherThings, 0.9),
             gap(0.1),

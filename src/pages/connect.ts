@@ -3,7 +3,7 @@ import { isLandscape, styleMultiLineText, styleSingleLineText } from "../layout"
 import { Align, Axis, el, flow, gap, imageWithFillWidth, imageWithWidth, run, setSizeX, setSizeY } from "../newLayoutEngine";
 import { registerUpdateLayout } from "../page";
 import { addScrollImage, addScrollPadding, addScrollSvg, addScrollText, getScrollHeight, getScrollWidth, resizeScrollContainerLandscape, resizeScrollContainerPortrait } from "../scroll";
-import { contentWidthMobile } from "../site";
+import { contentWidthMobile, setImageHeight } from "../site";
 import { theme } from "../theme";
 import { appendParagraph, colorOnHoverSVGFill, interlaceWithBetween } from "../util";
 
@@ -74,7 +74,7 @@ export function addConnectPage() {
             what,
             gap(0.15),
             flow(Axis.Y, [
-                el(letsMeet, { style: () => setSizeY(letsMeet, textColumnDesktop.box.h) }), // -
+                el(letsMeet, { style: () => setImageHeight(letsMeet, textColumnDesktop.box.h) }), // -
                 gap(0.05),
                 el(who, { style: (c) => styleSingleLineText(who, desktopTextStyle(c.s)) }),
             ]),
