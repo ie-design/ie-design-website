@@ -39,7 +39,7 @@ export const buildingAStrongBrandBlog = new Blog(
             "."
         );
         b.addSpace();
-        b.addHead("Thanks to those who attended. Stay tuned for future events.");
+        b.addHead("Thanks to all those who attended. Stay tuned for future events.");
         b.addSpace();
         b.addImage("studio.jpg");
         b.addSpace();
