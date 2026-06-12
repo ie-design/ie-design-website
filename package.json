@@ -1,22 +1,15 @@
 {
     "name": "ie-design-website",
     "version": "1.0.0",
-    "main": "index.js",
-    "homepage": "https://zakgriffin.github.io/ie-design-website/",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/ZakGriffin/ie-design-website.git"
+        "url": "git+https://github.com/ie-design/ie-design-website.git"
     },
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
-        "predeploy": "npm run build",
-        "deploy": "gh-pages -d dist"
+        "build": "vite build"
     },
     "devDependencies": {
-        "@cloudflare/vite-plugin": "^1.40.2",
-        "@types/node": "^25.9.3",
-        "gh-pages": "^6.3.0",
         "prettier": "^2.8.1",
         "typescript": "^6.0.3",
         "vite": "^8.0.14"
