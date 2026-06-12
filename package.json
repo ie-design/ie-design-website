@@ -1,6 +1,7 @@
 {
     "name": "ie-design-website",
     "version": "1.0.0",
+    "type": "module",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/ie-design/ie-design-website.git"
@@ -10,6 +11,7 @@
         "build": "vite build"
     },
     "devDependencies": {
+        "@cloudflare/vite-plugin": "^1.40.2",
         "prettier": "^2.8.1",
         "typescript": "^6.0.3",
         "vite": "^8.0.14"
