@@ -181,8 +181,8 @@ export class Blog {
                 return btn;
             }
         }
-        const prevButton = addNavButton(this.prevBlog, (b) => "← " + b.title);
-        const nextButton = addNavButton(this.nextBlog, (b) => b.title + " →");
+        const prevButton = addNavButton(this.prevBlog, (b) => "< " + b.title);
+        const nextButton = addNavButton(this.nextBlog, (b) => b.title + " >");
 
         const scrollPadding = addScrollPadding();
 
