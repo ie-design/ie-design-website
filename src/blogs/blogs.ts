@@ -11,6 +11,7 @@ import { theStartOfSomethingYumIeBlog } from "./10-the-start-of-something-yum-ie
 import { growingTheDreamBlog } from "./11-growing-the-dream";
 import { evolvingABrandWithHeartBlog } from "./12-evolving-a-brand-with-heart";
 import { buildingAStrongBrandBlog } from "./13-building-a-strong-brand";
+import { honoringALegacy } from "./14-honoring-a-legacy";
 import { initializeBlogs } from "./blog";
 
 export const blogs = initializeBlogs([
@@ -27,4 +28,5 @@ export const blogs = initializeBlogs([
     growingTheDreamBlog,
     evolvingABrandWithHeartBlog,
     buildingAStrongBrandBlog,
+    honoringALegacy,
 ]);
